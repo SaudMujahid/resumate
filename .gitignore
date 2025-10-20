@@ -37,6 +37,13 @@ Thumbs.db
 # Academic reports and media
 /others/*
 !others/.gitkeep
+# ✅ Allow real files (PDFs, slides, docs, images, etc.)
+!others/*.pdf
+!others/*.pptx
+!others/*.docx
+!others/*.jpg
+!others/*.png
+!others/*.txt
 
 # ==========================================================
 # Allow these files to stay tracked
