@@ -1,24 +1,47 @@
-*.log
-.DS_Store
-.env
-.env.backup
-.env.production
-.phpactor.json
-.phpunit.result.cache
-/.fleet
-/.idea
-/.nova
-/.phpunit.cache
-/.vscode
-/.zed
-/auth.json
-/node_modules
-/public/build
-/public/hot
+# ==========================================================
+# Laravel framework files
+# ==========================================================
+/vendor/
+/node_modules/
 /public/storage
 /storage/*.key
-/storage/pail
-/vendor
-Homestead.json
+.env
+.env.backup
 Homestead.yaml
+Homestead.json
+npm-debug.log
+yarn-error.log
+composer.lock
+
+# ==========================================================
+# OS / IDE files
+# ==========================================================
+.DS_Store
 Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# ==========================================================
+# Project-specific folders
+# ==========================================================
+# Datasets and private data
+/data/*
+
+# Support code that’s not part of Laravel core
+/support/*
+
+# Academic reports and media
+/others/*
+!others/.gitkeep
+
+# ==========================================================
+# Allow these files to stay tracked
+# ==========================================================
+!README.md
+!requirements.txt
+!main.php
+
