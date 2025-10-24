@@ -11,7 +11,7 @@
     {{-- Google Fonts --}}
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@500;600&family=Inter:wght@400&display=swap" rel="stylesheet">
 </head>
-<body class="font-[Poppins] bg-[#FFEEE6] text-[#1C1C3C] min-h-screen flex flex-col pt-20">
+<body x-data x-cloak class="font-[Poppins] text-[#1C1C3C] min-h-screen flex flex-col">
     {{-- Navigation --}}
     <header class="bg-gray-100 fixed top-0 left-0 w-full shadow z-50">
         <nav class="max-w-[1440px] mx-auto p-5 flex justify-between items-center relative">
@@ -49,15 +49,6 @@
                     <li><a href="#features" class="hover:text-[#FF6F61]">Features</a></li>
                     <li><a href="#templates" class="hover:text-[#FF6F61]">Templates</a></li>
                     <li><a href="#" class="hover:text-[#FF6F61]">Pricing</a></li>
-                </ul>
-            </div>
-            <div>
-                <h3 class="text-lg font-semibold mb-3">Resources</h3>
-                <ul>
-                    <li><a href="#" class="hover:text-[#FF6F61]">Blog</a></li>
-                    <li><a href="#" class="hover:text-[#FF6F61]">Resume Tips</a></li>
-                    <li><a href="#" class="hover:text-[#FF6F61]">Career Advice</a></li>
-                    <li><a href="#" class="hover:text-[#FF6F61]">FAQ</a></li>
                 </ul>
             </div>
             <div>
