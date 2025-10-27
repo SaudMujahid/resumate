@@ -15,11 +15,11 @@
     {{-- Navigation --}}
     <header class="bg-gray-100 fixed top-0 left-0 w-full shadow z-50">
         <nav class="max-w-[1440px] mx-auto p-5 flex justify-between items-center relative">
-            <div class="font-[Playfair_Display] text-2xl font-bold text-[#1C1C3C]">Resumate</div>
+            <div class="font-[Playfair_Display] text-2xl font-bold text-[#1C1C3C]"><a href="{{ url('/landing') }}"Resumate</a> </div>
             <div class="hidden md:flex gap-8 absolute left-1/2 -translate-x-1/2">
-                <a href="{{ url('/landing') }}" class="text-[#1C1C3C] hover:text-[#FF6F61] transition">Home</a>
+                <a href="{{ url('/mission') }}" class="text-[#1C1C3C] hover:text-[#FF6F61] transition">Mission</a>
                 <a href="{{ url('/features') }}" class="text-[#1C1C3C] hover:text-[#FF6F61] transition">Features</a>
-                <a href="{{ url('/Templates') }}" class="text-[#1C1C3C] hover:text-[#FF6F61] transition">Templates</a>
+                <a href="{{ url('/test') }}" class="text-[#1C1C3C] hover:text-[#FF6F61] transition">Templates</a>
                 <a href="{{ url('/analyzer') }}" class="text-[#1C1C3C] hover:text-[#FF6F61] transition">Analyzer</a>
             </div>
             <div>

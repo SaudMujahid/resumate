@@ -11,7 +11,11 @@ Route::get('/landing', function () {
     return view('landingTest');
 });
 
-Route::get('/test', function () {
+Route::get('/mission', function () {
+    return view('mission');
+});
+
+Route::get('/templates', function () {
     return view('test');
 });
 
