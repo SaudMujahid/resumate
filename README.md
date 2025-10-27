@@ -1,61 +1,105 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# **Resume Builder Laravel**
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## **About Project**
+It is a web application that allows users to create, read, update, and delete (CRUD) their resumes. The project would utilize the Laravel framework and include features such as form for users to input their resume information, and the ability to view, edit, and delete their resumes.
+<br />
 
-## About Laravel
+## **How To Run The Project**
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+<br />
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### **Step 1: Install PHP and Web Server**
+XAMPP is a free and open-source cross-platform web server. XAMPP is a software package that includes Apache, PHP, and MariaDB (a fork of MySQL). When you install XAMPP, you are installing all of these components at the same time. PHP is included in the package, so you do not need to install it separately.
+- Download XAMPP from the Apache Friends website. ([Download XAMPP](https://www.apachefriends.org/download.html))
+- Run the downloaded installer file.
+- Choose the components you want to install (e.g. Apache, MySQL, PHP).
+- Choose the installation location.
+- Click "Install" to begin the installation process.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+<br />
 
-## Learning Laravel
+### **Step 2: Install Composer**
+Composer is a dependency manager for PHP and is used to install Laravel and its dependencies. You can download Composer from the given link and install it according to the instructions provided. ([Download Composer](https://getcomposer.org/download/))
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+<br />
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### **Step 3: Clone the Laravel project**
+Clone the Laravel project from a repository or download it as a zip file and extract it to your machine.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+#### **Copy GitHub repository link**
 
-## Laravel Sponsors
+![Copy GitHub repository link](screenshots/step_1.png)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+#### **Open Xampp/htdocs folder and open terminal**
 
-### Premium Partners
+![Open Xampp/htdocs](screenshots/step_2.png)
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+#### **Clone repository**
 
-## Contributing
+![Clone repository](screenshots/step_3.png)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+<br />
 
-## Code of Conduct
+### **Step 4: Navigate to the Project directory**
+Navigate to the root directory of your Laravel project and open terminal.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+#### **Open Project directory**
 
-## Security Vulnerabilities
+![Navigate to the Project directory](screenshots/step_4.png)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+#### **Open terminal**
 
-## License
+![Navigate to the Project directory](screenshots/step_5.png)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+### **Step 5: Install required dependencies**
+Run the following command to install the required dependencies:
+
+    $ composer install
+
+![Run composer install command](screenshots/step_6.png)
+
+### **Step 6: Copy .env.example file**
+Copy the .env.example file to a new file called .env.
+
+    $ cp .env.example .env
+
+![Copy .eve.exmaple file to .env file](screenshots/step_7.png)
+
+### **Step 7: Generate Application Key**
+Run the following command to generate an application key:
+
+    $ php artisan key:generate
+
+![Run command php artisan key:generate](screenshots/step_8.png)
+
+### **Step 8: Open XAMPP Control Panel and Run Services**
+Open XAMPP Control Panel and start Apache and MySQL services.
+
+![XAMPP Control Panel](screenshots/step_9.png)
+
+### **Step 9: Create Database and update the database connection settings**
+Open phpMyAdmin and create a new database. In the .env file, update the database connection settings to match your local database setup.
+
+![Create Database](screenshots/step_10.png)
+
+![Update connection setting](screenshots/step_11.png)
+
+### **Step 10: Migrate all migrations**
+Run the following command to migrate the database:
+
+    $ php artisan migrate
+
+![Migrate database](screenshots/step_12.png)
+
+### **Step 11: Start Development Server**
+Finally, start the development server by running the following command:
+
+    $ php artisan serve
+
+![Start Server](screenshots/step_13.png)
+
+![Start Server](screenshots/step_14.png)
+
+<br />
+

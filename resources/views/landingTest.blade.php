@@ -2,37 +2,71 @@
 
 @section('content')
     {{-- Hero Section --}}
-    <section class="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center px-6 py-24">
-        <div class="max-w-[550px] text-center md:text-left space-y-6" x-data="{ show: false }" x-init="setTimeout(() => show = true, 200)">
-            <h1 x-show="show" x-transition
-                class="font-[Playfair_Display] text-[64px] md:text-[80px] font-bold leading-[1.2] text-[#1C1C3C] mb-4">
-                Build Your Dream Resume with AI
-            </h1>
+<section
+    class="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center px-6 py-20 md:py-24"
+>
+    <div
+        class="max-w-[550px] text-center md:text-left space-y-6"
+        x-data="{ show: false }"
+        x-init="setTimeout(() => show = true, 200)"
+    >
+        <h1
+            x-show="show"
+            x-transition
+            class="font-[Playfair_Display] text-[56px] md:text-[72px] font-bold leading-[1.2] text-[#1C1C3C] mb-4"
+        >
+            Build Your Dream Resume with AI
+        </h1>
 
-            <p x-show="show" x-transition.delay.150ms
-               class="text-lg md:text-2xl text-[#1C1C3C]/80 mb-8">
-                Create a professional, job-winning resume in minutes. Let our AI write, enhance, and analyze your content so you can focus on landing your next opportunity.
-            </p>
+        <p
+            x-show="show"
+            x-transition.delay.150ms
+            class="text-lg md:text-2xl text-[#1C1C3C]/80 mb-8"
+        >
+            Create a professional, job-winning resume in minutes. Let our AI write, enhance, and analyze your content so you can focus on landing your next opportunity.
+        </p>
 
-            <div class="flex justify-center md:justify-start gap-4">
-                <a href="{{ route('register') }}" class="bg-[#FF6F61] text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-[#FF8C7A] transition">
-                    Get Started Free
-                </a>
-
-                <a href="#features" class="border border-[#1C1C3C] px-8 py-3 rounded-lg text-[#1C1C3C] font-semibold hover:bg-[#1C1C3C] hover:text-white transition">
-                    Learn More
-                </a>
-            </div>
+        <div class="flex justify-center md:justify-start gap-4">
+            <a
+                href="{{ route('register') }}"
+                class="bg-[#FF6F61] text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-[#FF8C7A] transition"
+            >
+                Get Started Free
+            </a>
+            <a
+                href="#features"
+                class="border border-[#1C1C3C] px-8 py-3 rounded-lg text-[#1C1C3C] font-semibold hover:bg-[#1C1C3C] hover:text-white transition"
+            >
+                Learn More
+            </a>
         </div>
+    </div>
 
-        <div x-show="show" x-transition.delay.300ms class="w-full md:w-[520px] mt-10 md:mt-0 flex justify-center">
-            {{-- Hero Icon --}}
-            <svg class="w-96 h-96 text-[#FF6F61]" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M20 3H4c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2zM4 19V5h16l.002 14H4z"/>
-                <path d="M6 7h12v2H6zm0 4h12v2H6zm0 4h6v2H6z"/>
-            </svg>
+    <div
+        x-show="show"
+        x-transition.duration.700ms
+        class="w-full md:w-[520px] mt-10 md:mt-0 flex justify-center"
+    >
+        {{-- Animated Hero SVG --}}
+        <div class="relative w-80 h-80 md:w-96 md:h-96 animate-float">
+            <img
+                src="{{ asset('images/undraw_screening-resumes_dh9s.svg') }}"
+                alt="AI Resume Illustration"
+                class="w-full h-full object-contain drop-shadow-lg"
+            />
         </div>
-    </section>
+    </div>
+</section>
+
+<style>
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-12px); }
+}
+.animate-float {
+    animation: float 5s ease-in-out infinite;
+}
+</style>
 
     {{-- Features Section --}}
     <section id="features" class="bg-[#F7D9F1] py-20">
@@ -145,7 +179,7 @@
                     We currently offer popular templates like <strong>Classic</strong>, <strong>Modern</strong>, <strong>Minimalist</strong>, <strong>Elegant</strong>, and <strong>Creative</strong>.
                     But don't worry — we're actively working to add even more designs to suit your needs.
                 </p>
-                <a href="{{ url('/templates') }}" class="inline-block bg-[#1C1C3C] text-white px-8 py-3 rounded-xl text-lg font-semibold hover:bg-[#FF6F61] transition-all duration-300 shadow-lg hover:shadow-xl">
+                <a href="{{ url('/test') }}" class="inline-block bg-[#1C1C3C] text-white px-8 py-3 rounded-xl text-lg font-semibold hover:bg-[#FF6F61] transition-all duration-300 shadow-lg hover:shadow-xl">
                     View All Templates
                 </a>
             </div>
