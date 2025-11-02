@@ -1,6 +1,18 @@
-@extends('layouts.home')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ $title ?? 'Resumate - AI Resume Builder' }}</title>
 
-@section('content')
+    {{-- Include Tailwind + your styles via Vite --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    {{-- Google Fonts --}}
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@500;600&family=Inter:wght@400&display=swap" rel="stylesheet">
+</head>
+<body x-data x-cloak class="font-[Poppins] text-[#1C1C3C] min-h-screen flex flex-col">
+
 <div x-data="{
     currentPage: 'choice',
     selectedOption: null,
@@ -58,7 +70,7 @@
 
     <!-- Close Button -->
     <button
-        @click="window.location.href = '{{ url('/test') }}'"
+        @click="window.location.href = '{{ url('/templates') }}'"
         class="fixed top-6 right-6 z-50 w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-lg hover:bg-[#FFB8C6] transition-all duration-300 group">
         <svg class="w-6 h-6 text-gray-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -273,4 +285,7 @@
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 @endpush
 
-@endsection
+
+    </body>
+</html>
+

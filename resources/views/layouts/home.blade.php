@@ -16,7 +16,7 @@
     <header class="bg-gray-100 fixed top-0 left-0 w-full shadow z-50">
         <nav class="max-w-[1440px] mx-auto p-5 flex justify-between items-center relative">
             <div class="font-[Playfair_Display] text-2xl font-bold text-[#1C1C3C]">
-                <a href="{{ url('/landing') }}" class="hover:text-[#4CAF50] transition-colors duration-300">Resumate</a>
+                <a href="{{ url('/') }}" class="hover:text-[#4CAF50] transition-colors duration-300">Resumate</a>
             </div>
             <div class="hidden md:flex gap-8 absolute left-1/2 -translate-x-1/2">
                 <a href="{{ url('/mission') }}" class="text-[#1C1C3C] hover:text-[#FF6F61] transition">Mission</a>
@@ -33,7 +33,7 @@
     </header>
 
     {{-- Main content --}}
-    <main class="flex-1 mt-20">
+    <main class="flex-1 mt-12">
         @yield('content')
     </main>
 
