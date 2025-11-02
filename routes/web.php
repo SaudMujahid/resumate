@@ -23,6 +23,10 @@ Route::get('/resumebuilder', function () {
     return view('resumeBuilder');
 });
 
+Route::get('/resumebuilderv2', function () {
+    return view('resumebuilderv2');
+});
+
 Route::get('/features', function () {
     return view('features');
 });
