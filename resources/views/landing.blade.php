@@ -184,11 +184,11 @@
                     </div>
                     <h3 class="text-xl md:text-2xl font-semibold mb-3 text-[#1C1C3C]">Smart Resume Templates</h3>
                     <p class="text-base text-[#1C1C3C]/80 leading-relaxed">
-                        Choose from dozens of clean, ATS-friendly templates built by hiring experts to impress recruiters instantly.
+                        Choose from several modern, ATS-friendly templates built by hiring experts to impress recruiters instantly.
                     </p>
                 </div>
 
-                {{-- Analyzer --}}
+                {{-- template's feature 1 --}}
                 <div class="bg-white rounded-2xl p-8 flex flex-col items-center text-center shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                     <div class="w-20 h-20 mb-5 bg-[#F7D9F1] rounded-full flex items-center justify-center">
                         <svg class="w-11 h-11 text-[#1C1C3C]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -201,7 +201,7 @@
                     </p>
                 </div>
 
-                {{-- Formatting --}}
+                {{-- template's feature 2 --}}
                 <div class="bg-white rounded-2xl p-8 flex flex-col items-center text-center shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                     <div class="w-20 h-20 mb-5 bg-[#F7D9F1] rounded-full flex items-center justify-center">
                         <svg class="w-11 h-11 text-[#1C1C3C]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -215,12 +215,12 @@
                 </div>
             </div>
 
-            {{-- CTA under features --}}
+            {{-- template's feature 3 --}}
             <div class="mt-12 text-center">
                 <p class="text-lg text-[#1C1C3C]/80 mb-4 max-w-[650px] mx-auto">
                     Why wait longer? Find out more about what our powerful AI-driven features can do for you.
                 </p>
-                <a href="{{ route('login') }}" class="inline-block bg-[#1C1C3C] text-white px-8 py-3 rounded-xl text-lg font-semibold hover:bg-[#FF6F61] transition-all duration-300 shadow-lg hover:shadow-xl">
+                <a href="{{ url('/features') }}" class="inline-block bg-[#1C1C3C] text-white px-8 py-3 rounded-xl text-lg font-semibold hover:bg-[#FF6F61] transition-all duration-300 shadow-lg hover:shadow-xl">
                     Explore Features
                 </a>
             </div>

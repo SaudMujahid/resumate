@@ -16,17 +16,65 @@
 <div x-data="{
     currentPage: 'choice',
     selectedOption: null,
+    currentSection: 0,
     currentStep: 0,
-    steps: [
-        { id: 'firstName', label: 'What\'s your first name?', type: 'text', placeholder: 'John', required: true },
-        { id: 'lastName', label: 'And your last name?', type: 'text', placeholder: 'Doe', required: true },
-        { id: 'email', label: 'Your email address?', type: 'email', placeholder: 'john.doe@example.com', required: true },
-        { id: 'phone', label: 'Phone number?', type: 'tel', placeholder: '+1 (555) 123-4567', required: true },
-        { id: 'city', label: 'Which city do you live in?', type: 'text', placeholder: 'New York', required: false },
-        { id: 'linkedin', label: 'LinkedIn profile? (optional)', type: 'url', placeholder: 'linkedin.com/in/johndoe', required: false }
+
+    allSections: [
+        {
+            name: 'Personal Info',
+            bgColor: 'from-[#F2E9FF] to-[#FFE9F5]',
+            steps: [
+                { id: 'firstName', label: 'What\'s your first name?', type: 'text', placeholder: 'John', required: true },
+                { id: 'lastName', label: 'And your last name?', type: 'text', placeholder: 'Doe', required: true },
+                { id: 'email', label: 'Your email address?', type: 'email', placeholder: 'john.doe@example.com', required: true },
+                { id: 'phone', label: 'Phone number?', type: 'tel', placeholder: '+1 (555) 123-4567', required: true },
+                { id: 'city', label: 'Which city are you in?', type: 'text', placeholder: 'New York', required: false }
+            ]
+        },
+        {
+            name: 'Education',
+            bgColor: 'from-[#FFE9D1] to-[#FFF5E9]',
+            steps: [
+                { id: 'degree', label: 'What\'s your degree?', type: 'text', placeholder: 'Bachelor of Science', required: true },
+                { id: 'school', label: 'Which school?', type: 'text', placeholder: 'University of California', required: true },
+                { id: 'graduationYear', label: 'Graduation year?', type: 'text', placeholder: '2020', required: true },
+                { id: 'major', label: 'Your major?', type: 'text', placeholder: 'Computer Science', required: false }
+            ]
+        },
+        {
+            name: 'Experience',
+            bgColor: 'from-[#E9F5FF] to-[#F0F9FF]',
+            steps: [
+                { id: 'jobTitle', label: 'Most recent job title?', type: 'text', placeholder: 'Software Engineer', required: true },
+                { id: 'company', label: 'Company name?', type: 'text', placeholder: 'Tech Corp', required: true },
+                { id: 'duration', label: 'How long? (e.g., 2 years)', type: 'text', placeholder: '2 years', required: true },
+                { id: 'responsibilities', label: 'Key responsibilities?', type: 'textarea', placeholder: 'Led development of web applications...', required: false }
+            ]
+        },
+        {
+            name: 'Skills',
+            bgColor: 'from-[#E9FFE9] to-[#F0FFF0]',
+            steps: [
+                { id: 'technicalSkills', label: 'Technical skills?', type: 'text', placeholder: 'Python, JavaScript, React', required: true },
+                { id: 'softSkills', label: 'Soft skills?', type: 'text', placeholder: 'Communication, Leadership', required: false },
+                { id: 'languages', label: 'Languages you speak?', type: 'text', placeholder: 'English, Spanish', required: false }
+            ]
+        }
     ],
+
     formData: {},
-    sections: ['Personal Info', 'Education', 'Experience', 'Skills'],
+
+    get currentSectionData() {
+        return this.allSections[this.currentSection];
+    },
+
+    get currentStepData() {
+        return this.currentSectionData.steps[this.currentStep];
+    },
+
+    get totalStepsInSection() {
+        return this.currentSectionData.steps.length;
+    },
 
     selectOption(option) {
         this.selectedOption = option;
@@ -41,18 +89,24 @@
     },
 
     canContinue() {
-        const step = this.steps[this.currentStep];
+        const step = this.currentStepData;
         if (!step.required) return true;
         return this.formData[step.id] && this.formData[step.id].trim() !== '';
     },
 
     nextStep() {
-        if (this.canContinue()) {
-            if (this.currentStep < this.steps.length - 1) {
-                this.currentStep++;
+        if (!this.canContinue()) return;
+
+        if (this.currentStep < this.totalStepsInSection - 1) {
+            this.currentStep++;
+        } else {
+            // Move to next section
+            if (this.currentSection < this.allSections.length - 1) {
+                this.currentSection++;
+                this.currentStep = 0;
             } else {
-                // Move to next section (Education, etc.)
-                alert('Personal Info completed! Next sections coming soon.');
+                // All done!
+                this.completeResume();
             }
         }
     },
@@ -60,11 +114,20 @@
     prevStep() {
         if (this.currentStep > 0) {
             this.currentStep--;
+        } else if (this.currentSection > 0) {
+            this.currentSection--;
+            this.currentStep = this.allSections[this.currentSection].steps.length - 1;
         }
     },
 
     getSectionProgress() {
-        return Math.round((this.currentStep / this.steps.length) * 100);
+        return Math.round(((this.currentStep + 1) / this.totalStepsInSection) * 100);
+    },
+
+    completeResume() {
+        console.log('Resume Data:', this.formData);
+        alert('Resume completed! Data: ' + JSON.stringify(this.formData, null, 2));
+        // TODO: Send to backend or AI
     }
 }" class="min-h-screen bg-white relative overflow-hidden">
 
@@ -77,7 +140,7 @@
         </svg>
     </button>
 
-    <!-- PAGE 1: Choice Screen -->
+<!-- PAGE 1: Choice Screen -->
     <div x-show="currentPage === 'choice'"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0"
@@ -152,13 +215,14 @@
 
     <!-- PAGE 2: Resume Builder -->
     <div x-show="currentPage === 'builder'"
-         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter="transition ease-out duration-500"
          x-transition:enter-start="opacity-0"
          x-transition:enter-end="opacity-100"
          class="min-h-screen flex">
 
         <!-- Left Sidebar: Resume Image & Progress -->
-        <div class="w-[35%] bg-gradient-to-br from-[#F2E9FF] to-[#FFE9F5] p-8 flex flex-col justify-between">
+        <div class="w-[35%] p-8 flex flex-col justify-between transition-all duration-700 bg-gradient-to-br"
+             :class="currentSectionData.bgColor">
 
             <!-- Resume Format Image -->
             <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
@@ -179,7 +243,7 @@
             <div class="bg-white rounded-2xl shadow-xl p-6">
                 <div class="flex items-center justify-between mb-3">
                     <h3 class="font-['Poppins'] text-lg font-semibold text-[#3A2F6A]">
-                        Progress
+                        <span x-text="currentSectionData.name"></span>
                     </h3>
                     <span class="font-['Inter'] text-sm text-[#6A6CFF] font-bold" x-text="getSectionProgress() + '%'"></span>
                 </div>
@@ -192,16 +256,21 @@
 
                 <!-- Section List -->
                 <div class="space-y-2">
-                    <template x-for="(section, index) in sections" :key="index">
+                    <template x-for="(section, index) in allSections" :key="index">
                         <div class="flex items-center p-3 rounded-lg"
-                             :class="index === 0 ? 'bg-[#6A6CFF]/10' : 'bg-gray-50'">
+                             :class="index === currentSection ? 'bg-[#6A6CFF]/10' : index < currentSection ? 'bg-green-50' : 'bg-gray-50'">
                             <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3 flex-shrink-0"
-                                 :class="index === 0 ? 'bg-[#6A6CFF] text-white' : 'bg-gray-300 text-gray-600'">
-                                <span x-text="index + 1" class="text-sm font-bold"></span>
+                                 :class="index === currentSection ? 'bg-[#6A6CFF] text-white' : index < currentSection ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-600'">
+                                <span x-show="index < currentSection">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </span>
+                                <span x-show="index >= currentSection" x-text="index + 1" class="text-sm font-bold"></span>
                             </div>
                             <span class="font-['Inter'] text-sm font-medium"
-                                  :class="index === 0 ? 'text-[#3A2F6A]' : 'text-gray-500'"
-                                  x-text="section"></span>
+                                  :class="index === currentSection ? 'text-[#3A2F6A]' : 'text-gray-500'"
+                                  x-text="section.name"></span>
                         </div>
                     </template>
                 </div>
@@ -212,68 +281,78 @@
         <div class="flex-1 bg-white flex items-center justify-center p-12">
             <div class="max-w-xl w-full">
 
-                <template x-for="(step, index) in steps" :key="index">
-                    <div x-show="currentStep === index"
-                         x-transition:enter="transition ease-out duration-300"
-                         x-transition:enter-start="opacity-0 transform translate-x-8"
-                         x-transition:enter-end="opacity-100 transform translate-x-0"
-                         x-transition:leave="transition ease-in duration-200"
-                         x-transition:leave-start="opacity-100 transform translate-x-0"
-                         x-transition:leave-end="opacity-0 transform -translate-x-8">
+                <!-- Question Display -->
+                <div x-show="currentPage === 'builder'"
+                     :key="currentSection + '-' + currentStep"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 transform translate-x-8"
+                     x-transition:enter-end="opacity-100 transform translate-x-0">
 
-                        <!-- Question Number -->
-                        <div class="flex items-center mb-6">
-                            <div class="w-12 h-12 rounded-full bg-[#6A6CFF] text-white flex items-center justify-center font-bold text-xl mr-4">
-                                <span x-text="index + 1"></span>
-                            </div>
-                            <div class="text-sm text-gray-500 font-['Inter']">
-                                Question <span x-text="index + 1"></span> of <span x-text="steps.length"></span>
-                            </div>
+                    <!-- Question Number -->
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 rounded-full bg-[#6A6CFF] text-white flex items-center justify-center font-bold text-xl mr-4">
+                            <span x-text="currentStep + 1"></span>
                         </div>
+                        <div class="text-sm text-gray-500 font-['Inter']">
+                            <span x-text="currentSectionData.name"></span> -
+                            Question <span x-text="currentStep + 1"></span> of <span x-text="totalStepsInSection"></span>
+                        </div>
+                    </div>
 
-                        <!-- Question Label -->
-                        <h2 class="font-['Playfair_Display'] text-4xl font-bold text-[#3A2F6A] mb-8"
-                            x-text="step.label">
-                        </h2>
+                    <!-- Question Label -->
+                    <h2 class="font-['Playfair_Display'] text-4xl font-bold text-[#3A2F6A] mb-8"
+                        x-text="currentStepData.label">
+                    </h2>
 
-                        <!-- Input Field -->
+                    <!-- Input Field -->
+                    <template x-if="currentStepData.type !== 'textarea'">
                         <input
-                            :type="step.type"
-                            x-model="formData[step.id]"
-                            :placeholder="step.placeholder"
+                            :type="currentStepData.type"
+                            x-model="formData[currentStepData.id]"
+                            :placeholder="currentStepData.placeholder"
                             @keydown.enter="nextStep()"
                             class="w-full px-6 py-4 text-2xl rounded-xl border-3 border-gray-200 focus:border-[#6A6CFF] focus:outline-none transition-colors font-['Inter'] mb-8"
                             autofocus>
+                    </template>
 
-                        <!-- Navigation Buttons -->
-                        <div class="flex justify-between items-center">
-                            <button
-                                @click="prevStep()"
-                                x-show="currentStep > 0"
-                                class="px-6 py-3 rounded-xl font-['Inter'] font-semibold text-lg text-gray-600 hover:bg-gray-100 transition-all duration-300">
-                                ← Back
-                            </button>
-                            <div x-show="currentStep === 0"></div>
+                    <!-- Textarea for longer responses -->
+                    <template x-if="currentStepData.type === 'textarea'">
+                        <textarea
+                            x-model="formData[currentStepData.id]"
+                            :placeholder="currentStepData.placeholder"
+                            rows="6"
+                            class="w-full px-6 py-4 text-xl rounded-xl border-3 border-gray-200 focus:border-[#6A6CFF] focus:outline-none transition-colors font-['Inter'] mb-8 resize-none"
+                            autofocus></textarea>
+                    </template>
 
-                            <button
-                                @click="nextStep()"
-                                :disabled="!canContinue()"
-                                class="px-10 py-4 rounded-xl font-['Inter'] font-bold text-xl transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                                :class="canContinue() ? 'bg-[#6A6CFF] text-white hover:bg-[#5555FF] hover:shadow-xl hover:scale-105' : 'bg-gray-300 text-gray-500'">
-                                <span x-show="currentStep < steps.length - 1">Continue →</span>
-                                <span x-show="currentStep === steps.length - 1">Next Section →</span>
-                            </button>
-                        </div>
+                    <!-- Navigation Buttons -->
+                    <div class="flex justify-between items-center">
+                        <button
+                            @click="prevStep()"
+                            x-show="currentSection > 0 || currentStep > 0"
+                            class="px-6 py-3 rounded-xl font-['Inter'] font-semibold text-lg text-gray-600 hover:bg-gray-100 transition-all duration-300">
+                            ← Back
+                        </button>
+                        <div x-show="currentSection === 0 && currentStep === 0"></div>
 
-                        <!-- Skip Option for Optional Fields -->
-                        <div x-show="!step.required" class="text-center mt-4">
-                            <button @click="nextStep()"
-                                    class="text-gray-500 hover:text-[#6A6CFF] font-['Inter'] text-sm transition-colors">
-                                Skip this question
-                            </button>
-                        </div>
+                        <button
+                            @click="nextStep()"
+                            :disabled="!canContinue()"
+                            class="px-10 py-4 rounded-xl font-['Inter'] font-bold text-xl transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            :class="canContinue() ? 'bg-[#6A6CFF] text-white hover:bg-[#5555FF] hover:shadow-xl hover:scale-105' : 'bg-gray-300 text-gray-500'">
+                            <span x-show="currentSection < allSections.length - 1 || currentStep < totalStepsInSection - 1">Continue →</span>
+                            <span x-show="currentSection === allSections.length - 1 && currentStep === totalStepsInSection - 1">Complete ✓</span>
+                        </button>
                     </div>
-                </template>
+
+                    <!-- Skip Option for Optional Fields -->
+                    <div x-show="!currentStepData.required" class="text-center mt-4">
+                        <button @click="nextStep()"
+                                class="text-gray-500 hover:text-[#6A6CFF] font-['Inter'] text-sm transition-colors">
+                            Skip this question
+                        </button>
+                    </div>
+                </div>
 
             </div>
         </div>
@@ -281,9 +360,9 @@
 
 </div>
 
-@push('scripts')
+        {{-- @push('scripts') --}}
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-@endpush
+        {{-- @endpush --}}
 
 
     </body>
