@@ -19,6 +19,10 @@ Route::get('/templates', function () {
     return view('test');
 });
 
+Route::get('/resumebuilder', function () {
+    return view('resumeBuilder');
+});
+
 Route::get('/features', function () {
     return view('features');
 });
