@@ -4,11 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('/landing', function () {
-    return view('landingTest');
+    return view('landing');
 });
 
 Route::get('/mission', function () {
@@ -16,15 +12,11 @@ Route::get('/mission', function () {
 });
 
 Route::get('/templates', function () {
-    return view('test');
+    return view('templates');
 });
 
 Route::get('/resumebuilder', function () {
-    return view('resumeBuilder');
-});
-
-Route::get('/resumebuilderv2', function () {
-    return view('resumebuilderv2');
+    return view('resumebuilder');
 });
 
 Route::get('/features', function () {
