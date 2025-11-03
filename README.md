@@ -102,5 +102,4 @@ Finally, start the development server by running the following command:
 ![Start Server](screenshots/step_14.png)
 
 <br />
-https://www.figma.com/design/YihvsfQyh5Z53zTwHxYvkh/Untitled?node-id=0-1&t=1gBf4aR2oGy2ewZP-1
-https://www.figma.com/design/2pBWCyrEGcREyk2pjdAxmL/Untitled?node-id=0-1&t=RnUVxyZGPd7ipwqY-1
+https://drive.google.com/drive/folders/1CM3E1K26DJnMxrWp_FFb9MJJlc3Xl7Ux?usp=sharing
