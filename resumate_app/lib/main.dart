@@ -29,7 +29,13 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Resumate', style: GoogleFonts.playfairDisplay(fontSize: 24, fontWeight: FontWeight.w700)),
+        title: Text(
+          'Resumate',
+          style: GoogleFonts.playfairDisplay(
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
         backgroundColor: Colors.deepPurple,
       ),
       body: Padding(
@@ -40,7 +46,10 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               'Let\'s Get Started',
-              style: GoogleFonts.playfairDisplay(fontSize: 32, fontWeight: FontWeight.w700),
+              style: GoogleFonts.playfairDisplay(
+                fontSize: 32,
+                fontWeight: FontWeight.w700,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -58,7 +67,9 @@ class HomeScreen extends StatelessWidget {
                       color: Colors.deepPurple.shade100,
                       onTap: () => Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const ResumeBuilderPage()),
+                        MaterialPageRoute(
+                          builder: (_) => const ResumeBuilderPage(),
+                        ),
                       ),
                     ),
                   ),
@@ -69,7 +80,9 @@ class HomeScreen extends StatelessWidget {
                       subtitle: 'Import and enhance your resume',
                       color: Colors.pink.shade100,
                       onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Upload not implemented yet')),
+                        const SnackBar(
+                          content: Text('Upload not implemented yet'),
+                        ),
                       ),
                     ),
                   ),
@@ -120,10 +133,7 @@ class ChoiceCard extends StatelessWidget {
           color: color,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 12,
-            )
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 12),
           ],
         ),
         child: Column(
@@ -132,7 +142,10 @@ class ChoiceCard extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               title,
-              style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.w600),
+              style: GoogleFonts.poppins(
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -183,30 +196,125 @@ class ResumeBuilderPage extends StatefulWidget {
 
 class _ResumeBuilderPageState extends State<ResumeBuilderPage> {
   final List<ResumeSection> sections = [
-    ResumeSection(name: 'Personal Info', steps: [
-      ResumeStep(id: 'firstName', label: 'What\'s your first name?', placeholder: 'John', required: true),
-      ResumeStep(id: 'lastName', label: 'And your last name?', placeholder: 'Doe', required: true),
-      ResumeStep(id: 'email', label: 'Your email address?', type: 'email', placeholder: 'john.doe@example.com', required: true),
-      ResumeStep(id: 'phone', label: 'Phone number?', type: 'tel', placeholder: '+1 (555) 123-4567', required: true),
-      ResumeStep(id: 'city', label: 'Which city are you in?', placeholder: 'New York', required: false),
-    ]),
-    ResumeSection(name: 'Education', steps: [
-      ResumeStep(id: 'degree', label: 'What\'s your degree?', placeholder: 'Bachelor of Science', required: true),
-      ResumeStep(id: 'school', label: 'Which school?', placeholder: 'University of California', required: true),
-      ResumeStep(id: 'graduationYear', label: 'Graduation year?', placeholder: '2020', required: true),
-      ResumeStep(id: 'major', label: 'Your major?', placeholder: 'Computer Science', required: false),
-    ]),
-    ResumeSection(name: 'Experience', steps: [
-      ResumeStep(id: 'jobTitle', label: 'Most recent job title?', placeholder: 'Software Engineer', required: true),
-      ResumeStep(id: 'company', label: 'Company name?', placeholder: 'Tech Corp', required: true),
-      ResumeStep(id: 'duration', label: 'How long? (e.g., 2 years)', placeholder: '2 years', required: true),
-      ResumeStep(id: 'responsibilities', label: 'Key responsibilities?', type: 'textarea', placeholder: 'Led development...', required: false),
-    ]),
-    ResumeSection(name: 'Skills', steps: [
-      ResumeStep(id: 'technicalSkills', label: 'Technical skills?', placeholder: 'Python, JavaScript, React', required: true),
-      ResumeStep(id: 'softSkills', label: 'Soft skills?', placeholder: 'Communication, Leadership', required: false),
-      ResumeStep(id: 'languages', label: 'Languages you speak?', placeholder: 'English, Spanish', required: false),
-    ]),
+    ResumeSection(
+      name: 'Personal Info',
+      steps: [
+        ResumeStep(
+          id: 'firstName',
+          label: 'What\'s your first name?',
+          placeholder: 'John',
+          required: true,
+        ),
+        ResumeStep(
+          id: 'lastName',
+          label: 'And your last name?',
+          placeholder: 'Doe',
+          required: true,
+        ),
+        ResumeStep(
+          id: 'email',
+          label: 'Your email address?',
+          type: 'email',
+          placeholder: 'john.doe@example.com',
+          required: true,
+        ),
+        ResumeStep(
+          id: 'phone',
+          label: 'Phone number?',
+          type: 'tel',
+          placeholder: '+1 (555) 123-4567',
+          required: true,
+        ),
+        ResumeStep(
+          id: 'city',
+          label: 'Which city are you in?',
+          placeholder: 'New York',
+          required: false,
+        ),
+      ],
+    ),
+    ResumeSection(
+      name: 'Education',
+      steps: [
+        ResumeStep(
+          id: 'degree',
+          label: 'What\'s your degree?',
+          placeholder: 'Bachelor of Science',
+          required: true,
+        ),
+        ResumeStep(
+          id: 'school',
+          label: 'Which school?',
+          placeholder: 'University of California',
+          required: true,
+        ),
+        ResumeStep(
+          id: 'graduationYear',
+          label: 'Graduation year?',
+          placeholder: '2020',
+          required: true,
+        ),
+        ResumeStep(
+          id: 'major',
+          label: 'Your major?',
+          placeholder: 'Computer Science',
+          required: false,
+        ),
+      ],
+    ),
+    ResumeSection(
+      name: 'Experience',
+      steps: [
+        ResumeStep(
+          id: 'jobTitle',
+          label: 'Most recent job title?',
+          placeholder: 'Software Engineer',
+          required: true,
+        ),
+        ResumeStep(
+          id: 'company',
+          label: 'Company name?',
+          placeholder: 'Tech Corp',
+          required: true,
+        ),
+        ResumeStep(
+          id: 'duration',
+          label: 'How long? (e.g., 2 years)',
+          placeholder: '2 years',
+          required: true,
+        ),
+        ResumeStep(
+          id: 'responsibilities',
+          label: 'Key responsibilities?',
+          type: 'textarea',
+          placeholder: 'Led development...',
+          required: false,
+        ),
+      ],
+    ),
+    ResumeSection(
+      name: 'Skills',
+      steps: [
+        ResumeStep(
+          id: 'technicalSkills',
+          label: 'Technical skills?',
+          placeholder: 'Python, JavaScript, React',
+          required: true,
+        ),
+        ResumeStep(
+          id: 'softSkills',
+          label: 'Soft skills?',
+          placeholder: 'Communication, Leadership',
+          required: false,
+        ),
+        ResumeStep(
+          id: 'languages',
+          label: 'Languages you speak?',
+          placeholder: 'English, Spanish',
+          required: false,
+        ),
+      ],
+    ),
   ];
 
   int currentSection = 0;
@@ -218,7 +326,8 @@ class _ResumeBuilderPageState extends State<ResumeBuilderPage> {
 
   void nextStep() {
     if (stepData.required &&
-        (formData[stepData.id] == null || formData[stepData.id]!.trim().isEmpty)) {
+        (formData[stepData.id] == null ||
+            formData[stepData.id]!.trim().isEmpty)) {
       return;
     }
     setState(() {
@@ -238,7 +347,7 @@ class _ResumeBuilderPageState extends State<ResumeBuilderPage> {
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: const Text('OK'),
-              )
+              ),
             ],
           ),
         );
@@ -280,8 +389,10 @@ class _ResumeBuilderPageState extends State<ResumeBuilderPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Format',
-                          style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+                      Text(
+                        'Format',
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                      ),
                       const SizedBox(height: 8),
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
@@ -304,7 +415,7 @@ class _ResumeBuilderPageState extends State<ResumeBuilderPage> {
                           fontSize: 12,
                           color: Colors.black54,
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -353,8 +464,8 @@ class _ResumeBuilderPageState extends State<ResumeBuilderPage> {
                           keyboardType: stepData.type == 'email'
                               ? TextInputType.emailAddress
                               : (stepData.type == 'tel'
-                                  ? TextInputType.phone
-                                  : TextInputType.text),
+                                    ? TextInputType.phone
+                                    : TextInputType.text),
                           decoration: InputDecoration(
                             border: const OutlineInputBorder(),
                             hintText: stepData.placeholder,
@@ -376,8 +487,10 @@ class _ResumeBuilderPageState extends State<ResumeBuilderPage> {
                                       formData[stepData.id]!.trim().isEmpty)) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                      content: Text(
-                                          'Please fill this required field')),
+                                    content: Text(
+                                      'Please fill this required field',
+                                    ),
+                                  ),
                                 );
                                 return;
                               }
@@ -390,9 +503,9 @@ class _ResumeBuilderPageState extends State<ResumeBuilderPage> {
                                   ? 'Complete'
                                   : 'Continue',
                             ),
-                          )
+                          ),
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -416,8 +529,9 @@ class _ResumeBuilderPageState extends State<ResumeBuilderPage> {
                       });
                     },
                     selectedColor: Colors.deepPurple.shade100,
-                    backgroundColor:
-                        completed ? Colors.green.shade100 : Colors.grey.shade100,
+                    backgroundColor: completed
+                        ? Colors.green.shade100
+                        : Colors.grey.shade100,
                   );
                 }),
               ),
