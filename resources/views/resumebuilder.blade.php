@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'Resumate - AI Resume Builder' }}</title>
 
     {{-- Include Tailwind + your styles via Vite --}}
@@ -13,125 +14,138 @@
 </head>
 <body x-data x-cloak class="font-[Poppins] text-[#1C1C3C] min-h-screen flex flex-col">
 
-<div x-data="{
-    currentPage: 'choice',
-    selectedOption: null,
-    currentSection: 0,
-    currentStep: 0,
 
-    allSections: [
-        {
-            name: 'Personal Info',
-            bgColor: 'from-[#F2E9FF] to-[#FFE9F5]',
-            steps: [
-                { id: 'firstName', label: 'What\'s your first name?', type: 'text', placeholder: 'John', required: true },
-                { id: 'lastName', label: 'And your last name?', type: 'text', placeholder: 'Doe', required: true },
-                { id: 'email', label: 'Your email address?', type: 'email', placeholder: 'john.doe@example.com', required: true },
-                { id: 'phone', label: 'Phone number?', type: 'tel', placeholder: '+1 (555) 123-4567', required: true },
-                { id: 'city', label: 'Which city are you in?', type: 'text', placeholder: 'New York', required: false }
-            ]
-        },
-        {
-            name: 'Education',
-            bgColor: 'from-[#FFE9D1] to-[#FFF5E9]',
-            steps: [
-                { id: 'degree', label: 'What\'s your degree?', type: 'text', placeholder: 'Bachelor of Science', required: true },
-                { id: 'school', label: 'Which school?', type: 'text', placeholder: 'University of California', required: true },
-                { id: 'graduationYear', label: 'Graduation year?', type: 'text', placeholder: '2020', required: true },
-                { id: 'major', label: 'Your major?', type: 'text', placeholder: 'Computer Science', required: false }
-            ]
-        },
-        {
-            name: 'Experience',
-            bgColor: 'from-[#E9F5FF] to-[#F0F9FF]',
-            steps: [
-                { id: 'jobTitle', label: 'Most recent job title?', type: 'text', placeholder: 'Software Engineer', required: true },
-                { id: 'company', label: 'Company name?', type: 'text', placeholder: 'Tech Corp', required: true },
-                { id: 'duration', label: 'How long? (e.g., 2 years)', type: 'text', placeholder: '2 years', required: true },
-                { id: 'responsibilities', label: 'Key responsibilities?', type: 'textarea', placeholder: 'Led development of web applications...', required: false }
-            ]
-        },
-        {
-            name: 'Skills',
-            bgColor: 'from-[#E9FFE9] to-[#F0FFF0]',
-            steps: [
-                { id: 'technicalSkills', label: 'Technical skills?', type: 'text', placeholder: 'Python, JavaScript, React', required: true },
-                { id: 'softSkills', label: 'Soft skills?', type: 'text', placeholder: 'Communication, Leadership', required: false },
-                { id: 'languages', label: 'Languages you speak?', type: 'text', placeholder: 'English, Spanish', required: false }
-            ]
-        }
-    ],
+    <div
+    x-data="{
+        currentPage: 'choice',
+        selectedOption: null,
+        currentSection: 0,
+        currentStep: 0,
 
-    formData: {},
-
-    get currentSectionData() {
-        return this.allSections[this.currentSection];
-    },
-
-    get currentStepData() {
-        return this.currentSectionData.steps[this.currentStep];
-    },
-
-    get totalStepsInSection() {
-        return this.currentSectionData.steps.length;
-    },
-
-    selectOption(option) {
-        this.selectedOption = option;
-    },
-
-    proceedToBuilder() {
-        if (this.selectedOption === 'create') {
-            this.currentPage = 'builder';
-        } else if (this.selectedOption === 'upload') {
-            alert('Upload functionality will be implemented');
-        }
-    },
-
-    canContinue() {
-        const step = this.currentStepData;
-        if (!step.required) return true;
-        return this.formData[step.id] && this.formData[step.id].trim() !== '';
-    },
-
-    nextStep() {
-        if (!this.canContinue()) return;
-
-        if (this.currentStep < this.totalStepsInSection - 1) {
-            this.currentStep++;
-        } else {
-            // Move to next section
-            if (this.currentSection < this.allSections.length - 1) {
-                this.currentSection++;
-                this.currentStep = 0;
-            } else {
-                // All done!
-                this.completeResume();
+        allSections: [
+            {
+                name: 'Personal Info',
+                bgColor: 'from-[#F2E9FF] to-[#FFE9F5]',
+                steps: [
+                    { id: 'firstName', label: 'What\'s your first name?', type: 'text', placeholder: 'John', required: true },
+                    { id: 'lastName', label: 'And your last name?', type: 'text', placeholder: 'Doe', required: true },
+                    { id: 'email', label: 'Your email address?', type: 'email', placeholder: 'john.doe@example.com', required: true },
+                    { id: 'phone', label: 'Phone number?', type: 'tel', placeholder: '+1 (555) 123-4567', required: true },
+                    { id: 'city', label: 'Which city are you in?', type: 'text', placeholder: 'New York', required: false }
+                ]
+            },
+            {
+                name: 'Education',
+                bgColor: 'from-[#FFE9D1] to-[#FFF5E9]',
+                steps: [
+                    { id: 'degree', label: 'What\'s your degree?', type: 'text', placeholder: 'Bachelor of Science', required: true },
+                    { id: 'school', label: 'Which school?', type: 'text', placeholder: 'University of California', required: true },
+                    { id: 'graduationYear', label: 'Graduation year?', type: 'text', placeholder: '2020', required: true },
+                    { id: 'major', label: 'Your major?', type: 'text', placeholder: 'Computer Science', required: false }
+                ]
+            },
+            {
+                name: 'Experience',
+                bgColor: 'from-[#E9F5FF] to-[#F0F9FF]',
+                steps: [
+                    { id: 'jobTitle', label: 'Most recent job title?', type: 'text', placeholder: 'Software Engineer', required: true },
+                    { id: 'company', label: 'Company name?', type: 'text', placeholder: 'Tech Corp', required: true },
+                    { id: 'duration', label: 'How long? (e.g., 2 years)', type: 'text', placeholder: '2 years', required: true },
+                    { id: 'responsibilities', label: 'Key responsibilities?', type: 'textarea', placeholder: 'Led development of web applications...', required: false }
+                ]
+            },
+            {
+                name: 'Skills',
+                bgColor: 'from-[#E9FFE9] to-[#F0FFF0]',
+                steps: [
+                    { id: 'technicalSkills', label: 'Technical skills?', type: 'text', placeholder: 'Python, JavaScript, React', required: true },
+                    { id: 'softSkills', label: 'Soft skills?', type: 'text', placeholder: 'Communication, Leadership', required: false },
+                    { id: 'languages', label: 'Languages you speak?', type: 'text', placeholder: 'English, Spanish', required: false }
+                ]
             }
+        ],
+
+        formData: {},
+
+        get currentSectionData() {
+            return this.allSections[this.currentSection];
+        },
+
+        get currentStepData() {
+            return this.currentSectionData.steps[this.currentStep];
+        },
+
+        get totalStepsInSection() {
+            return this.currentSectionData.steps.length;
+        },
+
+        selectOption(option) {
+            this.selectedOption = option;
+        },
+
+        proceedToBuilder() {
+            if (this.selectedOption === 'create') {
+                this.currentPage = 'builder';
+            } else if (this.selectedOption === 'upload') {
+                alert('Upload functionality will be implemented');
+            }
+        },
+
+        canContinue() {
+            const step = this.currentStepData;
+            if (!step.required) return true;
+            return this.formData[step.id] && this.formData[step.id].trim() !== '';
+        },
+
+        nextStep() {
+            if (!this.canContinue()) return;
+
+            if (this.currentStep < this.totalStepsInSection - 1) {
+                this.currentStep++;
+            } else {
+                if (this.currentSection < this.allSections.length - 1) {
+                    this.currentSection++;
+                    this.currentStep = 0;
+                } else {
+                    this.completeResume();
+                }
+            }
+        },
+
+        prevStep() {
+            if (this.currentStep > 0) {
+                this.currentStep--;
+            } else if (this.currentSection > 0) {
+                this.currentSection--;
+                this.currentStep = this.allSections[this.currentSection].steps.length - 1;
+            }
+        },
+
+        getSectionProgress() {
+            return Math.round(((this.currentStep + 1) / this.totalStepsInSection) * 100);
+        },
+
+        completeResume() {
+            fetch('{{ route('resume.generate') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
+                },
+                body: JSON.stringify(this.formData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                window.location.href = '/resume/preview?file=' + data.file;
+            })
+            .catch(err => console.error(err));
         }
-    },
-
-    prevStep() {
-        if (this.currentStep > 0) {
-            this.currentStep--;
-        } else if (this.currentSection > 0) {
-            this.currentSection--;
-            this.currentStep = this.allSections[this.currentSection].steps.length - 1;
-        }
-    },
-
-    getSectionProgress() {
-        return Math.round(((this.currentStep + 1) / this.totalStepsInSection) * 100);
-    },
-
-    completeResume() {
-        console.log('Resume Data:', this.formData);
-        alert('Resume completed! Data: ' + JSON.stringify(this.formData, null, 2));
-        // TODO: Send to backend or AI
-    }
-}" class="min-h-screen bg-white relative overflow-hidden">
+    }"
+    class="min-h-screen bg-white relative overflow-hidden"
+>
 
     <!-- Close Button -->
+
     <button
         @click="window.location.href = '{{ url('/templates') }}'"
         class="fixed top-6 right-6 z-50 w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-lg hover:bg-[#FFB8C6] transition-all duration-300 group">
