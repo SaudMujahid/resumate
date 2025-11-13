@@ -18,7 +18,7 @@ Route::get('/templates', function () {
 
 Route::get('/resumebuilder', function () {
     return view('resumebuilder');
-});
+})->name('resumebuilder');
 
 Route::get('/features', function () {
     return view('features');
