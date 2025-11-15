@@ -1,7 +1,7 @@
 @extends('layouts.home')
 
 @section('content')
-<div class="min-h-screen bg-[rgba(251,241,255,0.98)] py-12">
+<div class="min-h-screen bg-[#FFFFF7]  py-12">
     <div class="max-w-[1440px] mx-auto px-6">
 
         <!-- Header Section -->

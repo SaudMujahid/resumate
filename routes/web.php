@@ -120,7 +120,7 @@ Route::get('/resume/{template}', [ResumeBuilderController::class, 'show'])
 // ---------------------------------------------------------------------
 // PDF download
 // ---------------------------------------------------------------------
-Route::post('/resume/download-pdf', [ResumeBuilderController::class, 'downloadPDF'])
+Route::get('/resume/download-pdf', [ResumeBuilderController::class, 'downloadPDF'])
     ->name('resume.download');
 
 require __DIR__.'/auth.php';
