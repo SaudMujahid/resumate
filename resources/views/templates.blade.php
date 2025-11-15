@@ -46,14 +46,10 @@
                         </p>
 
                         <!-- Use Template Button -->
-
                         <form action="{{ route('resumebuilder') }}" method="GET">
-                            <input type="hidden" name="template" value="modern">
-                            <button type="submit"
-                                class="inline-block bg-[rgba(106,136,255,0.89)] hover:bg-[rgba(106,136,255,1)] rounded-2xl px-8 py-3 transition-all duration-300">
-                                <span class="font-['Inter'] font-bold text-[20px] leading-[24px] text-[#FFFFFF]">Use Template</span>
-                            </button>
-                        </form>
+    <input type="hidden" name="template" value="chronological">
+    <button type="submit" class="...">Use Template</button>
+</form>
                     </div>
                 </div>
             </div>
@@ -86,13 +82,10 @@
                         </p>
 
                         <!-- Use Template Button -->
-                        <form action="{{ route('resumebuilder') }}" method="GET">
-                            <input type="hidden" name="template" value="modern">
-                            <button type="submit"
-                                class="inline-block bg-[rgba(106,136,255,0.89)] hover:bg-[rgba(106,136,255,1)] rounded-2xl px-8 py-3 transition-all duration-300">
-                                <span class="font-['Inter'] font-bold text-[20px] leading-[24px] text-[#FFFFFF]">Use Template</span>
-                            </button>
-                        </form>
+                <form action="{{ route('resumebuilder') }}" method="GET">
+                    <input type="hidden" name="template" value="modern">
+                    <button type="submit" class="...">Use Template</button>
+                </form>
                     </div>
                 </div>
             </div>
@@ -125,13 +118,10 @@
                         </p>
 
                         <!-- Use Template Button -->
-                        <form action="{{ route('resumebuilder') }}" method="GET">
-                            <input type="hidden" name="template" value="modern">
-                            <button type="submit"
-                                class="inline-block bg-[rgba(106,136,255,0.89)] hover:bg-[rgba(106,136,255,1)] rounded-2xl px-8 py-3 transition-all duration-300">
-                                <span class="font-['Inter'] font-bold text-[20px] leading-[24px] text-[#FFFFFF]">Use Template</span>
-                            </button>
-                        </form>
+                <form action="{{ route('resumebuilder') }}" method="GET">
+                    <input type="hidden" name="template" value="minimal">
+                    <button type="submit" class="...">Use Template</button>
+                </form>
                     </div>
                 </div>
             </div>

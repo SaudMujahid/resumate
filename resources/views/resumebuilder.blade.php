@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'Resumate - AI Resume Builder' }}</title>
-
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@500;600&family=Inter:wght@400&display=swap" rel="stylesheet">
 </head>
 <body class="font-[Poppins] text-[#1C1C3C] min-h-screen flex flex-col">
@@ -19,7 +17,6 @@
     $currentStep = (int) session('current_step', 0);
     $formData = session('form_data', []);
     $selectedTemplate = session('selected_template', 'modern');
-
     $allSections = [
         [
             'name' => 'Personal Info',
@@ -62,18 +59,18 @@
             ]
         ]
     ];
-
     $currentSectionData = $allSections[$currentSection] ?? $allSections[0];
     $totalStepsInSection = count($currentSectionData['steps']);
     $currentStepData = $currentSectionData['steps'][$currentStep] ?? $currentSectionData['steps'][0];
     $sectionProgress = round((($currentStep + 1) / $totalStepsInSection) * 100);
+
+    // Check if this is the FINAL step
+    $isLastStep = ($currentSection === count($allSections) - 1) && ($currentStep === $totalStepsInSection - 1);
 @endphp
 
 <div class="min-h-screen bg-white relative overflow-hidden">
-
     <!-- Close Button -->
-    <a href="{{ url('/templates') }}"
-       class="fixed top-6 right-6 z-50 w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-lg hover:bg-[#FFB8C6] transition-all duration-300 group">
+    <a href="{{ url('/templates') }}" class="fixed top-6 right-6 z-50 w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-lg hover:bg-[#FFB8C6] transition-all duration-300 group">
         <svg class="w-6 h-6 text-gray-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
         </svg>
@@ -91,10 +88,8 @@
                     Choose how you'd like to begin
                 </p>
             </div>
-
             <form action="{{ route('resumebuilder') }}" method="GET">
                 <input type="hidden" name="template" value="{{ $selectedTemplate }}">
-
                 <div class="grid md:grid-cols-2 gap-6 mb-8">
                     <!-- Create New -->
                     <label class="cursor-pointer">
@@ -113,7 +108,6 @@
                             </p>
                         </div>
                     </label>
-
                     <!-- Upload Existing -->
                     <label class="cursor-pointer">
                         <input type="radio" name="option" value="upload" class="hidden peer" {{ $selectedOption === 'upload' ? 'checked' : '' }}>
@@ -132,7 +126,6 @@
                         </div>
                     </label>
                 </div>
-
                 <div class="text-center">
                     <button type="submit" name="action" value="proceed"
                             class="px-12 py-4 rounded-xl font-['Inter'] font-bold text-xl transition-all duration-300 shadow-lg bg-[#6A6CFF] text-white hover:bg-[#5555FF] hover:shadow-xl hover:scale-105">
@@ -146,66 +139,47 @@
     @elseif($currentPage === 'builder')
     <!-- PAGE 2: Resume Builder -->
     <div class="min-h-screen flex">
-
-        <!-- Left Sidebar: Resume Image & Progress -->
+        <!-- Left Sidebar -->
         <div class="w-[35%] p-8 flex flex-col justify-between transition-all duration-700 bg-gradient-to-br {{ $currentSectionData['bgColor'] }}">
-
-            <!-- Resume Format Image -->
+            <!-- Format Image -->
             <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
-                <h3 class="font-['Poppins'] text-lg font-semibold text-[#3A2F6A] mb-4 text-center">
-                    Your Format
-                </h3>
+                <h3 class="font-['Poppins'] text-lg font-semibold text-[#3A2F6A] mb-4 text-center">Your Format</h3>
                 <div class="bg-gray-50 rounded-lg overflow-hidden">
-                    <img src="https://d.novoresume.com/images/doc/reverse-chronological-resume-template.png"
-                         alt="Reverse Chronological Resume Format"
-                         class="w-full h-auto">
+                    <img src="https://d.novoresume.com/images/doc/reverse-chronological-resume-template.png" alt="Template" class="w-full h-auto">
                 </div>
-                <p class="text-center text-sm text-[#3A2F6A]/70 mt-3 font-['Inter']">
-                    Reverse Chronological Format
-                </p>
+                <p class="text-center text-sm text-[#3A2F6A]/70 mt-3 font-['Inter']">{{ ucfirst($selectedTemplate) }} Template</p>
             </div>
-
-            <!-- Progress Section -->
+            <!-- Progress -->
             <div class="bg-white rounded-2xl shadow-xl p-6">
                 <div class="flex items-center justify-between mb-3">
-                    <h3 class="font-['Poppins'] text-lg font-semibold text-[#3A2F6A]">
-                        {{ $currentSectionData['name'] }}
-                    </h3>
+                    <h3 class="font-['Poppins'] text-lg font-semibold text-[#3A2F6A]">{{ $currentSectionData['name'] }}</h3>
                     <span class="font-['Inter'] text-sm text-[#6A6CFF] font-bold">{{ $sectionProgress }}%</span>
                 </div>
-
-                <!-- Progress Bar -->
                 <div class="w-full bg-gray-200 rounded-full h-3 mb-6">
                     <div class="bg-[#6A6CFF] h-3 rounded-full transition-all duration-500" style="width: {{ $sectionProgress }}%"></div>
                 </div>
-
-                <!-- Section List -->
                 <div class="space-y-2">
                     @foreach($allSections as $index => $section)
                     <div class="flex items-center p-3 rounded-lg {{ $index === $currentSection ? 'bg-[#6A6CFF]/10' : ($index < $currentSection ? 'bg-green-50' : 'bg-gray-50') }}">
-                        <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3 flex-shrink-0 {{ $index === $currentSection ? 'bg-[#6A6CFF] text-white' : ($index < $currentSection ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-600') }}">
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3 {{ $index === $currentSection ? 'bg-[#6A6CFF] text-white' : ($index < $currentSection ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-600') }}">
                             @if($index < $currentSection)
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
-                                </svg>
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                             @else
                                 <span class="text-sm font-bold">{{ $index + 1 }}</span>
                             @endif
                         </div>
-                        <span class="font-['Inter'] text-sm font-medium {{ $index === $currentSection ? 'text-[#3A2F6A]' : 'text-gray-500' }}">
-                            {{ $section['name'] }}
-                        </span>
+                        <span class="font-['Inter'] text-sm font-medium {{ $index === $currentSection ? 'text-[#3A2F6A]' : 'text-gray-500' }}">{{ $section['name'] }}</span>
                     </div>
                     @endforeach
                 </div>
             </div>
         </div>
 
-        <!-- Right Side: One Question at a Time -->
+        <!-- Right Side: Question -->
         <div class="flex-1 bg-white flex items-center justify-center p-12">
             <div class="max-w-xl w-full">
-
                 <form action="{{ route('resumebuilder') }}" method="GET" id="stepForm">
+                    @csrf
                     <input type="hidden" name="template" value="{{ $selectedTemplate }}">
 
                     <!-- Question Number -->
@@ -223,11 +197,12 @@
                         {{ $currentStepData['label'] }}
                     </h2>
 
-                    <!-- Input Field -->
+                    <!-- Input -->
                     @if($currentStepData['type'] !== 'textarea')
                         <input
                             type="{{ $currentStepData['type'] }}"
                             name="answer"
+                            id="answerInput"
                             value="{{ $formData[$currentStepData['id']] ?? '' }}"
                             placeholder="{{ $currentStepData['placeholder'] }}"
                             {{ $currentStepData['required'] ? 'required' : '' }}
@@ -236,6 +211,7 @@
                     @else
                         <textarea
                             name="answer"
+                            id="answerInput"
                             placeholder="{{ $currentStepData['placeholder'] }}"
                             rows="6"
                             {{ $currentStepData['required'] ? 'required' : '' }}
@@ -243,28 +219,33 @@
                             autofocus>{{ $formData[$currentStepData['id']] ?? '' }}</textarea>
                     @endif
 
-                    <!-- Navigation Buttons -->
+                    <!-- NAVIGATION BUTTONS -->
                     <div class="flex justify-between items-center">
                         @if($currentSection > 0 || $currentStep > 0)
                             <button type="submit" name="action" value="prev"
                                     class="px-6 py-3 rounded-xl font-['Inter'] font-semibold text-lg text-gray-600 hover:bg-gray-100 transition-all duration-300">
-                                ← Back
+                                Back
                             </button>
                         @else
                             <div></div>
                         @endif
 
-                        <button type="submit" name="action" value="next"
-                                class="px-10 py-4 rounded-xl font-['Inter'] font-bold text-xl transition-all duration-300 shadow-lg bg-[#6A6CFF] text-white hover:bg-[#5555FF] hover:shadow-xl hover:scale-105">
-                            @if($currentSection < count($allSections) - 1 || $currentStep < $totalStepsInSection - 1)
-                                Continue →
-                            @else
-                                Complete ✓
-                            @endif
-                        </button>
+                        @if($isLastStep)
+                            <!-- FINAL STEP: Generate Resume Button -->
+                            <button type="button" id="generateResumeBtn"
+                                    class="px-10 py-4 rounded-xl font-['Inter'] font-bold text-xl transition-all duration-300 shadow-lg bg-[#6A6CFF] text-white hover:bg-[#5555FF] hover:shadow-xl hover:scale-105">
+                                Generate Resume
+                            </button>
+                        @else
+                            <!-- Normal Continue Button -->
+                            <button type="submit" name="action" value="next"
+                                    class="px-10 py-4 rounded-xl font-['Inter'] font-bold text-xl transition-all duration-300 shadow-lg bg-[#6A6CFF] text-white hover:bg-[#5555FF] hover:shadow-xl hover:scale-105">
+                                Continue
+                            </button>
+                        @endif
                     </div>
 
-                    <!-- Skip Option for Optional Fields -->
+                    <!-- Skip Option -->
                     @if(!$currentStepData['required'])
                     <div class="text-center mt-4">
                         <button type="submit" name="action" value="skip"
@@ -274,13 +255,103 @@
                     </div>
                     @endif
                 </form>
-
             </div>
         </div>
     </div>
     @endif
-
 </div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+    <div class="bg-white rounded-2xl p-12 max-w-md text-center shadow-2xl">
+        <div class="animate-spin rounded-full h-16 w-16 border-4 border-[#6A6CFF] border-t-transparent mx-auto mb-6"></div>
+        <h3 class="font-['Poppins'] text-2xl font-bold text-[#3A2F6A] mb-3">Generating Your Resume</h3>
+        <p class="font-['Inter'] text-gray-600">Please wait while we create your professional resume...</p>
+    </div>
+</div>
+
+<!-- FINAL SUBMISSION SCRIPT -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('generateResumeBtn');
+    if (!btn) return;
+
+    btn.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        // Get the current answer
+        const answerInput = document.getElementById('answerInput');
+        const currentAnswer = answerInput ? answerInput.value : '';
+
+        // Show loading overlay
+        document.getElementById('loadingOverlay').classList.remove('hidden');
+
+        // Disable button
+        btn.disabled = true;
+
+        // Create form to submit to controller
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ route('resume.generate') }}';
+
+        // CSRF token
+        const csrf = document.createElement('input');
+        csrf.type = 'hidden';
+        csrf.name = '_token';
+        csrf.value = '{{ csrf_token() }}';
+        form.appendChild(csrf);
+
+        // Template
+        const template = document.createElement('input');
+        template.type = 'hidden';
+        template.name = 'selected_template';
+        template.value = '{{ $selectedTemplate }}';
+        form.appendChild(template);
+
+        // Add current answer if exists
+        @if($isLastStep)
+        if (currentAnswer) {
+            const finalAnswer = document.createElement('input');
+            finalAnswer.type = 'hidden';
+            finalAnswer.name = '{{ $currentStepData['id'] }}';
+            finalAnswer.value = currentAnswer;
+            form.appendChild(finalAnswer);
+        }
+        @endif
+
+        // All previous form data
+        @foreach($formData as $key => $value)
+            const field{{ $loop->index }} = document.createElement('input');
+            field{{ $loop->index }}.type = 'hidden';
+            field{{ $loop->index }}.name = '{{ $key }}';
+            field{{ $loop->index }}.value = `{!! addslashes($value) !!}`;
+            form.appendChild(field{{ $loop->index }});
+        @endforeach
+
+        document.body.appendChild(form);
+        form.submit();
+    });
+});
+</script>
+
+<!-- Input Focus & Enter -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('stepForm');
+    const input = form?.querySelector('input[name="answer"], textarea[name="answer"]');
+    if (!input) return;
+
+    input.focus();
+    if (input.value) input.select();
+
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey && input.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+            form.requestSubmit();
+        }
+    });
+});
+</script>
 
 </body>
 </html>
