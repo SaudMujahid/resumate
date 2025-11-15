@@ -1,7 +1,7 @@
 @extends('layouts.home')
 
 @section('content')
-<div class="bg-[#ddf6d2] min-h-screen">
+<div class="bg-[#FFFFF7] min-h-screen">
 
     <!-- Hero Section -->
     <div class="container mx-auto px-4 py-16">
