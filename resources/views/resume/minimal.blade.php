@@ -3,187 +3,276 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $resume['name'] ?? 'Resume' }}</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-
+    <title>Minimal Resume</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
-            background: #F9FAFB;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Poppins', sans-serif;
+            background: #f5f5f5;
             padding: 20px;
+            min-height: 100vh;
         }
 
-        .resume-container {
+        .container {
             max-width: 900px;
-            margin: 0 auto 20px;
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
         }
 
-        /* Header */
-        .header-box {
-            background: rgba(255,198,106,0.75);
-            padding: 40px 20px;
-            border-radius: 12px;
-            text-align: center;
+        .resume-wrapper {
+            position: relative;
+            width: 100%;
+            background: #ffffff;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .header-section {
+            position: relative;
+            width: 100%;
+            padding: 50px 60px;
+            display: flex;
+            align-items: flex-start;
+            z-index: 1;
             transition: background-color 0.3s ease;
         }
 
+        .header-section.orange {
+            background: rgba(255, 198, 106, 0.75);
+        }
+
+        .header-section.blue {
+            background: rgba(75, 123, 229, 0.99);
+        }
+
+        .header-section.green {
+            background: rgba(76, 175, 80, 0.75);
+        }
+
+        .header-section.red {
+            background: rgba(244, 67, 54, 0.75);
+        }
+
+        .header-section.purple {
+            background: rgba(156, 39, 176, 0.75);
+        }
+
+        .header-section.amber {
+            background: rgba(255, 152, 0, 0.75);
+        }
+
+        .header-section.teal {
+            background: rgba(0, 150, 136, 0.75);
+        }
+
+        .header-section.gray {
+            background: rgba(96, 125, 139, 0.75);
+        }
+
         .header-name {
-            font-size: 40px;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Poppins';
             font-weight: 700;
-            color: #222;
+            font-size: 48px;
+            line-height: 1.2;
+            color: #ffffff;
+            word-break: break-word;
         }
 
-        .header-profession {
-            font-size: 22px;
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-            color: #222;
-            margin-top: 8px;
-        }
-
-        .header-summary {
-            margin-top: 20px;
-            font-size: 16px;
-            color: #333;
-            line-height: 1.6;
-        }
-
-        /* Section Titles */
-        .section-title {
-            font-size: 22px;
-            font-family: 'Inter', sans-serif;
-            font-weight: 700;
-            color: #E5864B;
-            margin-top: 40px;
-            margin-bottom: 16px;
-        }
-
-        /* Two Column Layout */
-        .two-col {
+        .content-box {
+            position: relative;
+            width: 100%;
+            padding: 50px 60px;
             display: grid;
             grid-template-columns: 1fr 1fr;
+            gap: 60px;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
             gap: 40px;
-            margin-top: 20px;
         }
 
-        /* Experience */
-        .job-title {
-            font-weight: 700;
-            font-size: 20px;
-            color: #4B3B00;
-            margin-bottom: 4px;
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
         }
 
-        .company {
-            font-size: 16px;
+        .section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .section-title {
+            font-family: 'Poppins';
             font-weight: 600;
-            color: #4B3B00;
-            margin-bottom: 8px;
+            font-size: 28px;
+            line-height: 1.3;
+            color: rgba(75, 123, 229, 0.99);
+            margin-bottom: 10px;
         }
 
-        .job-list {
-            margin-left: 20px;
+        .job-entry {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
             margin-bottom: 20px;
         }
 
-        .job-list li {
-            margin-bottom: 6px;
-            font-size: 14px;
-            color: #333;
-        }
-
-        /* Education */
-        .edu-entry {
-            font-size: 18px;
-            color: #4B3B00;
-            margin-bottom: 12px;
+        .job-title {
+            font-family: 'Poppins';
             font-weight: 700;
+            font-size: 18px;
+            line-height: 1.3;
+            color: #333333;
         }
 
-        .edu-major {
-            font-size: 14px;
+        .company-info {
+            font-family: 'Poppins';
             font-weight: 400;
-            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #666666;
         }
 
-        /* Contact */
-        .contact-info {
-            font-size: 18px;
-            color: #4B3B00;
-            font-weight: 700;
-            line-height: 1.8;
+        .contact-item {
+            font-family: 'Poppins';
+            font-weight: 600;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333333;
         }
 
-        /* Skills */
         .skill-item {
-            font-size: 18px;
-            font-weight: 700;
-            color: #4B3B00;
-            margin-bottom: 8px;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
         }
 
         .skill-dot {
-            width: 9px;
-            height: 9px;
-            background: #4B3B00;
+            width: 7px;
+            height: 7px;
+            background: #1e1e1e;
             border-radius: 50%;
-            margin-right: 10px;
+            margin-top: 6px;
             flex-shrink: 0;
+        }
+
+        .skill-text {
+            font-family: 'Poppins';
+            font-weight: 600;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333333;
+        }
+
+        .edu-entry {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .edu-degree {
+            font-family: 'Poppins';
+            font-weight: 700;
+            font-size: 16px;
+            line-height: 1.3;
+            color: #333333;
+        }
+
+        .edu-details {
+            font-family: 'Poppins';
+            font-weight: 400;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #666666;
+        }
+
+        /* Editing Styles */
+        .editable {
+            cursor: text;
+            padding: 4px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .editable:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .editable:focus {
+            outline: none;
+            background-color: rgba(75, 123, 229, 0.15);
+            box-shadow: inset 0 0 0 2px rgba(75, 123, 229, 0.4);
         }
 
         /* Control Bar */
         .control-bar {
-            max-width: 900px;
-            margin: 0 auto;
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
             background: white;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
             padding: 20px;
-            bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            align-items: center;
+            z-index: 1000;
         }
 
-        .control-content {
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            flex-wrap: wrap;
+            gap: 8px;
+            font-family: 'Poppins', sans-serif;
         }
 
         .color-section {
             display: flex;
             align-items: center;
             gap: 12px;
-            flex-wrap: wrap;
         }
 
         .color-label {
             font-weight: 600;
-            font-size: 14px;
+            font-size: 12px;
             color: #333;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            white-space: nowrap;
         }
 
         .color-palette {
             display: flex;
+            flex-direction: column;
             gap: 8px;
         }
 
         .color-btn {
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             border: 3px solid transparent;
             cursor: pointer;
@@ -200,203 +289,246 @@
             transform: scale(1.15);
         }
 
-        .action-buttons {
-            display: flex;
-            gap: 12px;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 14px;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: none;
-        }
-
-        .btn-primary {
-            background: #6A6CFF;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #5555FF;
-        }
-
-        .btn-secondary {
-            background: #999;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background: #777;
-        }
-
-        .icon {
-            width: 18px;
-            height: 18px;
-        }
-
         /* Print Styles */
         @media print {
-            body { background: white; padding: 0; }
-            .resume-container { box-shadow: none; }
-            .control-bar { display: none !important; }
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+
+            .resume-wrapper {
+                box-shadow: none;
+                margin-bottom: 0;
+                border-radius: 0;
+                max-width: 100%;
+            }
+
+            .control-bar {
+                display: none !important;
+            }
         }
 
         /* Responsive */
-        @media (max-width: 768px) {
-            .two-col {
+        @media (max-width: 1024px) {
+            .content-box {
                 grid-template-columns: 1fr;
-                gap: 20px;
+                gap: 40px;
+                padding: 40px;
             }
 
-            .control-content {
-                flex-direction: column;
-                align-items: stretch;
+            .header-section {
+                padding: 40px;
             }
 
-            .color-section,
-            .action-buttons {
-                justify-content: center;
+            .header-name {
+                font-size: 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .resume-wrapper {
+                padding: 20px;
+            }
+
+            .header-section {
+                padding: 30px;
+            }
+
+            .header-name {
+                font-size: 32px;
+            }
+
+            .content-box {
+                padding: 30px;
+                gap: 30px;
+            }
+
+            .control-bar {
+                right: 10px;
+                top: auto;
+                bottom: 10px;
+                transform: none;
             }
         }
     </style>
 </head>
 <body>
-    <div class="resume-container" id="resumeContent">
-        <!-- HEADER AREA -->
-        <div class="header-box" id="headerBox">
-            <div class="header-name">{{ $resume['name'] ?? 'Your Name' }}</div>
-            <div class="header-profession">{{ $resume['profession'] ?? 'Your Profession' }}</div>
-            <div class="header-summary">
-                {{ $resume['summary'] ?? 'Write a short description about yourself.' }}
+    <div class="container">
+        <div class="resume-wrapper" id="resumeContent">
+            <div class="header-section blue" id="headerSection">
+                <div class="header-name" contenteditable="true" data-field="name">Your Name</div>
             </div>
-        </div>
 
-        <!-- MAIN SECTIONS -->
-        <div class="two-col">
-            <!-- LEFT COLUMN -->
-            <div>
-                <div class="section-title">WORK EXPERIENCE</div>
-                @foreach($resume['experience'] ?? [] as $exp)
-                    <div class="job-title">{{ $exp['title'] }}</div>
-                    <div class="company">{{ $exp['company'] }} ({{ $exp['duration'] }})</div>
-                    <ul class="job-list">
-                        @foreach($exp['responsibilities'] ?? [] as $r)
-                            <li>{{ $r }}</li>
-                        @endforeach
-                    </ul>
-                @endforeach
-
-                <div class="section-title">EDUCATION</div>
-                @foreach($resume['education'] ?? [] as $edu)
-                    <div class="edu-entry">
-                        {{ $edu['degree'] }} — {{ $edu['school'] }} ({{ $edu['year'] }})<br>
-                        <span class="edu-major">Major: {{ $edu['major'] }}</span>
+            <div class="content-box">
+                <!-- Left Column -->
+                <div class="left-column">
+                    <!-- Work Experience -->
+                    <div class="section">
+                        <div class="section-title">WORK EXPERIENCE</div>
+                        <div id="workExperience">
+                            <div class="job-entry">
+                                <div class="job-title editable" contenteditable="true">Job Title</div>
+                                <div class="company-info editable" contenteditable="true">Company Name • Jan 2020 - Dec 2021</div>
+                            </div>
+                            <div class="job-entry">
+                                <div class="job-title editable" contenteditable="true">Previous Job Title</div>
+                                <div class="company-info editable" contenteditable="true">Previous Company • Jan 2018 - Dec 2019</div>
+                            </div>
+                        </div>
                     </div>
-                @endforeach
-            </div>
 
-            <!-- RIGHT COLUMN -->
-            <div>
-                <div class="section-title">CONTACT</div>
-                <div class="contact-info">
-                    {{ $resume['phone'] ?? '+1 234 567 8900' }}<br>
-                    {{ $resume['email'] ?? 'email@example.com' }}<br>
-                    {{ $resume['city'] ?? 'City, State' }}
+                    <!-- Skills -->
+                    <div class="section">
+                        <div class="section-title">SKILLS</div>
+                        <div id="skillsList">
+                            <div class="skill-item">
+                                <div class="skill-dot"></div>
+                                <div class="skill-text editable" contenteditable="true">UI/UX Design</div>
+                            </div>
+                            <div class="skill-item">
+                                <div class="skill-dot"></div>
+                                <div class="skill-text editable" contenteditable="true">Web Development</div>
+                            </div>
+                            <div class="skill-item">
+                                <div class="skill-dot"></div>
+                                <div class="skill-text editable" contenteditable="true">Project Management</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="section-title">SKILLS</div>
-                @foreach(array_merge($resume['skills']['technical'] ?? [], $resume['skills']['soft'] ?? [], $resume['skills']['languages'] ?? []) as $skill)
-                <div class="skill-item">
-                    <span class="skill-dot"></span>{{ $skill }}
+                <!-- Right Column -->
+                <div class="right-column">
+                    <!-- Contact -->
+                    <div class="section">
+                        <div class="section-title">CONTACT</div>
+                        <div class="contact-item editable" contenteditable="true">+1 (555) 123-4567</div>
+                        <div class="contact-item editable" contenteditable="true">your.email@example.com</div>
+                        <div class="contact-item editable" contenteditable="true">New York, NY</div>
+                    </div>
+
+                    <!-- Education -->
+                    <div class="section">
+                        <div class="section-title">EDUCATION</div>
+                        <div id="educationList">
+                            <div class="edu-entry">
+                                <div class="edu-degree editable" contenteditable="true">Bachelor of Science</div>
+                                <div class="edu-details editable" contenteditable="true">University Name • 2020</div>
+                            </div>
+                            <div class="edu-entry">
+                                <div class="edu-degree editable" contenteditable="true">High School Diploma</div>
+                                <div class="edu-details editable" contenteditable="true">High School Name • 2016</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                @endforeach
             </div>
         </div>
     </div>
 
-    <!-- CONTROL BAR -->
+    <!-- Control Bar -->
     <div class="control-bar">
-        <div class="control-content">
-            <!-- Color Picker Section -->
-            <div class="color-section">
-                <div class="color-label">
-                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
-                    </svg>
-                    Header Color:
-                </div>
-                <div class="color-palette">
-                    <button class="color-btn active" style="background: rgba(255,198,106,0.75);" data-color="rgba(255,198,106,0.75)" title="Orange"></button>
-                    <button class="color-btn" style="background: rgba(75,123,229,0.99);" data-color="rgba(75,123,229,0.99)" title="Blue"></button>
-                    <button class="color-btn" style="background: rgba(76,175,80,0.75);" data-color="rgba(76,175,80,0.75)" title="Green"></button>
-                    <button class="color-btn" style="background: rgba(244,67,54,0.75);" data-color="rgba(244,67,54,0.75)" title="Red"></button>
-                    <button class="color-btn" style="background: rgba(156,39,176,0.75);" data-color="rgba(156,39,176,0.75)" title="Purple"></button>
-                    <button class="color-btn" style="background: rgba(255,152,0,0.75);" data-color="rgba(255,152,0,0.75)" title="Amber"></button>
-                    <button class="color-btn" style="background: rgba(0,150,136,0.75);" data-color="rgba(0,150,136,0.75)" title="Teal"></button>
-                    <button class="color-btn" style="background: rgba(96,125,139,0.75);" data-color="rgba(96,125,139,0.75)" title="Gray"></button>
-                </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="action-buttons">
-                <button onclick="downloadPDF()" class="btn btn-primary">
-                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                    </svg>
-                    Download PDF
-                </button>
-                <a href="{{ url('/') }}" class="btn btn-secondary">
-                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                    </svg>
-                    Home
-                </a>
+        <div class="color-section">
+            <span class="color-label">Header Color:</span>
+            <div class="color-palette">
+                <button class="color-btn active" style="background: rgba(75, 123, 229, 0.99);" data-color="blue" onclick="changeColor('blue')" title="Blue"></button>
+                <button class="color-btn" style="background: rgba(255, 198, 106, 0.75);" data-color="orange" onclick="changeColor('orange')" title="Orange"></button>
+                <button class="color-btn" style="background: rgba(76, 175, 80, 0.75);" data-color="green" onclick="changeColor('green')" title="Green"></button>
+                <button class="color-btn" style="background: rgba(244, 67, 54, 0.75);" data-color="red" onclick="changeColor('red')" title="Red"></button>
+                <button class="color-btn" style="background: rgba(156, 39, 176, 0.75);" data-color="purple" onclick="changeColor('purple')" title="Purple"></button>
+                <button class="color-btn" style="background: rgba(255, 152, 0, 0.75);" data-color="amber" onclick="changeColor('amber')" title="Amber"></button>
+                <button class="color-btn" style="background: rgba(0, 150, 136, 0.75);" data-color="teal" onclick="changeColor('teal')" title="Teal"></button>
+                <button class="color-btn" style="background: rgba(96, 125, 139, 0.75);" data-color="gray" onclick="changeColor('gray')" title="Gray"></button>
             </div>
         </div>
+
+        <button class="btn btn-primary" onclick="downloadPDF()">
+            <span>⬇️</span> Download PDF
+        </button>
+        <a href="/" class="btn btn-secondary" style="text-decoration: none;">
+            <span>🏠</span> Home
+        </a>
     </div>
 
-    <!-- JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>
-        // Color Picker Functionality
-        const colorButtons = document.querySelectorAll('.color-btn');
-        const headerBox = document.getElementById('headerBox');
+        let currentColor = 'blue';
 
-        colorButtons.forEach(btn => {
-            btn.addEventListener('click', function() {
-                // Remove active class from all buttons
-                colorButtons.forEach(b => b.classList.remove('active'));
+        function changeColor(color) {
+            const header = document.getElementById('headerSection');
+            const buttons = document.querySelectorAll('.color-btn');
 
-                // Add active class to clicked button
-                this.classList.add('active');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.color-btn').classList.add('active');
 
-                // Change header background color
-                const color = this.getAttribute('data-color');
-                headerBox.style.background = color;
+            header.className = 'header-section ' + color;
+            currentColor = color;
+            sessionStorage.setItem('headerColor', color);
+        }
+
+        // Make all contenteditable elements work properly
+        document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+            el.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                }
             });
         });
 
-        // PDF Download Functionality
         function downloadPDF() {
             const element = document.getElementById('resumeContent');
             const opt = {
-                margin: 0.5,
-                filename: '{{ $resume["name"] ?? "Resume" }}'.replace(/\s+/g, '_') + '_Resume.pdf',
+                margin: [10, 10, 10, 10],
+                filename: 'resume.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    allowTaint: true
+                },
+                jsPDF: {
+                    unit: 'mm',
+                    format: 'a4',
+                    orientation: 'portrait'
+                }
             };
 
             html2pdf().set(opt).from(element).save();
         }
+
+        // Store edits in session
+        document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+            el.addEventListener('blur', () => {
+                sessionStorage.setItem(el.getAttribute('data-field') || el.textContent, el.innerHTML);
+            });
+        });
+
+        // Restore edits and color on page load
+        window.addEventListener('load', () => {
+            // Restore color
+            const savedColor = sessionStorage.getItem('headerColor') || 'blue';
+            const header = document.getElementById('headerSection');
+            header.className = 'header-section ' + savedColor;
+
+            const buttons = document.querySelectorAll('.color-btn');
+            buttons.forEach(btn => {
+                if (btn.getAttribute('data-color') === savedColor) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Restore edits
+            document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+                const key = el.getAttribute('data-field') || el.textContent;
+                const stored = sessionStorage.getItem(key);
+                if (stored) {
+                    el.innerHTML = stored;
+                }
+            });
+        });
     </script>
 </body>
 </html>
