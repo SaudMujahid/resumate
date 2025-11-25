@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ResumeBuilderController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use App\Http\Controllers\AnalyzerController;
 
 // ---------------------------------------------------------------------
 // Public pages
@@ -122,5 +123,9 @@ Route::get('/resume/{template}', [ResumeBuilderController::class, 'show'])
 // ---------------------------------------------------------------------
 Route::get('/resume/download-pdf', [ResumeBuilderController::class, 'downloadPDF'])
     ->name('resume.download');
+
+// CV Analyzer Routes
+Route::get('/analyzer', [AnalyzerController::class, 'index'])->name('analyzer.index');
+Route::post('/analyzer/analyze', [AnalyzerController::class, 'analyze'])->name('analyzer.analyze');
 
 require __DIR__.'/auth.php';
