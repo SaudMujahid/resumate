@@ -9,9 +9,10 @@ use App\Http\Controllers\AnalyzerController;
 // ---------------------------------------------------------------------
 // Public pages
 // ---------------------------------------------------------------------
-Route::get('/', fn() => view('landing'));
+Route::get('/', fn() => view('landing'))->name('home');
 Route::get('/mission', fn() => view('mission'));
 Route::get('/templates', fn() => view('templates'));
+Route::get('/features', fn() => view('features'));
 Route::get('/features', fn() => view('features'));
 
 // ---------------------------------------------------------------------
@@ -47,10 +48,10 @@ Route::get('/resumebuilder', function (Request $request) {
     $formData       = session('form_data', []);
 
     $allSections = [
-        ['name' => 'Personal Info', 'steps' => ['firstName','lastName','email','phone','city']],
-        ['name' => 'Education',    'steps' => ['degree','school','graduationYear','major']],
-        ['name' => 'Experience',   'steps' => ['jobTitle','company','duration','responsibilities']],
-        ['name' => 'Skills',       'steps' => ['technicalSkills','softSkills','languages']],
+        ['name' => 'Personal Info', 'steps' => ['firstName', 'lastName', 'email', 'phone', 'city']],
+        ['name' => 'Education',    'steps' => ['degree', 'school', 'graduationYear', 'major']],
+        ['name' => 'Experience',   'steps' => ['jobTitle', 'company', 'duration', 'responsibilities']],
+        ['name' => 'Skills',       'steps' => ['technicalSkills', 'softSkills', 'languages']],
     ];
 
     $action = $request->input('action');
@@ -127,5 +128,5 @@ Route::get('/resume/download-pdf', [ResumeBuilderController::class, 'downloadPDF
 // CV Analyzer Routes
 Route::get('/analyzer', [AnalyzerController::class, 'index'])->name('analyzer.index');
 Route::post('/analyzer/analyze', [AnalyzerController::class, 'analyze'])->name('analyzer.analyze');
-
-require __DIR__.'/auth.php';
+Route::get('/analyzer/results/{id}', [AnalyzerController::class, 'results'])->name('analyzer.results');
+require __DIR__ . '/auth.php';

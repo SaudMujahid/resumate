@@ -16,6 +16,7 @@ class AnalyzerController extends Controller
         return view('analyzer');
     }
 
+    // THIS IS THE METHOD THAT CHANGES
     public function analyze(Request $request)
     {
         // Validate the uploaded file
@@ -40,11 +41,18 @@ class AnalyzerController extends Controller
             // Analyze with Gemini API
             $analysis = $this->analyzeWithGemini($cvText);
 
+            // CHANGE 1: Store analysis in session
+            // This creates a unique key and stores the analysis data
+            $resultId = uniqid('result_', true);
+            session(["analysis_{$resultId}" => $analysis]);
+
+            // CHANGE 2: Return JSON with redirect URL instead of analysis data
+            // The frontend JavaScript receives this and redirects the user
             return response()->json([
                 'success' => true,
-                'analysis' => $analysis
+                'redirect' => route('analyzer.results', ['id' => $resultId])
+                // Example: returns "/analyzer/results/result_6758e2c4c67bd1.23456789"
             ]);
-
         } catch (Exception $e) {
             Log::error('CV Analysis Error: ' . $e->getMessage());
 
@@ -53,6 +61,23 @@ class AnalyzerController extends Controller
                 'message' => 'An error occurred while analyzing your CV. Please try again.'
             ], 500);
         }
+    }
+
+    // NEW METHOD: Add this to handle the results page
+    public function results($id)
+    {
+        // STEP 1: Retrieve analysis from session using the ID
+        $analysis = session("analysis_{$id}");
+
+        // STEP 2: If analysis doesn't exist, show 404 error
+        // This prevents people from accessing invalid URLs
+        if (!$analysis) {
+            abort(404, 'Analysis not found');
+        }
+
+        // STEP 3: Return the results view with the analysis data
+        // The view receives the $analysis array and displays it
+        return view('analyzer.results', ['analysis' => $analysis, 'id' => $id]);
     }
 
     private function extractText($file, $extension)
@@ -127,7 +152,6 @@ class AnalyzerController extends Controller
 
             // Parse the structured response
             return $this->parseGeminiResponse($generatedText);
-
         } catch (Exception $e) {
             Log::error('Gemini API Error: ' . $e->getMessage());
             throw $e;
@@ -225,7 +249,6 @@ PROMPT;
             if (preg_match('/RECOMMENDATIONS:(.*?)$/is', $text, $matches)) {
                 $analysis['recommendations'] = $this->extractBulletPoints($matches[1]);
             }
-
         } catch (Exception $e) {
             Log::error('Response Parsing Error: ' . $e->getMessage());
         }
