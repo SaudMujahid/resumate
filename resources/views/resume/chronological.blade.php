@@ -3,50 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chronological Resume</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Resume - Chronological</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background: #F9FAFB;
-            font-family: 'DejaVu Sans', sans-serif;
-            padding: 20px;
-            min-height: 100vh;
+            background: #f5f5f5;
+            font-family: 'Poppins', sans-serif;
+            padding: 15px;
+            font-size: 10pt;
+            line-height: 1.4;
         }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
         .resume-wrapper {
+            max-width: 210mm;
+            height: 297mm;
+            margin: 0 auto;
             background: white;
-            position: relative;
-            min-height: 1123px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.12);
             display: flex;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
             overflow: hidden;
+            position: relative;
+            page-break-after: avoid;
         }
-
-        /* Left Sidebar */
         .sidebar {
-            width: 366px;
-            background: #3A8B84;
-            padding: 40px 30px;
-            display: flex;
-            flex-direction: column;
-            transition: background-color 0.3s ease;
+            width: 35%;
+            background: #2c7a7b;
+            color: white;
+            padding: 30px 22px;
+            position: relative;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        .main-content {
+            width: 65%;
+            padding: 30px 28px;
+            background: white;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
 
-        .sidebar.teal { background: #3A8B84; }
+        /* Editable Fields */
+        [contenteditable="true"] {
+            outline: none;
+            position: relative;
+        }
+        [contenteditable="true"]:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            padding: 2px 4px;
+            margin: -2px -4px;
+        }
+        [contenteditable="true"]:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 3px;
+            padding: 2px 4px;
+            margin: -2px -4px;
+        }
+        .main-content [contenteditable="true"]:hover {
+            background: rgba(44, 122, 123, 0.08);
+        }
+        .main-content [contenteditable="true"]:focus {
+            background: rgba(44, 122, 123, 0.15);
+        }
+
+        /* Profile Image */
+        .profile-image-container {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin: 0 auto 16px;
+            border: 3px solid rgba(255,255,255,0.3);
+            cursor: pointer;
+            position: relative;
+            flex-shrink: 0;
+        }
+        .profile-image-container:hover::after {
+            content: 'Change Photo';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 10px;
+            white-space: nowrap;
+        }
+        .profile-image { width: 100%; height: 100%; object-fit: cover; }
+        .profile-placeholder {
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+
+        .profile-name {
+            font-size: 20pt;
+            font-weight: 700;
+            margin: 8px 0 3px;
+            color: white;
+            text-align: center;
+            word-break: break-word;
+            line-height: 1.2;
+        }
+        .profile-title {
+            font-size: 11pt;
+            font-weight: 600;
+            color: #e6f7f7;
+            text-align: center;
+            margin-bottom: 18px;
+            line-height: 1.3;
+        }
+
+        .section-title {
+            font-size: 12pt;
+            font-weight: 700;
+            color: white;
+            margin: 16px 0 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+        }
+        .contact-item {
+            margin-bottom: 6px;
+            font-size: 9pt;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            word-break: break-word;
+            line-height: 1.3;
+        }
+        .contact-item strong { flex-shrink: 0; }
+        .skill-item {
+            margin-bottom: 5px;
+            font-size: 9pt;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            line-height: 1.3;
+        }
+        .skill-dot {
+            width: 5px;
+            height: 5px;
+            background: white;
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 3px;
+        }
+
+        /* Main Content */
+        .main-title {
+            font-size: 14pt;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 14px 0 10px 0;
+            border-bottom: 2px solid #2c7a7b;
+            padding-bottom: 4px;
+            page-break-after: avoid;
+        }
+        .summary {
+            font-size: 10pt;
+            line-height: 1.4;
+            color: #333;
+            margin-bottom: 12px;
+            page-break-after: avoid;
+        }
+        .experience-entry, .education-entry {
+            margin-bottom: 10px;
+            page-break-inside: avoid;
+        }
+        .entry-title {
+            font-size: 11pt;
+            font-weight: 700;
+            color: #1a1a1a;
+            line-height: 1.3;
+        }
+        .entry-subtitle {
+            font-size: 9.5pt;
+            color: #2c7a7b;
+            font-weight: 600;
+            margin: 2px 0 3px;
+            line-height: 1.3;
+        }
+        .entry-meta {
+            font-size: 9pt;
+            color: #666;
+            margin-bottom: 3px;
+            line-height: 1.3;
+        }
+        .entry-bullets {
+            font-size: 9pt;
+            color: #444;
+            padding-left: 16px;
+            list-style: disc;
+            margin: 3px 0 0 0;
+            line-height: 1.35;
+        }
+        .entry-bullets li {
+            margin-bottom: 2px;
+        }
+
+        /* Two-column skills layout */
+        .skills-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .skill-column { display: flex; flex-direction: column; gap: 5px; }
+        .skill-column-title {
+            font-size: 8.5pt;
+            font-weight: 700;
+            color: rgba(255,255,255,0.7);
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Color Variants */
+        .sidebar.teal { background: #2c7a7b; }
         .sidebar.blue { background: #4B7BE5; }
         .sidebar.green { background: #4CAF50; }
         .sidebar.purple { background: #9C27B0; }
@@ -55,328 +233,29 @@
         .sidebar.gray { background: #607D8B; }
         .sidebar.navy { background: #1A237E; }
 
-        .profile-section {
-            text-align: center;
-            margin-bottom: 50px;
-        }
+        .main-title.blue { border-bottom-color: #4B7BE5; }
+        .entry-subtitle.blue { color: #4B7BE5; }
+        .sidebar.blue .entry-subtitle { color: #2c7a7b; }
+        .main-title.green { border-bottom-color: #4CAF50; }
+        .entry-subtitle.green { color: #4CAF50; }
+        .main-title.purple { border-bottom-color: #9C27B0; }
+        .entry-subtitle.purple { color: #9C27B0; }
+        .main-title.orange { border-bottom-color: #FF9800; }
+        .entry-subtitle.orange { color: #FF9800; }
+        .main-title.red { border-bottom-color: #F44336; }
+        .entry-subtitle.red { color: #F44336; }
+        .main-title.gray { border-bottom-color: #607D8B; }
+        .entry-subtitle.gray { color: #607D8B; }
+        .main-title.navy { border-bottom-color: #1A237E; }
+        .entry-subtitle.navy { color: #1A237E; }
 
-        .profile-image-container {
-            width: 150px;
-            height: 150px;
-            margin: 0 auto 20px;
-            border-radius: 50%;
-            overflow: hidden;
-            background: rgba(255,255,255,0.1);
-            border: 3px solid rgba(255,255,255,0.3);
-            cursor: pointer;
-            position: relative;
-        }
-
-        .profile-image-container:hover::after {
-            content: 'Click to change';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 14px;
-            background: rgba(0,0,0,0.7);
-            padding: 5px 10px;
-            border-radius: 4px;
-            white-space: nowrap;
-        }
-
-        .profile-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .profile-placeholder {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            color: rgba(255,255,255,0.5);
-        }
-
-        .profile-name {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 700;
-            font-size: 28px;
-            line-height: 1.3;
-            color: rgba(255, 255, 255, 0.94);
-            margin-bottom: 8px;
-            cursor: text;
-            padding: 4px;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-        }
-
-        .profile-name:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .profile-name:focus {
-            outline: none;
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .profile-title {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 700;
-            font-size: 20px;
-            line-height: 1.3;
-            color: rgba(255, 255, 255, 0.96);
-            cursor: text;
-            padding: 4px;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-        }
-
-        .profile-title:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .profile-title:focus {
-            outline: none;
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .sidebar-section {
-            margin-bottom: 40px;
-        }
-
-        .sidebar-title {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 700;
-            font-size: 24px;
-            line-height: 1.3;
-            color: rgba(255, 255, 255, 0.96);
-            margin-bottom: 15px;
-        }
-
-        .contact-item {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            font-size: 16px;
-            line-height: 1.6;
-            color: rgba(255, 255, 255, 0.95);
-            margin-bottom: 8px;
-            cursor: text;
-            padding: 4px;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-        }
-
-        .contact-item:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .contact-item:focus {
-            outline: none;
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .skill-item {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 10px;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            font-size: 16px;
-            line-height: 1.5;
-            color: #FFFFFF;
-            cursor: text;
-            padding: 4px;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-        }
-
-        .skill-item:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .skill-item:focus {
-            outline: none;
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .skill-dot {
-            width: 9px;
-            height: 9px;
-            background: #FFFFFF;
-            border-radius: 50%;
-            margin-right: 15px;
-            margin-top: 6px;
-            flex-shrink: 0;
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            padding: 60px 50px;
-        }
-
-        .section {
-            margin-bottom: 45px;
-        }
-
-        .section-title {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 700;
-            font-size: 28px;
-            line-height: 1.3;
-            color: #222222;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #E0E0E0;
-            padding-bottom: 8px;
-        }
-
-        .experience-entry {
-            margin-bottom: 25px;
-        }
-
-        .job-title {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 700;
-            font-size: 20px;
-            line-height: 1.3;
-            color: #222222;
-            margin-bottom: 4px;
-            cursor: text;
-            padding: 4px;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-        }
-
-        .job-title:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-
-        .job-title:focus {
-            outline: none;
-            background-color: rgba(75, 123, 229, 0.15);
-            box-shadow: inset 0 0 0 2px rgba(75, 123, 229, 0.4);
-        }
-
-        .company-info {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            font-size: 16px;
-            line-height: 1.5;
-            color: #666666;
-            margin-bottom: 4px;
-            cursor: text;
-            padding: 4px;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-        }
-
-        .company-info:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-
-        .company-info:focus {
-            outline: none;
-            background-color: rgba(75, 123, 229, 0.15);
-            box-shadow: inset 0 0 0 2px rgba(75, 123, 229, 0.4);
-        }
-
-        .job-description {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 400;
-            font-size: 15px;
-            line-height: 1.6;
-            color: #333333;
-            margin-top: 8px;
-            cursor: text;
-            padding: 4px;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-        }
-
-        .job-description:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-
-        .job-description:focus {
-            outline: none;
-            background-color: rgba(75, 123, 229, 0.15);
-            box-shadow: inset 0 0 0 2px rgba(75, 123, 229, 0.4);
-        }
-
-        .education-entry {
-            margin-bottom: 20px;
-        }
-
-        .edu-degree {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 700;
-            font-size: 18px;
-            line-height: 1.3;
-            color: #222222;
-            margin-bottom: 4px;
-            cursor: text;
-            padding: 4px;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-        }
-
-        .edu-degree:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-
-        .edu-degree:focus {
-            outline: none;
-            background-color: rgba(75, 123, 229, 0.15);
-            box-shadow: inset 0 0 0 2px rgba(75, 123, 229, 0.4);
-        }
-
-        .edu-details {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            font-size: 15px;
-            line-height: 1.5;
-            color: #666666;
-            cursor: text;
-            padding: 4px;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-        }
-
-        .edu-details:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-
-        .edu-details:focus {
-            outline: none;
-            background-color: rgba(75, 123, 229, 0.15);
-            box-shadow: inset 0 0 0 2px rgba(75, 123, 229, 0.4);
-        }
-
-        .about-text {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 400;
-            font-size: 15px;
-            line-height: 1.6;
-            color: #333333;
-            cursor: text;
-            padding: 4px;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-        }
-
-        .about-text:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-
-        .about-text:focus {
-            outline: none;
-            background-color: rgba(75, 123, 229, 0.15);
-            box-shadow: inset 0 0 0 2px rgba(75, 123, 229, 0.4);
+        /* Print & PDF Fix */
+        @media print {
+            body, html { margin: 0 !important; padding: 0 !important; }
+            .resume-wrapper { box-shadow: none !important; margin: 0 !important; height: 297mm !important; }
+            .no-print { display: none !important; }
+            .sidebar, .main-content { overflow: visible !important; }
+            [contenteditable] { background: transparent !important; outline: none !important; }
         }
 
         /* Control Bar */
@@ -386,364 +265,303 @@
             top: 50%;
             transform: translateY(-50%);
             background: white;
+            padding: 18px;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            align-items: center;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
             z-index: 1000;
+            width: 240px;
         }
-
-        .color-section {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .color-label {
+        .control-label {
+            margin-bottom: 12px;
             font-weight: 600;
             font-size: 12px;
             color: #333;
-            writing-mode: vertical-rl;
-            text-orientation: mixed;
-            white-space: nowrap;
         }
-
-        .color-palette {
-            display: flex;
-            flex-direction: column;
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
             gap: 8px;
+            margin-bottom: 16px;
         }
-
         .color-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
+            width: 100%;
+            aspect-ratio: 1;
             border: 3px solid transparent;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: transform 0.2s, border-color 0.2s;
         }
-
         .color-btn:hover {
-            transform: scale(1.1);
-            border-color: #333;
+            transform: scale(1.05);
         }
-
         .color-btn.active {
             border-color: #333;
-            transform: scale(1.15);
+            box-shadow: 0 0 0 2px white, 0 0 0 4px #333;
         }
-
-        .btn {
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 14px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-family: 'Poppins', sans-serif;
-            text-decoration: none;
-            justify-content: center;
-            background: #6A6CFF;
+        .btn-primary {
+            background: #2c7a7b;
             color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            font-family: 'Poppins', sans-serif;
+            width: 100%;
+            margin-bottom: 8px;
+            transition: opacity 0.2s;
         }
-
-        .btn:hover {
-            background: #5555FF;
-        }
-
+        .btn-primary:hover { opacity: 0.9; }
         .btn-secondary {
-            background: #999;
+            background: #666;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 12px;
+            font-family: 'Poppins', sans-serif;
+            width: 100%;
+            display: block;
+            cursor: pointer;
+            transition: opacity 0.2s;
         }
-
-        .btn-secondary:hover {
-            background: #777;
-        }
-
-        #imageUpload {
-            display: none;
-        }
-
-        /* Print Styles */
-        @media print {
-            body {
-                background: white;
-                padding: 0;
-                margin: 0;
-            }
-
-            .resume-wrapper {
-                box-shadow: none;
-                border-radius: 0;
-                max-width: 100%;
-            }
-
-            .control-bar {
-                display: none !important;
-            }
-        }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .resume-wrapper {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                width: 100%;
-            }
-
-            .main-content {
-                padding: 40px 30px;
-            }
-
-            .control-bar {
-                right: 10px;
-                top: auto;
-                bottom: 10px;
-                transform: none;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                padding: 30px 20px;
-            }
-
-            .sidebar {
-                padding: 30px 20px;
-            }
+        .btn-secondary:hover { opacity: 0.9; }
+        .hint {
+            font-size: 11px;
+            color: #666;
+            font-style: italic;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #eee;
         }
     </style>
 </head>
 <body>
-    <input type="file" id="imageUpload" accept="image/*">
 
-    <div class="container">
-        <div class="resume-wrapper" id="resumeContent">
-            <!-- Left Sidebar -->
-            <div class="sidebar teal" id="sidebar">
-                <div class="profile-section">
-                    <div class="profile-image-container" onclick="document.getElementById('imageUpload').click()">
-                        <div class="profile-placeholder" id="profilePlaceholder">👤</div>
-                        <img class="profile-image" id="profileImage" style="display: none;">
-                    </div>
+<input type="file" id="imageUpload" accept="image/*" style="display:none;">
 
-                    <div class="profile-name" contenteditable="true" id="name">Your Name</div>
-                    <div class="profile-title" contenteditable="true" id="jobTitle">Job Title</div>
-                </div>
-
-                <div class="sidebar-section">
-                    <div class="sidebar-title">CONTACT</div>
-                    <div class="contact-item" contenteditable="true">+1 (555) 123-4567</div>
-                    <div class="contact-item" contenteditable="true">your.email@example.com</div>
-                    <div class="contact-item" contenteditable="true">New York, NY</div>
-                </div>
-
-                <div class="sidebar-section">
-                    <div class="sidebar-title">SKILLS</div>
-                    <div id="skillsList">
-                        <div class="skill-item" contenteditable="true">
-                            <span class="skill-dot"></span>JavaScript & React
-                        </div>
-                        <div class="skill-item" contenteditable="true">
-                            <span class="skill-dot"></span>Python & Django
-                        </div>
-                        <div class="skill-item" contenteditable="true">
-                            <span class="skill-dot"></span>Project Management
-                        </div>
-                        <div class="skill-item" contenteditable="true">
-                            <span class="skill-dot"></span>Team Leadership
-                        </div>
-                        <div class="skill-item" contenteditable="true">
-                            <span class="skill-dot"></span>Problem Solving
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Main Content -->
-            <div class="main-content">
-                <div class="section">
-                    <div class="section-title">EXPERIENCE</div>
-                    <div class="experience-entry">
-                        <div class="job-title" contenteditable="true">Senior Software Engineer</div>
-                        <div class="company-info" contenteditable="true">Tech Company Inc. • Jan 2020 - Present</div>
-                        <div class="job-description" contenteditable="true">
-                            Led development of core product features, mentored junior developers, and improved application performance by 40%. Collaborated with cross-functional teams to deliver high-quality software solutions.
-                        </div>
-                    </div>
-                    <div class="experience-entry">
-                        <div class="job-title" contenteditable="true">Software Developer</div>
-                        <div class="company-info" contenteditable="true">StartUp Co. • Jun 2017 - Dec 2019</div>
-                        <div class="job-description" contenteditable="true">
-                            Built scalable web applications and worked closely with designers to create intuitive user interfaces. Implemented automated testing to reduce bugs by 30%.
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <div class="section-title">EDUCATION</div>
-                    <div class="education-entry">
-                        <div class="edu-degree" contenteditable="true">Bachelor of Computer Science</div>
-                        <div class="edu-details" contenteditable="true">State University • Graduated 2017</div>
-                    </div>
-                    <div class="education-entry">
-                        <div class="edu-degree" contenteditable="true">Relevant Certifications</div>
-                        <div class="edu-details" contenteditable="true">AWS Certified Solutions Architect • 2019</div>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <div class="section-title">ABOUT ME</div>
-                    <div class="about-text" contenteditable="true">
-                        Passionate software engineer with 6+ years of experience building scalable web applications. Committed to writing clean, maintainable code and continuously learning new technologies. Strong communicator who thrives in collaborative environments.
-                    </div>
-                </div>
-            </div>
+<div class="resume-wrapper" id="resumeContent">
+    <!-- LEFT SIDEBAR -->
+    <div class="sidebar teal" id="sidebar">
+        <div class="profile-image-container" onclick="document.getElementById('imageUpload').click()">
+            <div class="profile-placeholder" id="profilePlaceholder">👤</div>
+            <img class="profile-image" id="profileImage" style="display:none;" alt="Profile">
         </div>
-    </div>
 
-    <!-- Control Bar -->
-    <div class="control-bar">
-        <div class="color-section">
-            <span class="color-label">Sidebar Color:</span>
-            <div class="color-palette">
-                <button class="color-btn active" style="background: #3A8B84;" data-color="teal" onclick="changeColor('teal')" title="Teal"></button>
-                <button class="color-btn" style="background: #4B7BE5;" data-color="blue" onclick="changeColor('blue')" title="Blue"></button>
-                <button class="color-btn" style="background: #4CAF50;" data-color="green" onclick="changeColor('green')" title="Green"></button>
-                <button class="color-btn" style="background: #9C27B0;" data-color="purple" onclick="changeColor('purple')" title="Purple"></button>
-                <button class="color-btn" style="background: #FF9800;" data-color="orange" onclick="changeColor('orange')" title="Orange"></button>
-                <button class="color-btn" style="background: #F44336;" data-color="red" onclick="changeColor('red')" title="Red"></button>
-                <button class="color-btn" style="background: #607D8B;" data-color="gray" onclick="changeColor('gray')" title="Gray"></button>
-                <button class="color-btn" style="background: #1A237E;" data-color="navy" onclick="changeColor('navy')" title="Navy"></button>
+        <div class="profile-name" contenteditable="true">{{ $resume['name'] ?? 'Your Name' }}</div>
+        <div class="profile-title" contenteditable="true">{{ $resume['experience'][0]['title'] ?? 'Professional Title' }}</div>
+
+        <div class="section-title">CONTACT</div>
+        <div class="contact-item"><strong>📱</strong><span contenteditable="true">{{ $resume['phone'] ?? 'Not provided' }}</span></div>
+        <div class="contact-item"><strong>✉️</strong><span contenteditable="true">{{ $resume['email'] ?? 'Not provided' }}</span></div>
+        <div class="contact-item"><strong>📍</strong><span contenteditable="true">{{ $resume['city'] ?? 'Bangladesh' }}</span></div>
+
+        <div class="section-title">SKILLS</div>
+        <div class="skills-container">
+            <div class="skill-column">
+                <div class="skill-column-title">Technical</div>
+                @if(!empty($resume['skills']['technical']))
+                    @foreach($resume['skills']['technical'] as $skill)
+                        <div class="skill-item"><span class="skill-dot"></span><span contenteditable="true">{{ trim($skill) }}</span></div>
+                    @endforeach
+                @else
+                    <div class="skill-item"><span class="skill-dot"></span><span contenteditable="true">Add skills</span></div>
+                @endif
+            </div>
+            <div class="skill-column">
+                <div class="skill-column-title">Soft Skills</div>
+                @if(!empty($resume['skills']['soft']))
+                    @foreach($resume['skills']['soft'] as $skill)
+                        <div class="skill-item"><span class="skill-dot"></span><span contenteditable="true">{{ trim($skill) }}</span></div>
+                    @endforeach
+                @else
+                    <div class="skill-item"><span class="skill-dot"></span><span contenteditable="true">Add soft skills</span></div>
+                @endif
             </div>
         </div>
 
-        <button class="btn" onclick="downloadPDF()">
-            <span>⬇️</span> Download PDF
-        </button>
-        <a href="/" class="btn btn-secondary">
-            <span>🏠</span> Home
-        </a>
+        <div style="margin-top: 12px;">
+            <div class="skill-column-title">Languages</div>
+            @if(!empty($resume['skills']['languages']))
+                @foreach($resume['skills']['languages'] as $skill)
+                    <div class="skill-item"><span class="skill-dot"></span><span contenteditable="true">{{ trim($skill) }}</span></div>
+                @endforeach
+            @else
+                <div class="skill-item"><span class="skill-dot"></span><span contenteditable="true">Add languages</span></div>
+            @endif
+        </div>
     </div>
 
-    <script>
-        let currentColor = 'teal';
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="main-title">Professional Summary</div>
+        <div class="summary" contenteditable="true">{{ $resume['summary'] ?? 'Dedicated professional with strong technical and communication skills. Ready to contribute expertise to innovative projects.' }}</div>
 
-        function changeColor(color) {
-            const sidebar = document.getElementById('sidebar');
-            const buttons = document.querySelectorAll('.color-btn');
+        <div class="main-title">Experience</div>
+        @if(!empty($resume['experience']))
+            @foreach($resume['experience'] as $exp)
+                <div class="experience-entry">
+                    <div class="entry-title" contenteditable="true">{{ $exp['title'] ?? 'Role' }}</div>
+                    <div class="entry-subtitle" contenteditable="true">
+                        {{ $exp['company'] ?? '' }}
+                        @if(!empty($exp['duration'])) • {{ $exp['duration'] }} @endif
+                    </div>
+                    @if(!empty($exp['responsibilities']))
+                        <ul class="entry-bullets">
+                            @foreach($exp['responsibilities'] as $bullet)
+                                <li contenteditable="true">{{ trim($bullet) }}</li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </div>
+            @endforeach
+        @else
+            <div class="experience-entry">
+                <div class="entry-title" contenteditable="true">Aspiring Developer</div>
+                <div class="entry-subtitle" contenteditable="true">Personal Projects & Freelance • 2025 – Present</div>
+                <ul class="entry-bullets">
+                    <li contenteditable="true">Actively building real-world applications</li>
+                    <li contenteditable="true">Continuously learning modern technologies</li>
+                    <li contenteditable="true">Ready to contribute professionally</li>
+                </ul>
+            </div>
+        @endif
 
-            buttons.forEach(btn => btn.classList.remove('active'));
-            event.target.closest('.color-btn').classList.add('active');
+        <div class="main-title">Education</div>
+        @if(!empty($resume['education']))
+            @foreach($resume['education'] as $edu)
+                <div class="education-entry">
+                    @if(isset($edu['degree']) && !empty($edu['degree']))
+                        <div class="entry-title" contenteditable="true">
+                            {{ $edu['degree'] }}
+                            @if(!empty($edu['major'])) in {{ $edu['major'] }} @endif
+                        </div>
+                        <div class="entry-subtitle" contenteditable="true">
+                            {{ $edu['school'] ?? '' }}
+                            @if(!empty($edu['cgpa'])) • CGPA: {{ $edu['cgpa'] }} @endif
+                        </div>
+                        <div class="entry-meta" contenteditable="true">{{ $edu['year'] ?? '' }}</div>
+                    @else
+                        <div class="entry-title" contenteditable="true">{{ $edu['level'] ?? 'Education' }}</div>
+                        <div class="entry-subtitle" contenteditable="true">
+                            {{ $edu['school'] ?? '' }}
+                            @if(!empty($edu['grade'])) • {{ $edu['grade'] }} @endif
+                        </div>
+                        <div class="entry-meta" contenteditable="true">{{ $edu['year'] ?? '' }}</div>
+                    @endif
+                </div>
+            @endforeach
+        @else
+            <div class="education-entry">
+                <div class="entry-title" contenteditable="true">Bachelor's Degree (In Progress)</div>
+                <div class="entry-subtitle" contenteditable="true">University Name</div>
+            </div>
+        @endif
+    </div>
+</div>
 
-            sidebar.className = 'sidebar ' + color;
-            currentColor = color;
-            sessionStorage.setItem('sidebarColor', color);
+<!-- Control Bar -->
+<div class="control-bar no-print">
+    <div class="control-label">Sidebar Color</div>
+    <div class="color-grid">
+        <button class="color-btn active" data-color="teal" style="background:#2c7a7b;" title="Teal"></button>
+        <button class="color-btn" data-color="blue" style="background:#4B7BE5;" title="Blue"></button>
+        <button class="color-btn" data-color="green" style="background:#4CAF50;" title="Green"></button>
+        <button class="color-btn" data-color="purple" style="background:#9C27B0;" title="Purple"></button>
+        <button class="color-btn" data-color="orange" style="background:#FF9800;" title="Orange"></button>
+        <button class="color-btn" data-color="red" style="background:#F44336;" title="Red"></button>
+        <button class="color-btn" data-color="gray" style="background:#607D8B;" title="Gray"></button>
+        <button class="color-btn" data-color="navy" style="background:#1A237E;" title="Navy"></button>
+    </div>
+
+    <button class="btn-primary" onclick="downloadPDF()">Download PDF</button>
+    <button class="btn-secondary" onclick="location.href='/'">Home</button>
+
+    <div class="hint">💡 <strong>Tip:</strong> Click any text to edit it. Changes are auto-saved!</div>
+</div>
+
+<script>
+    // Restore saved color
+    window.addEventListener('load', () => {
+        const savedColor = sessionStorage.getItem('sidebarColor') || 'teal';
+        applyColor(savedColor);
+
+        const savedImage = sessionStorage.getItem('profileImage');
+        if (savedImage) {
+            document.getElementById('profileImage').src = savedImage;
+            document.getElementById('profileImage').style.display = 'block';
+            document.getElementById('profilePlaceholder').style.display = 'none';
         }
+    });
 
-        // Image upload handling
-        document.getElementById('imageUpload').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const img = document.getElementById('profileImage');
-                    const placeholder = document.getElementById('profilePlaceholder');
+    function applyColor(color) {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.className = 'sidebar ' + color;
 
-                    img.src = event.target.result;
-                    img.style.display = 'block';
-                    placeholder.style.display = 'none';
-
-                    sessionStorage.setItem('profileImage', event.target.result);
-                };
-                reader.readAsDataURL(file);
-            }
+        document.querySelectorAll('.main-title').forEach(el => {
+            el.className = 'main-title ' + (color !== 'teal' ? color : '');
+        });
+        document.querySelectorAll('.entry-subtitle').forEach(el => {
+            el.className = 'entry-subtitle ' + (color !== 'teal' ? color : '');
         });
 
-        // Prevent Enter key from creating new lines in single-line fields
-        document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-            if (!el.classList.contains('job-description') && !el.classList.contains('about-text')) {
-                el.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                    }
-                });
-            }
+        document.querySelectorAll('.color-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.color === color);
         });
 
-        function downloadPDF() {
-            const element = document.getElementById('resumeContent');
-            const opt = {
-                margin: [10, 10, 10, 10],
-                filename: 'chronological-resume.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: {
-                    scale: 2,
-                    useCORS: true,
-                    logging: false,
-                    allowTaint: true
-                },
-                jsPDF: {
-                    unit: 'mm',
-                    format: 'a4',
-                    orientation: 'portrait'
-                }
+        sessionStorage.setItem('sidebarColor', color);
+    }
+
+    // Color changer
+    document.querySelectorAll('.color-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            applyColor(this.dataset.color);
+        });
+    });
+
+    // Image upload
+    document.getElementById('imageUpload').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                document.getElementById('profileImage').src = ev.target.result;
+                document.getElementById('profileImage').style.display = 'block';
+                document.getElementById('profilePlaceholder').style.display = 'none';
+                sessionStorage.setItem('profileImage', ev.target.result);
             };
-
-            html2pdf().set(opt).from(element).save();
+            reader.readAsDataURL(file);
         }
+    });
 
-        // Store edits in session
-        document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-            el.addEventListener('blur', () => {
-                const key = el.id || el.className + '_' + el.textContent.substring(0, 20);
-                sessionStorage.setItem(key, el.innerHTML);
-            });
-        });
-
-        // Restore edits, color, and image on page load
-        window.addEventListener('load', () => {
-            // Restore color
-            const savedColor = sessionStorage.getItem('sidebarColor') || 'teal';
-            const sidebar = document.getElementById('sidebar');
-            sidebar.className = 'sidebar ' + savedColor;
-
-            const buttons = document.querySelectorAll('.color-btn');
-            buttons.forEach(btn => {
-                if (btn.getAttribute('data-color') === savedColor) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
-
-            // Restore profile image
-            const savedImage = sessionStorage.getItem('profileImage');
-            if (savedImage) {
-                const img = document.getElementById('profileImage');
-                const placeholder = document.getElementById('profilePlaceholder');
-                img.src = savedImage;
-                img.style.display = 'block';
-                placeholder.style.display = 'none';
+    // PDF Download with proper margins
+    function downloadPDF() {
+        const element = document.getElementById('resumeContent');
+        const opt = {
+            margin: [0, 0, 0, 0],
+            filename: 'resume.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: '#ffffff',
+                windowWidth: 794,
+                windowHeight: 1123
+            },
+            jsPDF: {
+                unit: 'mm',
+                format: 'a4',
+                orientation: 'portrait'
             }
+        };
+        html2pdf().set(opt).from(element).save();
+    }
+</script>
 
-            // Restore edits
-            document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-                const key = el.id || el.className + '_' + el.textContent.substring(0, 20);
-                const stored = sessionStorage.getItem(key);
-                if (stored) {
-                    el.innerHTML = stored;
-                }
-            });
-        });
-    </script>
 </body>
 </html>
