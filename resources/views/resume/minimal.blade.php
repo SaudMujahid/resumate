@@ -16,33 +16,41 @@
         body {
             font-family: 'Poppins', sans-serif;
             background: #f5f5f5;
-            padding: 20px;
+            padding: 15px;
             min-height: 100vh;
         }
 
         .container {
-            max-width: 900px;
+            max-width: 210mm;
+            height: 297mm;
             margin: 0 auto;
+            background: white;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border-radius: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .resume-wrapper {
-            position: relative;
             width: 100%;
-            background: #ffffff;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
 
         .header-section {
             position: relative;
             width: 100%;
-            padding: 50px 60px;
+            padding: 35px 40px;
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             z-index: 1;
             transition: background-color 0.3s ease;
+            flex-shrink: 0;
+            page-break-inside: avoid;
         }
 
         .header-section.orange {
@@ -77,142 +85,300 @@
             background: rgba(96, 125, 139, 0.75);
         }
 
+        .profile-image-container {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 3px solid rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            position: relative;
+            margin-right: 20px;
+        }
+
+        .profile-image-container:hover::after {
+            content: 'Change';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 10px;
+            white-space: nowrap;
+        }
+
+        .profile-image { width: 100%; height: 100%; object-fit: cover; }
+        .profile-placeholder {
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
         .header-name {
             font-family: 'Poppins';
             font-weight: 700;
-            font-size: 48px;
+            font-size: 38px;
             line-height: 1.2;
             color: #ffffff;
             word-break: break-word;
-        }
-
-        .content-box {
-            position: relative;
-            width: 100%;
-            padding: 50px 60px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 60px;
-        }
-
-        .left-column {
-            display: flex;
-            flex-direction: column;
-            gap: 40px;
-        }
-
-        .right-column {
-            display: flex;
-            flex-direction: column;
-            gap: 40px;
-        }
-
-        .section {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .section-title {
-            font-family: 'Poppins';
-            font-weight: 600;
-            font-size: 28px;
-            line-height: 1.3;
-            color: rgba(75, 123, 229, 0.99);
-            margin-bottom: 10px;
-        }
-
-        .job-entry {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-bottom: 20px;
-        }
-
-        .job-title {
-            font-family: 'Poppins';
-            font-weight: 700;
-            font-size: 18px;
-            line-height: 1.3;
-            color: #333333;
-        }
-
-        .company-info {
-            font-family: 'Poppins';
-            font-weight: 400;
-            font-size: 14px;
-            line-height: 1.5;
-            color: #666666;
-        }
-
-        .contact-item {
-            font-family: 'Poppins';
-            font-weight: 600;
-            font-size: 14px;
-            line-height: 1.6;
-            color: #333333;
-        }
-
-        .skill-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-
-        .skill-dot {
-            width: 7px;
-            height: 7px;
-            background: #1e1e1e;
-            border-radius: 50%;
-            margin-top: 6px;
-            flex-shrink: 0;
-        }
-
-        .skill-text {
-            font-family: 'Poppins';
-            font-weight: 600;
-            font-size: 14px;
-            line-height: 1.5;
-            color: #333333;
-        }
-
-        .edu-entry {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-bottom: 20px;
-        }
-
-        .edu-degree {
-            font-family: 'Poppins';
-            font-weight: 700;
-            font-size: 16px;
-            line-height: 1.3;
-            color: #333333;
-        }
-
-        .edu-details {
-            font-family: 'Poppins';
-            font-weight: 400;
-            font-size: 13px;
-            line-height: 1.5;
-            color: #666666;
-        }
-
-        /* Editing Styles */
-        .editable {
             cursor: text;
             padding: 4px;
             border-radius: 4px;
             transition: background-color 0.2s;
         }
 
-        .editable:hover {
+        .header-name:hover {
+            background-color: rgba(0, 0, 0, 0.15);
+        }
+
+        .header-name:focus {
+            outline: none;
+            background-color: rgba(0, 0, 0, 0.25);
+            box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.4);
+        }
+
+        .content-box {
+            position: relative;
+            width: 100%;
+            padding: 30px 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            page-break-inside: avoid;
+        }
+
+        .section-title {
+            font-family: 'Poppins';
+            font-weight: 600;
+            font-size: 16px;
+            line-height: 1.3;
+            color: rgba(75, 123, 229, 0.99);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid rgba(75, 123, 229, 0.99);
+            padding-bottom: 6px;
+        }
+
+        .job-entry {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 12px;
+            page-break-inside: avoid;
+        }
+
+        .job-title {
+            font-family: 'Poppins';
+            font-weight: 700;
+            font-size: 14px;
+            line-height: 1.3;
+            color: #333333;
+            cursor: text;
+            padding: 3px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .job-title:hover {
             background-color: rgba(0, 0, 0, 0.05);
         }
 
-        .editable:focus {
+        .job-title:focus {
+            outline: none;
+            background-color: rgba(75, 123, 229, 0.15);
+            box-shadow: inset 0 0 0 2px rgba(75, 123, 229, 0.4);
+        }
+
+        .company-info {
+            font-family: 'Poppins';
+            font-weight: 400;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #666666;
+            cursor: text;
+            padding: 3px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .company-info:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .company-info:focus {
+            outline: none;
+            background-color: rgba(75, 123, 229, 0.15);
+            box-shadow: inset 0 0 0 2px rgba(75, 123, 229, 0.4);
+        }
+
+        .job-description {
+            font-family: 'Poppins';
+            font-weight: 400;
+            font-size: 11px;
+            line-height: 1.4;
+            color: #555;
+            cursor: text;
+            padding: 2px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+            margin-left: 10px;
+        }
+
+        .job-description:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .job-description:focus {
+            outline: none;
+            background-color: rgba(75, 123, 229, 0.15);
+            box-shadow: inset 0 0 0 2px rgba(75, 123, 229, 0.4);
+        }
+
+        .contact-item {
+            font-family: 'Poppins';
+            font-weight: 400;
+            font-size: 12px;
+            line-height: 1.5;
+            color: #333333;
+            cursor: text;
+            padding: 3px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+            word-break: break-word;
+        }
+
+        .contact-item:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .contact-item:focus {
+            outline: none;
+            background-color: rgba(75, 123, 229, 0.15);
+            box-shadow: inset 0 0 0 2px rgba(75, 123, 229, 0.4);
+        }
+
+        .contact-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .skill-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .skill-dot {
+            width: 6px;
+            height: 6px;
+            background: #1e1e1e;
+            border-radius: 50%;
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+
+        .skill-text {
+            font-family: 'Poppins';
+            font-weight: 400;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #333333;
+            cursor: text;
+            padding: 2px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+            flex: 1;
+        }
+
+        .skill-text:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .skill-text:focus {
+            outline: none;
+            background-color: rgba(75, 123, 229, 0.15);
+            box-shadow: inset 0 0 0 2px rgba(75, 123, 229, 0.4);
+        }
+
+        .edu-entry {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 10px;
+            page-break-inside: avoid;
+        }
+
+        .edu-degree {
+            font-family: 'Poppins';
+            font-weight: 700;
+            font-size: 13px;
+            line-height: 1.3;
+            color: #333333;
+            cursor: text;
+            padding: 3px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .edu-degree:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .edu-degree:focus {
+            outline: none;
+            background-color: rgba(75, 123, 229, 0.15);
+            box-shadow: inset 0 0 0 2px rgba(75, 123, 229, 0.4);
+        }
+
+        .edu-details {
+            font-family: 'Poppins';
+            font-weight: 400;
+            font-size: 11px;
+            line-height: 1.4;
+            color: #666666;
+            cursor: text;
+            padding: 2px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .edu-details:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .edu-details:focus {
             outline: none;
             background-color: rgba(75, 123, 229, 0.15);
             box-shadow: inset 0 0 0 2px rgba(75, 123, 229, 0.4);
@@ -226,309 +392,340 @@
             transform: translateY(-50%);
             background: white;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            align-items: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            padding: 18px;
             z-index: 1000;
+            width: 240px;
         }
 
-        .btn {
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 14px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .color-section {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .color-label {
+        .control-label {
+            margin-bottom: 12px;
             font-weight: 600;
             font-size: 12px;
             color: #333;
-            writing-mode: vertical-rl;
-            text-orientation: mixed;
-            white-space: nowrap;
         }
 
-        .color-palette {
-            display: flex;
-            flex-direction: column;
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
             gap: 8px;
+            margin-bottom: 16px;
         }
 
         .color-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
+            width: 100%;
+            aspect-ratio: 1;
             border: 3px solid transparent;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: transform 0.2s, border-color 0.2s;
         }
 
         .color-btn:hover {
-            transform: scale(1.1);
-            border-color: #333;
+            transform: scale(1.05);
         }
 
         .color-btn.active {
             border-color: #333;
-            transform: scale(1.15);
+            box-shadow: 0 0 0 2px white, 0 0 0 4px #333;
+        }
+
+        .btn-primary {
+            background: #6A6CFF;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            font-family: 'Poppins', sans-serif;
+            width: 100%;
+            margin-bottom: 8px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-primary:hover { opacity: 0.9; }
+
+        .btn-secondary {
+            background: #666;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 12px;
+            font-family: 'Poppins', sans-serif;
+            width: 100%;
+            display: block;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-secondary:hover { opacity: 0.9; }
+
+        .hint {
+            font-size: 11px;
+            color: #666;
+            font-style: italic;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #eee;
         }
 
         /* Print Styles */
         @media print {
-            body {
-                background: white;
-                padding: 0;
-                margin: 0;
-            }
-
-            .resume-wrapper {
-                box-shadow: none;
-                margin-bottom: 0;
-                border-radius: 0;
-                max-width: 100%;
-            }
-
-            .control-bar {
-                display: none !important;
-            }
-        }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .content-box {
-                grid-template-columns: 1fr;
-                gap: 40px;
-                padding: 40px;
-            }
-
-            .header-section {
-                padding: 40px;
-            }
-
-            .header-name {
-                font-size: 40px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .resume-wrapper {
-                padding: 20px;
-            }
-
-            .header-section {
-                padding: 30px;
-            }
-
-            .header-name {
-                font-size: 32px;
-            }
-
-            .content-box {
-                padding: 30px;
-                gap: 30px;
-            }
-
-            .control-bar {
-                right: 10px;
-                top: auto;
-                bottom: 10px;
-                transform: none;
-            }
+            body { background: white; padding: 0; margin: 0; }
+            .container { box-shadow: none; margin: 0; height: auto; }
+            .resume-wrapper { overflow: visible; }
+            .control-bar { display: none !important; }
+            .header-section, .content-box { page-break-inside: avoid !important; }
+            [contenteditable] { background: transparent !important; outline: none !important; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="resume-wrapper" id="resumeContent">
-            <div class="header-section blue" id="headerSection">
-                <div class="header-name" contenteditable="true" data-field="name">Your Name</div>
+
+<input type="file" id="imageUpload" accept="image/*" style="display:none;">
+
+<div class="container">
+    <div class="resume-wrapper" id="resumeContent">
+        <!-- HEADER SECTION -->
+        <div class="header-section blue" id="headerSection">
+            <div class="profile-image-container" onclick="document.getElementById('imageUpload').click()">
+                <div class="profile-placeholder" id="profilePlaceholder">👤</div>
+                <img class="profile-image" id="profileImage" style="display:none;" alt="Profile">
             </div>
+            <div class="header-name" contenteditable="true">{{ $resume['name'] ?? 'Your Name' }}</div>
+        </div>
 
-            <div class="content-box">
-                <!-- Left Column -->
-                <div class="left-column">
-                    <!-- Work Experience -->
-                    <div class="section">
-                        <div class="section-title">WORK EXPERIENCE</div>
-                        <div id="workExperience">
+        <!-- CONTENT BOX -->
+        <div class="content-box">
+            <!-- LEFT COLUMN -->
+            <div class="left-column">
+                <!-- Work Experience -->
+                <div class="section">
+                    <div class="section-title">WORK EXPERIENCE</div>
+                    @if(!empty($resume['experience']))
+                        @foreach($resume['experience'] as $exp)
                             <div class="job-entry">
-                                <div class="job-title editable" contenteditable="true">Job Title</div>
-                                <div class="company-info editable" contenteditable="true">Company Name • Jan 2020 - Dec 2021</div>
+                                <div class="job-title" contenteditable="true">{{ $exp['title'] ?? 'Position' }}</div>
+                                <div class="company-info" contenteditable="true">{{ $exp['company'] ?? 'Company' }}@if(!empty($exp['duration'])) • {{ $exp['duration'] }}@endif</div>
+                                @if(!empty($exp['responsibilities']))
+                                    @foreach($exp['responsibilities'] as $bullet)
+                                        <div class="job-description" contenteditable="true">• {{ trim($bullet) }}</div>
+                                    @endforeach
+                                @endif
                             </div>
-                            <div class="job-entry">
-                                <div class="job-title editable" contenteditable="true">Previous Job Title</div>
-                                <div class="company-info editable" contenteditable="true">Previous Company • Jan 2018 - Dec 2019</div>
-                            </div>
+                        @endforeach
+                    @else
+                        <div class="job-entry">
+                            <div class="job-title" contenteditable="true">Position Title</div>
+                            <div class="company-info" contenteditable="true">Company Name • Duration</div>
                         </div>
-                    </div>
-
-                    <!-- Skills -->
-                    <div class="section">
-                        <div class="section-title">SKILLS</div>
-                        <div id="skillsList">
-                            <div class="skill-item">
-                                <div class="skill-dot"></div>
-                                <div class="skill-text editable" contenteditable="true">UI/UX Design</div>
-                            </div>
-                            <div class="skill-item">
-                                <div class="skill-dot"></div>
-                                <div class="skill-text editable" contenteditable="true">Web Development</div>
-                            </div>
-                            <div class="skill-item">
-                                <div class="skill-dot"></div>
-                                <div class="skill-text editable" contenteditable="true">Project Management</div>
-                            </div>
-                        </div>
-                    </div>
+                    @endif
                 </div>
 
-                <!-- Right Column -->
-                <div class="right-column">
-                    <!-- Contact -->
-                    <div class="section">
-                        <div class="section-title">CONTACT</div>
-                        <div class="contact-item editable" contenteditable="true">+1 (555) 123-4567</div>
-                        <div class="contact-item editable" contenteditable="true">your.email@example.com</div>
-                        <div class="contact-item editable" contenteditable="true">New York, NY</div>
-                    </div>
-
-                    <!-- Education -->
-                    <div class="section">
-                        <div class="section-title">EDUCATION</div>
-                        <div id="educationList">
-                            <div class="edu-entry">
-                                <div class="edu-degree editable" contenteditable="true">Bachelor of Science</div>
-                                <div class="edu-details editable" contenteditable="true">University Name • 2020</div>
+                <!-- Technical Skills -->
+                <div class="section">
+                    <div class="section-title">TECHNICAL SKILLS</div>
+                    @if(!empty($resume['skills']['technical']))
+                        @foreach($resume['skills']['technical'] as $skill)
+                            <div class="skill-item">
+                                <div class="skill-dot"></div>
+                                <div class="skill-text" contenteditable="true">{{ trim($skill) }}</div>
                             </div>
-                            <div class="edu-entry">
-                                <div class="edu-degree editable" contenteditable="true">High School Diploma</div>
-                                <div class="edu-details editable" contenteditable="true">High School Name • 2016</div>
-                            </div>
+                        @endforeach
+                    @else
+                        <div class="skill-item">
+                            <div class="skill-dot"></div>
+                            <div class="skill-text" contenteditable="true">Add technical skills</div>
                         </div>
-                    </div>
+                    @endif
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN -->
+            <div class="right-column">
+                <!-- Contact -->
+                <div class="section">
+                    <div class="section-title">CONTACT</div>
+                    <div class="contact-label">📱 Phone</div>
+                    <div class="contact-item" contenteditable="true">{{ $resume['phone'] ?? 'Not provided' }}</div>
+                    <div class="contact-label" style="margin-top: 8px;">✉️ Email</div>
+                    <div class="contact-item" contenteditable="true">{{ $resume['email'] ?? 'Not provided' }}</div>
+                    <div class="contact-label" style="margin-top: 8px;">📍 Location</div>
+                    <div class="contact-item" contenteditable="true">{{ $resume['city'] ?? 'Bangladesh' }}</div>
+                </div>
+
+                <!-- Education -->
+                <div class="section">
+                    <div class="section-title">EDUCATION</div>
+                    @if(!empty($resume['education']))
+                        @foreach($resume['education'] as $edu)
+                            <div class="edu-entry">
+                                @if(isset($edu['degree']) && !empty($edu['degree']))
+                                    <div class="edu-degree" contenteditable="true">{{ $edu['degree'] }}</div>
+                                @else
+                                    <div class="edu-degree" contenteditable="true">{{ $edu['level'] ?? 'Education' }}</div>
+                                @endif
+                                <div class="edu-details" contenteditable="true">
+                                    {{ $edu['school'] ?? '' }}
+                                    @if(!empty($edu['year'])) • {{ $edu['year'] }} @endif
+                                    @if(!empty($edu['cgpa'])) • GPA: {{ $edu['cgpa'] }} @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    @else
+                        <div class="edu-entry">
+                            <div class="edu-degree" contenteditable="true">Bachelor's Degree</div>
+                            <div class="edu-details" contenteditable="true">University Name • Year</div>
+                        </div>
+                    @endif
+                </div>
+
+                <!-- Soft Skills -->
+                <div class="section">
+                    <div class="section-title">SOFT SKILLS</div>
+                    @if(!empty($resume['skills']['soft']))
+                        @foreach($resume['skills']['soft'] as $skill)
+                            <div class="skill-item">
+                                <div class="skill-dot"></div>
+                                <div class="skill-text" contenteditable="true">{{ trim($skill) }}</div>
+                            </div>
+                        @endforeach
+                    @else
+                        <div class="skill-item">
+                            <div class="skill-dot"></div>
+                            <div class="skill-text" contenteditable="true">Add soft skills</div>
+                        </div>
+                    @endif
+                </div>
+
+                <!-- Languages -->
+                <div class="section">
+                    <div class="section-title">LANGUAGES</div>
+                    @if(!empty($resume['skills']['languages']))
+                        @foreach($resume['skills']['languages'] as $lang)
+                            <div class="skill-item">
+                                <div class="skill-dot"></div>
+                                <div class="skill-text" contenteditable="true">{{ trim($lang) }}</div>
+                            </div>
+                        @endforeach
+                    @else
+                        <div class="skill-item">
+                            <div class="skill-dot"></div>
+                            <div class="skill-text" contenteditable="true">Add languages</div>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Control Bar -->
-    <div class="control-bar">
-        <div class="color-section">
-            <span class="color-label">Header Color:</span>
-            <div class="color-palette">
-                <button class="color-btn active" style="background: rgba(75, 123, 229, 0.99);" data-color="blue" onclick="changeColor('blue')" title="Blue"></button>
-                <button class="color-btn" style="background: rgba(255, 198, 106, 0.75);" data-color="orange" onclick="changeColor('orange')" title="Orange"></button>
-                <button class="color-btn" style="background: rgba(76, 175, 80, 0.75);" data-color="green" onclick="changeColor('green')" title="Green"></button>
-                <button class="color-btn" style="background: rgba(244, 67, 54, 0.75);" data-color="red" onclick="changeColor('red')" title="Red"></button>
-                <button class="color-btn" style="background: rgba(156, 39, 176, 0.75);" data-color="purple" onclick="changeColor('purple')" title="Purple"></button>
-                <button class="color-btn" style="background: rgba(255, 152, 0, 0.75);" data-color="amber" onclick="changeColor('amber')" title="Amber"></button>
-                <button class="color-btn" style="background: rgba(0, 150, 136, 0.75);" data-color="teal" onclick="changeColor('teal')" title="Teal"></button>
-                <button class="color-btn" style="background: rgba(96, 125, 139, 0.75);" data-color="gray" onclick="changeColor('gray')" title="Gray"></button>
-            </div>
-        </div>
-
-        <button class="btn btn-primary" onclick="downloadPDF()">
-            <span>⬇️</span> Download PDF
-        </button>
-        <a href="/" class="btn btn-secondary" style="text-decoration: none;">
-            <span>🏠</span> Home
-        </a>
+<!-- Control Bar -->
+<div class="control-bar no-print">
+    <div class="control-label">Header Color</div>
+    <div class="color-grid">
+        <button class="color-btn active" data-color="blue" style="background:#4B7BE5;" title="Blue"></button>
+        <button class="color-btn" data-color="orange" style="background:rgba(255, 198, 106, 0.75);" title="Orange"></button>
+        <button class="color-btn" data-color="green" style="background:#4CAF50;" title="Green"></button>
+        <button class="color-btn" data-color="red" style="background:#F44336;" title="Red"></button>
+        <button class="color-btn" data-color="purple" style="background:#9C27B0;" title="Purple"></button>
+        <button class="color-btn" data-color="amber" style="background:#FF9800;" title="Amber"></button>
+        <button class="color-btn" data-color="teal" style="background:#009688;" title="Teal"></button>
+        <button class="color-btn" data-color="gray" style="background:#607D8B;" title="Gray"></button>
     </div>
 
-    <script>
-        let currentColor = 'blue';
+    <button class="btn-primary" onclick="downloadPDF()">Download PDF</button>
+    <button class="btn-secondary" onclick="location.href='/'">Home</button>
 
-        function changeColor(color) {
-            const header = document.getElementById('headerSection');
-            const buttons = document.querySelectorAll('.color-btn');
+    <div class="hint">💡 <strong>Tip:</strong> Click any text to edit it. Changes are auto-saved!</div>
+</div>
 
-            buttons.forEach(btn => btn.classList.remove('active'));
-            event.target.closest('.color-btn').classList.add('active');
+<script>
+    // Restore saved color
+    window.addEventListener('load', () => {
+        const savedColor = sessionStorage.getItem('minimalColor') || 'blue';
+        applyColor(savedColor);
 
-            header.className = 'header-section ' + color;
-            currentColor = color;
-            sessionStorage.setItem('headerColor', color);
+        const savedImage = sessionStorage.getItem('minimalProfileImage');
+        if (savedImage) {
+            document.getElementById('profileImage').src = savedImage;
+            document.getElementById('profileImage').style.display = 'block';
+            document.getElementById('profilePlaceholder').style.display = 'none';
         }
+    });
 
-        // Make all contenteditable elements work properly
-        document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-            el.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                }
-            });
+    function applyColor(color) {
+        const header = document.getElementById('headerSection');
+        header.className = 'header-section ' + color;
+
+        document.querySelectorAll('.color-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.color === color);
         });
 
-        function downloadPDF() {
-            const element = document.getElementById('resumeContent');
-            const opt = {
-                margin: [10, 10, 10, 10],
-                filename: 'resume.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: {
-                    scale: 2,
-                    useCORS: true,
-                    logging: false,
-                    allowTaint: true
-                },
-                jsPDF: {
-                    unit: 'mm',
-                    format: 'a4',
-                    orientation: 'portrait'
-                }
+        sessionStorage.setItem('minimalColor', color);
+    }
+
+    // Color changer
+    document.querySelectorAll('.color-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            applyColor(this.dataset.color);
+        });
+    });
+
+    // Image upload
+    document.getElementById('imageUpload').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                document.getElementById('profileImage').src = ev.target.result;
+                document.getElementById('profileImage').style.display = 'block';
+                document.getElementById('profilePlaceholder').style.display = 'none';
+                sessionStorage.setItem('minimalProfileImage', ev.target.result);
             };
-
-            html2pdf().set(opt).from(element).save();
+            reader.readAsDataURL(file);
         }
+    });
 
-        // Store edits in session
-        document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-            el.addEventListener('blur', () => {
-                sessionStorage.setItem(el.getAttribute('data-field') || el.textContent, el.innerHTML);
-            });
+    // PDF Download with no cropping
+    function downloadPDF() {
+        const element = document.getElementById('resumeContent');
+        const opt = {
+            margin: [0, 0, 0, 0],
+            filename: 'minimal-resume.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: '#ffffff',
+                windowWidth: 794,
+                windowHeight: 1123
+            },
+            jsPDF: {
+                unit: 'mm',
+                format: 'a4',
+                orientation: 'portrait'
+            }
+        };
+        html2pdf().set(opt).from(element).save();
+    }
+
+    // Prevent Enter key from creating new lines
+    document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+        el.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+            }
         });
+    });
+</script>
 
-        // Restore edits and color on page load
-        window.addEventListener('load', () => {
-            // Restore color
-            const savedColor = sessionStorage.getItem('headerColor') || 'blue';
-            const header = document.getElementById('headerSection');
-            header.className = 'header-section ' + savedColor;
-
-            const buttons = document.querySelectorAll('.color-btn');
-            buttons.forEach(btn => {
-                if (btn.getAttribute('data-color') === savedColor) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
-
-            // Restore edits
-            document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-                const key = el.getAttribute('data-field') || el.textContent;
-                const stored = sessionStorage.getItem(key);
-                if (stored) {
-                    el.innerHTML = stored;
-                }
-            });
-        });
-    </script>
 </body>
 </html>

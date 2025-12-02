@@ -375,7 +375,24 @@
             padding-top: 12px;
             border-top: 1px solid #eee;
         }
+        /* fix cropping */
+    @page {
+        margin: 0;
+        size: A4;
+    }
 
+    body {
+        margin: 0;
+        padding: 15px; /* This becomes your "page padding" */
+    }
+
+    .container {
+        width: 210mm;
+        min-height: 297mm;
+        margin: 0 auto;
+        padding: 0;
+        box-shadow: none !important;
+    }
         /* Print Styles */
         @media print {
             body { background: white; padding: 0; margin: 0; }

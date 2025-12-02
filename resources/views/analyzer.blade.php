@@ -26,9 +26,16 @@
                         No more wondering why you're not getting interviews – we tell you exactly what's holding you back
                     </p>
                     <div>
-                        <button onclick="openModal()" class="bg-amber-400 hover:bg-amber-500 text-black font-semibold py-3 px-8 rounded-full transition duration-200 transform hover:scale-105 w-full sm:w-auto">
-                            Upload Resume
-                        </button>
+                        @guest
+                            <button onclick="openLoginPrompt()" class="bg-amber-400 hover:bg-amber-500 text-black font-semibold py-3 px-8 rounded-full transition duration-200 transform hover:scale-105 w-full sm:w-auto">
+                                Upload Resume
+                            </button>
+                        @endguest
+                        @auth
+                            <button onclick="openModal()" class="bg-amber-400 hover:bg-amber-500 text-black font-semibold py-3 px-8 rounded-full transition duration-200 transform hover:scale-105 w-full sm:w-auto">
+                                Upload Resume
+                            </button>
+                        @endauth
                     </div>
                 </div>
 
@@ -105,14 +112,48 @@
             <p class="text-lg text-gray-600 mb-12">
                 Uncover Hidden Strengths in Your Resume Today
             </p>
-            <button onclick="openModal()" class="bg-amber-400 hover:bg-amber-500 text-black font-semibold py-4 px-10 rounded-full text-lg transition duration-200 transform hover:scale-105 inline-block">
-                Get Your Resume Score Now
-            </button>
+            @guest
+                <button onclick="openLoginPrompt()" class="bg-amber-400 hover:bg-amber-500 text-black font-semibold py-4 px-10 rounded-full text-lg transition duration-200 transform hover:scale-105 inline-block">
+                    Get Your Resume Score Now
+                </button>
+            @endguest
+            @auth
+                <button onclick="openModal()" class="bg-amber-400 hover:bg-amber-500 text-black font-semibold py-4 px-10 rounded-full text-lg transition duration-200 transform hover:scale-105 inline-block">
+                    Get Your Resume Score Now
+                </button>
+            @endauth
         </div>
     </section>
 
+    <!-- Login Prompt Modal (For Guests) -->
+    <div id="loginPromptModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full relative">
+            <button onclick="closeLoginPrompt()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10 bg-white rounded-full p-2 hover:bg-gray-100 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
 
-<!-- Modal -->
+            <div class="p-8">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Get Started Now</h2>
+                    <p class="text-gray-600">Sign in to analyze your resume and unlock your potential</p>
+                </div>
+
+                <div class="space-y-4">
+                    <a href="{{ route('login') }}" class="w-full block text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                        Sign In
+                    </a>
+                    <p class="text-center text-gray-600">Don't have an account?</p>
+                    <a href="{{ route('register') }}" class="w-full block text-center bg-amber-400 hover:bg-amber-500 text-black font-bold py-3 px-6 rounded-lg transition-colors">
+                        Create Account
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analyzer Modal (For Authenticated Users) -->
     <div id="analyzerModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative">
             <!-- Close Button -->
@@ -167,8 +208,30 @@
                         <p id="errorText"></p>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Modal functions
+        // Login Prompt Modal functions (for guests)
+        function openLoginPrompt() {
+            document.getElementById('loginPromptModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLoginPrompt() {
+            document.getElementById('loginPromptModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close login prompt when clicking outside
+        document.getElementById('loginPromptModal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'loginPromptModal') {
+                closeLoginPrompt();
+            }
+        });
+
+        // Analyzer Modal functions (for authenticated users)
         function openModal() {
             document.getElementById('analyzerModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
@@ -180,8 +243,8 @@
             resetForm();
         }
 
-        // Close modal when clicking outside
-        document.getElementById('analyzerModal').addEventListener('click', (e) => {
+        // Close analyzer modal when clicking outside
+        document.getElementById('analyzerModal')?.addEventListener('click', (e) => {
             if (e.target.id === 'analyzerModal') {
                 closeModal();
             }
@@ -192,9 +255,9 @@
         const fileInput = document.getElementById('cv_file');
         const fileName = document.getElementById('fileName');
 
-        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone?.addEventListener('click', () => fileInput?.click());
 
-        fileInput.addEventListener('change', (e) => {
+        fileInput?.addEventListener('change', (e) => {
             if (e.target.files.length > 0) {
                 fileName.textContent = e.target.files[0].name;
                 fileName.classList.remove('hidden');
@@ -202,16 +265,16 @@
         });
 
         // Drag and drop
-        dropZone.addEventListener('dragover', (e) => {
+        dropZone?.addEventListener('dragover', (e) => {
             e.preventDefault();
             dropZone.classList.add('border-blue-500', 'bg-blue-50');
         });
 
-        dropZone.addEventListener('dragleave', () => {
+        dropZone?.addEventListener('dragleave', () => {
             dropZone.classList.remove('border-blue-500', 'bg-blue-50');
         });
 
-        dropZone.addEventListener('drop', (e) => {
+        dropZone?.addEventListener('drop', (e) => {
             e.preventDefault();
             dropZone.classList.remove('border-blue-500', 'bg-blue-50');
 
@@ -222,45 +285,59 @@
             }
         });
 
-// Form submission
-document.getElementById('analyzerForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
+        // Form submission
+        document.getElementById('analyzerForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-    const formData = new FormData(e.target);
-    const loadingIndicator = document.getElementById('loadingIndicator');
-    const errorMessage = document.getElementById('errorMessage');
-    const analyzeBtn = document.getElementById('analyzeBtn');
+            const formData = new FormData(e.target);
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const errorMessage = document.getElementById('errorMessage');
+            const analyzeBtn = document.getElementById('analyzeBtn');
 
-    // Reset UI
-    loadingIndicator.classList.remove('hidden');
-    errorMessage.classList.add('hidden');
-    analyzeBtn.disabled = true;
+            // Reset UI
+            loadingIndicator.classList.remove('hidden');
+            errorMessage.classList.add('hidden');
+            analyzeBtn.disabled = true;
 
-    try {
-        const response = await fetch('/analyzer/analyze', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+            try {
+                const response = await fetch('/analyzer/analyze', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Redirect to results page instead of displaying results
+                    window.location.href = data.redirect;
+                } else {
+                    showError(data.message || 'An error occurred while analyzing your CV.');
+                }
+            } catch (error) {
+                showError('An unexpected error occurred. Please try again.');
+                console.error('Error:', error);
+            } finally {
+                loadingIndicator.classList.add('hidden');
+                analyzeBtn.disabled = false;
             }
         });
 
-        const data = await response.json();
-
-        if (data.success) {
-            // Redirect to results page instead of displaying results
-            window.location.href = data.redirect;
-        } else {
-            showError(data.message || 'An error occurred while analyzing your CV.');
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            errorText.textContent = message;
+            errorMessage.classList.remove('hidden');
         }
-    } catch (error) {
-        showError('An unexpected error occurred. Please try again.');
-        console.error('Error:', error);
-    } finally {
-        loadingIndicator.classList.add('hidden');
-        analyzeBtn.disabled = false;
-    }
-});
+
+        function resetForm() {
+            document.getElementById('analyzerForm')?.reset();
+            document.getElementById('fileName').classList.add('hidden');
+            document.getElementById('errorMessage').classList.add('hidden');
+        }
     </script>
+</div>
 @endsection
 </html>

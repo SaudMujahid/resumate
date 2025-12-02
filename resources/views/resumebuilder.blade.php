@@ -18,46 +18,57 @@
     $formData = session('form_data', []);
     $selectedTemplate = session('selected_template', 'modern');
     $allSections = [
-        [
-            'name' => 'Personal Info',
-            'bgColor' => 'from-[#F2E9FF] to-[#FFE9F5]',
-            'steps' => [
-                ['id' => 'firstName', 'label' => 'What\'s your first name?', 'type' => 'text', 'placeholder' => 'John', 'required' => true],
-                ['id' => 'lastName', 'label' => 'And your last name?', 'type' => 'text', 'placeholder' => 'Doe', 'required' => true],
-                ['id' => 'email', 'label' => 'Your email address?', 'type' => 'email', 'placeholder' => 'john.doe@example.com', 'required' => true],
-                ['id' => 'phone', 'label' => 'Phone number?', 'type' => 'tel', 'placeholder' => '+1 (555) 123-4567', 'required' => true],
-                ['id' => 'city', 'label' => 'Which city are you in?', 'type' => 'text', 'placeholder' => 'New York', 'required' => false]
-            ]
-        ],
-        [
-            'name' => 'Education',
-            'bgColor' => 'from-[#FFE9D1] to-[#FFF5E9]',
-            'steps' => [
-                ['id' => 'degree', 'label' => 'What\'s your degree?', 'type' => 'text', 'placeholder' => 'Bachelor of Science', 'required' => true],
-                ['id' => 'school', 'label' => 'Which school?', 'type' => 'text', 'placeholder' => 'University of California', 'required' => true],
-                ['id' => 'graduationYear', 'label' => 'Graduation year?', 'type' => 'text', 'placeholder' => '2020', 'required' => true],
-                ['id' => 'major', 'label' => 'Your major?', 'type' => 'text', 'placeholder' => 'Computer Science', 'required' => false]
-            ]
-        ],
-        [
-            'name' => 'Experience',
-            'bgColor' => 'from-[#E9F5FF] to-[#F0F9FF]',
-            'steps' => [
-                ['id' => 'jobTitle', 'label' => 'Most recent job title?', 'type' => 'text', 'placeholder' => 'Software Engineer', 'required' => true],
-                ['id' => 'company', 'label' => 'Company name?', 'type' => 'text', 'placeholder' => 'Tech Corp', 'required' => true],
-                ['id' => 'duration', 'label' => 'How long? (e.g., 2 years)', 'type' => 'text', 'placeholder' => '2 years', 'required' => true],
-                ['id' => 'responsibilities', 'label' => 'Key responsibilities?', 'type' => 'textarea', 'placeholder' => 'Led development of web applications...', 'required' => false]
-            ]
-        ],
-        [
-            'name' => 'Skills',
-            'bgColor' => 'from-[#E9FFE9] to-[#F0FFF0]',
-            'steps' => [
-                ['id' => 'technicalSkills', 'label' => 'Technical skills?', 'type' => 'text', 'placeholder' => 'Python, JavaScript, React', 'required' => true],
-                ['id' => 'softSkills', 'label' => 'Soft skills?', 'type' => 'text', 'placeholder' => 'Communication, Leadership', 'required' => false],
-                ['id' => 'languages', 'label' => 'Languages you speak?', 'type' => 'text', 'placeholder' => 'English, Spanish', 'required' => false]
-            ]
+    [
+        'name' => 'Personal Info',
+        'bgColor' => 'from-[#F2E9FF] to-[#FFE9F5]',
+        'steps' => [
+            ['id' => 'firstName', 'label' => "What's your first name?", 'type' => 'text', 'placeholder' => 'John', 'required' => true],
+            ['id' => 'lastName', 'label' => 'And your last name?', 'type' => 'text', 'placeholder' => 'Doe (optional)', 'required' => false],
+            ['id' => 'email', 'label' => 'Your email address?', 'type' => 'email', 'placeholder' => 'john.doe@gmail.com', 'required' => true],
+            ['id' => 'phone', 'label' => 'Phone number?', 'type' => 'tel', 'placeholder' => '01712345678', 'required' => true],
+            ['id' => 'city', 'label' => 'Which city are you in?', 'type' => 'text', 'placeholder' => 'Dhaka, Chittagong, Remote (optional)', 'required' => false],
         ]
+    ],
+
+    [
+        'name' => 'Education',
+        'bgColor' => 'from-[#FFE9D1] to-[#FFF5E9]',
+        'steps' => [
+            ['id' => 'degree', 'label' => "What's your highest degree?", 'type' => 'text', 'placeholder' => 'Bachelor of Science in Computer Science', 'required' => true],
+            ['id' => 'university', 'label' => 'University name?', 'type' => 'text', 'placeholder' => 'University of Dhaka, BRAC University', 'required' => true],
+            ['id' => 'graduationYear', 'label' => 'Graduation year?', 'type' => 'text', 'placeholder' => '2024, 2025, Expected 2026', 'required' => true],
+            ['id' => 'major', 'label' => 'Your major?', 'type' => 'text', 'placeholder' => 'Computer Science, Business, English (optional)', 'required' => false],
+            ['id' => 'cgpa', 'label' => 'CGPA / Grade? (optional)', 'type' => 'text', 'placeholder' => '3.85/4.00, First Class, Not disclosed', 'required' => false],
+
+            ['id' => 'ssc_school', 'label' => 'Your Secondary School (Class 10 / O-Level / IGCSE)?', 'type' => 'text', 'placeholder' => 'Scholastica, Viqarunnisa Noon', 'required' => false],
+            ['id' => 'ssc_grade', 'label' => 'Result / Grade ? (optional)', 'type' => 'text', 'placeholder' => 'GPA 5.00 | 9 A*', 'required' => false],
+
+            ['id' => 'hsc_college', 'label' => 'Your Higher Secondary (Class 12 / A-Level / IB)?', 'type' => 'text', 'placeholder' => 'e.g. Notre Dame, Hurdco', 'required' => false],
+            ['id' => 'hsc_grade', 'label' => 'HSC result? (optional)', 'type' => 'text', 'placeholder' => 'GPA 5.00 | 3 A* 1 A', 'required' => false],
+        ]
+    ],
+
+    [
+        'name' => 'Experience',
+        'bgColor' => 'from-[#E9F5FF] to-[#F0F9FF]',
+        'steps' => [
+            ['id' => 'jobTitle', 'label' => 'Most recent job title?', 'type' => 'text', 'placeholder' => 'Software Engineer, Freelancer (optional)', 'required' => false],
+            ['id' => 'company', 'label' => 'Company name?', 'type' => 'text', 'placeholder' => 'bKash, Daraz, Freelance (optional)', 'required' => false],
+            ['id' => 'duration', 'label' => 'How long?', 'type' => 'text', 'placeholder' => '2 years, 2023 – Present (optional)', 'required' => false],
+            ['id' => 'responsibilities', 'label' => 'Key achievements?', 'type' => 'textarea',
+                'placeholder' => "• Developed features used by 100K+ users\n• Reduced bugs by 70%\n(optional but recommended)", 'required' => false],
+        ]
+    ],
+
+    [
+        'name' => 'Skills',
+        'bgColor' => 'from-[#E9FFE9] to-[#F0FFF0]',
+        'steps' => [
+            ['id' => 'technicalSkills', 'label' => 'Technical skills?', 'type' => 'text', 'placeholder' => 'JavaScript, Python, Laravel, Figma (optional)', 'required' => false],
+            ['id' => 'softSkills', 'label' => 'Soft skills?', 'type' => 'text', 'placeholder' => 'Leadership, Communication (optional)', 'required' => false],
+            ['id' => 'languages', 'label' => 'Languages?', 'type' => 'text', 'placeholder' => 'Bangla (Native), English (Fluent) (optional)', 'required' => false],
+        ]
+    ]
     ];
     $currentSectionData = $allSections[$currentSection] ?? $allSections[0];
     $totalStepsInSection = count($currentSectionData['steps']);
@@ -339,15 +350,26 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('stepForm');
     const input = form?.querySelector('input[name="answer"], textarea[name="answer"]');
+    const continueBtn = form?.querySelector('button[name="action"][value="next"]');
+    const skipBtn = form?.querySelector('button[name="action"][value="skip"]');
+
     if (!input) return;
 
     input.focus();
     if (input.value) input.select();
 
     input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey && input.tagName !== 'TEXTAREA') {
+        if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            form.requestSubmit();
+
+            // If field is optional and empty → use Skip if available
+            if (!{{ $currentStepData['required'] ? 'true' : 'false' }} && input.value.trim() === '' && skipBtn) {
+                skipBtn.click();
+            }
+            // Otherwise go next
+            else if (continueBtn) {
+                continueBtn.click();
+            }
         }
     });
 });
