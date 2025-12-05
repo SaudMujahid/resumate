@@ -1,11 +1,11 @@
 @extends('layouts.home')
 
 @section('content')
-<div class="min-h-screen relative overflow-hidden bg-[#FFFFF7]">
+<div class="min-h-screen relative overflow-hidden bg-white">
     <div class="max-w-[857px] mx-auto px-4 py-12 md:py-20">
 
         <!-- Header Section -->
-        <h1 class="text-3xl md:text-[40px] font-bold leading-[39px] text-rose-400 max-w-[542px] mb-4 text-center mx-auto">
+        <h1 class="text-3xl md:text-[40px] font-bold leading-[39px] text-purple-800 max-w-[542px] mb-4 text-center mx-auto">
             Explore Our Templates
         </h1>
         <p class="text-lg md:text-2xl font-normal leading-7 text-black/60 max-w-[649px] mb-12 text-center mx-auto">
@@ -130,7 +130,7 @@
                     <input type="hidden" name="template" x-ref="templateInput">
 
                     <button type="submit"
-                            class="inline-block bg-rose-400 hover:bg-rose-500 text-white font-['Poppins'] font-semibold text-[24px] px-16 py-4 rounded-[42px] transform transition-all duration-300 hover:scale-105 hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="inline-block bg-purple-600 hover:bg-purple-900 text-white font-['Poppins'] font-semibold text-[24px] px-16 py-4 rounded-[42px] transform transition-all duration-300 hover:scale-105 hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed"
                             :disabled="!selectedTemplate"
                             :class="selectedTemplate ? 'opacity-100' : 'opacity-60'">
                         Proceed

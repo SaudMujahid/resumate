@@ -1,72 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>CV Analyzer</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
 @extends('layouts.home')
 @section('content')
-<div class="bg-[#FFFFF7] min-h-screen">
+<div class="bg-white max-w-[857px] mx-auto px-4 py-12 md:py-20 min-h-screen">
     <!-- Hero Section -->
-    <section class="py-12 md:py-20 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-7xl mx-auto">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
-                <!-- Left Content -->
-                <div class="flex flex-col justify-center">
-                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+    <section class="">
+        <!-- Header Section -->
+        <h1 class="text-3xl md:text-[40px] font-bold leading-[39px] text-orange-800 max-w-[542px] mb-4 text-center mx-auto">
                         Discover Your Resume Score
-                    </h2>
-                    <p class="text-lg text-gray-600 mb-4">
-                        <span class="font-semibold">– Free, Fast, Brutally Honest</span>
-                    </p>
-                    <p class="text-base md:text-lg text-gray-700 mb-8 leading-relaxed">
-                        No more wondering why you're not getting interviews – we tell you exactly what's holding you back
-                    </p>
-                    <div>
-                        @guest
-                            <button onclick="openLoginPrompt()" class="bg-amber-400 hover:bg-amber-500 text-black font-semibold py-3 px-8 rounded-full transition duration-200 transform hover:scale-105 w-full sm:w-auto">
-                                Upload Resume
-                            </button>
-                        @endguest
-                        @auth
-                            <button onclick="openModal()" class="bg-amber-400 hover:bg-amber-500 text-black font-semibold py-3 px-8 rounded-full transition duration-200 transform hover:scale-105 w-full sm:w-auto">
-                                Upload Resume
-                            </button>
-                        @endauth
-                    </div>
-                </div>
-
-                <!-- Right Image -->
-                <div class="hidden md:block">
-                    <div class="bg-gradient-to-br from-amber-100 to-orange-100 rounded-2xl flex items-center justify-center overflow-hidden">
-                        <div class="w-full h-64 bg-gradient-to-br from-amber-200 to-orange-200 flex items-center justify-center">
-                            <img src="{{ asset('images/analyzer-img.jpg') }}" >
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Features Section -->
-    <section class="py-16 md:py-20 px-4 sm:px-6 lg:px-8 bg-white">
-        <div class="max-w-7xl mx-auto">
-            <h3 class="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-12">
-                What You'll Discover
-            </h3>
-
-            <!-- Cards Grid - Fixed Responsive Layout -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-16">
+        </h1>
+        <p class="text-lg md:text-2xl font-normal leading-7 text-black/60 max-w-[649px] mb-12 text-center mx-auto">
+            Unlock a new way to resume building with a simple score on your CV. Just upload and judge. it is -free, fast, and brutally honest.
+        </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mb:gap-8 mb-16">
                 <!-- Card 1: Strengths -->
-                <div class="bg-[#F1F3E0] rounded-[29px] p-6 flex flex-col items-center text-center min-w-0 transform transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
+                <div class="bg-[#F1F3E0] rounded-[29px] p-6 flex flex-col items-center text-center relateive  transform transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
                     <h3 class="text-2xl font-bold leading-7 text-black font-['Inter'] break-words">
                         Strengths
                     </h3>
                     <p class="mt-4 text-lg md:text-xl font-normal leading-6 text-black/60 font-['Inter']">
-                        Discover your shining superstar qualities that make recruiters stop scrolling
+                        Find out the exact strengths that make your resume shine.
                     </p>
                 </div>
 
@@ -76,55 +27,38 @@
                         Areas of Improvement
                     </h3>
                     <p class="mt-4 text-lg md:text-xl font-normal leading-6 text-black/60 font-['Inter']">
-                        Spot the sneaky weaknesses quietly sabotaging your applications
+                        Discover the hidden weaknesses holding you back.
                     </p>
                 </div>
 
                 <!-- Card 3: Structure & Content -->
                 <div class="bg-orange-200 rounded-[29px] p-6 flex flex-col items-center text-center min-w-0 transform transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
                     <h3 class="text-2xl font-bold leading-7 text-black font-['Inter'] break-words">
-                        Structure & Content Feedback
-                    </h3>
-                    <p class="mt-4 text-lg md:text-xl font-normal leading-6 text-black/60 font-['Inter']">
-                        Get an X-ray of your layout, wording and ATS readiness
-                    </p>
-                </div>
-
-                <!-- Card 4: Recommendations -->
-                <div class="bg-orange-300 rounded-[29px] p-6 flex flex-col items-center text-center min-w-0 transform transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
-                    <h3 class="text-2xl font-bold leading-7 text-black font-['Inter'] break-words">
                         Recommendations
                     </h3>
                     <p class="mt-4 text-lg md:text-xl font-normal leading-6 text-black/60 font-['Inter']">
-                        Receive brutally honest, recruiter-level fixes that actually move the needle
+                        Get actionable fixes for layout, ATS, and wording
                     </p>
                 </div>
             </div>
-        </div>
     </section>
-
-    <!-- CTA Section -->
-    <section class="py-16 md:py-20 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-7xl mx-auto text-center">
-            <h3 class="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
-                Why wait longer?
-            </h3>
-            <p class="text-lg text-gray-600 mb-12">
-                Uncover Hidden Strengths in Your Resume Today
+<!-- CTA Section -->
+        <div class="text-center mb-8">
+            <p class="text-base md:text-lg text-orange-700 mb-8 font-medium max-w-2xl mx-auto">
+                No more wondering why you're not getting interviews – we tell you exactly what's holding you back
             </p>
-            @guest
-                <button onclick="openLoginPrompt()" class="bg-amber-400 hover:bg-amber-500 text-black font-semibold py-4 px-10 rounded-full text-lg transition duration-200 transform hover:scale-105 inline-block">
-                    Get Your Resume Score Now
-                </button>
-            @endguest
-            @auth
-                <button onclick="openModal()" class="bg-amber-400 hover:bg-amber-500 text-black font-semibold py-4 px-10 rounded-full text-lg transition duration-200 transform hover:scale-105 inline-block">
-                    Get Your Resume Score Now
-                </button>
-            @endauth
+    <div>
+        @auth
+            <button onclick="openModal()" class="bg-yellow-300 hover:bg-yellow-400 text-orange-800 font-bold py-3 px-8 rounded-full transition duration-300 transform hover:scale-105 shadow-lg text-base md:text-lg border-2 border-yellow-400">
+                Upload Resume
+            </button>
+        @else
+            <button onclick="openLoginPrompt()" class="bg-yellow-300 hover:bg-yellow-400 text-orange-800 font-bold py-3 px-8 rounded-full transition duration-300 transform hover:scale-105 shadow-lg text-base md:text-lg border-2 border-yellow-400">
+                Upload Resume
+            </button>
+        @endauth
+    </div>
         </div>
-    </section>
-
     <!-- Login Prompt Modal (For Guests) -->
     <div id="loginPromptModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-lg shadow-xl max-w-md w-full relative">
@@ -340,4 +274,3 @@
     </script>
 </div>
 @endsection
-</html>

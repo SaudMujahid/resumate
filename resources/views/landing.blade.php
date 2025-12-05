@@ -188,7 +188,7 @@
                     We currently offer popular templates like <strong>Classic</strong>, <strong>Modern</strong>, <strong>Minimalist</strong>, <strong>Elegant</strong>, and <strong>Creative</strong>.
                     But don't worry — we're actively working to add even more designs to suit your needs.
                 </p>
-                <a href="{{ url('/test') }}" class="inline-block bg-[#1C1C3C] text-white px-8 py-3 rounded-xl text-lg font-semibold hover:bg-[#FF6F61] transition-all duration-300 shadow-lg hover:shadow-xl">
+                <a href="{{ url('/templates') }}" class="inline-block bg-[#1C1C3C] text-white px-8 py-3 rounded-xl text-lg font-semibold hover:bg-[#FF6F61] transition-all duration-300 shadow-lg hover:shadow-xl">
                     View All Templates
                 </a>
             </div>
@@ -196,53 +196,65 @@
     </section>
 
     <!-- Features Section -->
-    <section class="py-16 md:py-20 px-4 sm:px-6 lg:px-8 bg-white">
+    <section class="py-16 md:py-20 px-4 sm:px-6 lg:px-8 bg-[#fbc4ab]">
         <div class="max-w-7xl mx-auto">
         <div class="max-w-[1200px] mx-auto text-center px-6">
-            <h2 class="font-[Playfair_Display] text-4xl md:text-5xl font-bold mb-4 text-[#1C1C3C]">What You'll Discover Using Our Rating System
-</h2>
-            <p class="text-lg md:text-xl mb-12 text-[#1C1C3C]/80 max-w-[800px] mx-auto">
+            <h2 class="font-[Playfair_Display] text-4xl md:text-5xl font-bold mb-4 text-[#1C1C3C]">See Your Resume Rating</h2>
+            <p class="text-lg md:text-xl mb-12 text-[#1C1C3C]/80 max-w-[800px] mx-auto">Our analyzer breaks down your results into these core areas.</p>
             <!-- Cards Grid - Fixed Responsive Layout -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-16">
-                <!-- Card 1: Strengths -->
-                <div class="bg-[#F1F3E0] rounded-[29px] p-6 flex flex-col items-center text-center min-w-0 transform transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
-                    <h3 class="text-2xl font-bold leading-7 text-black font-['Inter'] break-words">
-                        Strengths
-                    </h3>
-                    <p class="mt-4 text-lg md:text-xl font-normal leading-6 text-black/60 font-['Inter']">
-                        Discover your shining superstar qualities that make recruiters stop scrolling
-                    </p>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                {{-- Modern --}}
+                <div class="bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center text-center hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-20 h-20 mb-5 bg-[#fbc4ab] rounded-full flex items-center justify-center">
+                <svg class="w-11 h-11 text-[#1C1C3C]" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 3v4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                <path d="M5.21 7.21a9 9 0 0113.58 0" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                <path d="M3 13a9 9 0 0018 0" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                <path d="M12 11v2" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                <circle cx="12" cy="12" r="1" fill="currentColor"/>
+            </svg>
+                    </div>
+                    <h3 class="text-xl md:text-2xl font-semibold mb-3 text-[#1C1C3C]">AI-Powered Rating</h3>
+                    <p class="text-base text-[#1C1C3C]/80 leading-relaxed">Instant, accurate resume scoring using our advanced AI system. Get detailed insights on clarity, structure, keywords, and overall impact.</p>
                 </div>
 
-                <!-- Card 2: Areas of Improvement -->
-                <div class="bg-orange-100 rounded-[29px] p-6 flex flex-col items-center text-center min-w-0 transform transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
-                    <h3 class="text-2xl font-bold leading-7 text-black font-['Inter'] break-words">
-                        Areas of Improvement
-                    </h3>
-                    <p class="mt-4 text-lg md:text-xl font-normal leading-6 text-black/60 font-['Inter']">
-                        Spot the sneaky weaknesses quietly sabotaging your applications
-                    </p>
+                {{-- Classic --}}
+                <div class="bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center text-center hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-20 h-20 mb-5 bg-[#fbc4ab] rounded-full flex items-center justify-center">
+                        <svg class="w-11 h-11 text-[#1C1C3C]" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 21l-4.35-4.35" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                <circle cx="11" cy="11" r="6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                <path d="M9 11l1.5 1.5L14 9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+            </svg>
+                    </div>
+                    <h3 class="text-xl md:text-2xl font-semibold mb-3 text-[#1C1C3C]">Precision Feedback</h3>
+                    <p class="text-base text-[#1C1C3C]/80 leading-relaxed">Receive direct, no-nonsense feedback just like a real recruiter. Spot weaknesses instantly and fix them with confidence.</p>
                 </div>
 
-                <!-- Card 3: Structure & Content -->
-                <div class="bg-orange-200 rounded-[29px] p-6 flex flex-col items-center text-center min-w-0 transform transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
-                    <h3 class="text-2xl font-bold leading-7 text-black font-['Inter'] break-words">
-                        Structure & Content Feedback
-                    </h3>
-                    <p class="mt-4 text-lg md:text-xl font-normal leading-6 text-black/60 font-['Inter']">
-                        Get an X-ray of your layout, wording and ATS readiness
-                    </p>
+                {{-- Creative --}}
+                <div class="bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center text-center hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-20 h-20 mb-5 bg-[#fbc4ab] rounded-full flex items-center justify-center">
+              <svg class="w-11 h-11 text-[#1C1C3C]" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 10h7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+            <path d="M14 10h7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+            <path d="M12 3v18" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+            <path d="M8 14a3 3 0 01-6 0" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+            <path d="M22 14a3 3 0 01-6 0" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </svg>
+                    </div>
+                    <h3 class="text-xl md:text-2xl font-semibold mb-3 text-[#1C1C3C]">Balanced & Precise</h3>
+                    <p class="text-base text-[#1C1C3C]/80 leading-relaxed">Not too much, not too little—just the perfect level of insights to refine your resume while keeping your authentic tone.</p>
                 </div>
+            </div>
 
-                <!-- Card 4: Recommendations -->
-                <div class="bg-orange-300 rounded-[29px] p-6 flex flex-col items-center text-center min-w-0 transform transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
-                    <h3 class="text-2xl font-bold leading-7 text-black font-['Inter'] break-words">
-                        Recommendations
-                    </h3>
-                    <p class="mt-4 text-lg md:text-xl font-normal leading-6 text-black/60 font-['Inter']">
-                        Receive brutally honest, recruiter-level fixes that actually move the needle
-                    </p>
-                </div>
+            <div class="mt-12 text-center">
+                <p class="text-lg text-[#1C1C3C]/80 mb-4 max-w-[750px] mx-auto">
+                   This detailed breakdown leads to your final rating, giving you clear, actionable insights—not just a number—so you can make impactful improvements.
+                </p>
+                <a href="{{ url('/analyzer') }}" class="inline-block bg-[#1C1C3C] text-white px-8 py-3 rounded-xl text-lg font-semibold hover:bg-[#FF6F61] transition-all duration-300 shadow-lg hover:shadow-xl">
+                Check your resume
+                </a>
             </div>
         </div>
     </section>
