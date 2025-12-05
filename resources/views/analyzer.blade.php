@@ -44,20 +44,21 @@
     </section>
 <!-- CTA Section -->
         <div class="text-center mb-8">
-            <p class="text-base md:text-lg text-orange-700 mb-8 font-medium max-w-2xl mx-auto">
-                No more wondering why you're not getting interviews – we tell you exactly what's holding you back
-            </p>
     <div>
         @auth
-            <button onclick="openModal()" class="bg-yellow-300 hover:bg-yellow-400 text-orange-800 font-bold py-3 px-8 rounded-full transition duration-300 transform hover:scale-105 shadow-lg text-base md:text-lg border-2 border-yellow-400">
+            <button onclick="openModal()" class="bg-orange-400 hover:bg-orange-700 text-white font-bold py-8 px-8 rounded-full transition duration-300 transform hover:scale-105 shadow-lg text-base md:text-lg border-2 border-yellow-400">
                 Upload Resume
             </button>
         @else
-            <button onclick="openLoginPrompt()" class="bg-yellow-300 hover:bg-yellow-400 text-orange-800 font-bold py-3 px-8 rounded-full transition duration-300 transform hover:scale-105 shadow-lg text-base md:text-lg border-2 border-yellow-400">
+            <button onclick="openLoginPrompt()" class="bg-orange-400 hover:bg-orange-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 transform hover:scale-105 shadow-lg text-base md:text-lg border-2 border-yellow-400">
                 Upload Resume
             </button>
         @endauth
     </div>
+
+        <p class="text-lg md:text-2xl font-normal leading-7 text-black/60 max-w-[649px] mb-12 text-center mx-auto py-8">
+                No more wondering why you're not getting interviews – we tell you exactly what's holding you back
+            </p>
         </div>
     <!-- Login Prompt Modal (For Guests) -->
     <div id="loginPromptModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
