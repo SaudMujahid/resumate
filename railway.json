@@ -8,8 +8,6 @@
     "startCommand": "apache2-foreground",
     "preDeployCommand": "php artisan migrate --force",
     "restartPolicyType": "ON_FAILURE",
-    "healthcheckPath": "/",
-    "healthcheckTimeout": 60,
     "numReplicas": 1
   }
 }
