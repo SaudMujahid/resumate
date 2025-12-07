@@ -1,18 +1,19 @@
 FROM php:8.3-apache
 
-# Install required extensions including GD
+# Install required system packages and PHP extensions
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    libzip-dev \
     zip \
     unzip \
     git \
     curl \
     && docker-php-ext-configure gd --with-jpeg --with-freetype \
-    && docker-php-ext-install -j$(nproc) gd \
-    && docker-php-ext-install pdo pdo_mysql \
-    && a2enmod rewrite
+    && docker-php-ext-install -j$(nproc) gd zip pdo pdo_mysql \
+    && a2enmod rewrite \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -26,7 +27,9 @@ COPY . .
 RUN composer install --optimize-autoloader --no-scripts --no-interaction
 
 # Set up permissions
-RUN chown -R www-data:www-data /var/www/html
+RUN chown -R www-data:www-data /var/www/html && \
+    chmod -R 755 /var/www/html/storage && \
+    chmod -R 755 /var/www/html/bootstrap/cache
 
 # Configure Apache
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
