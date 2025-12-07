@@ -87,7 +87,7 @@ class AnalyzerController extends Controller
         $text = '';
 
         // Read file contents directly from memory (no disk needed)
-        $contents = file_get_contents($file->getRealPath());   // This is safe and fast
+        $contents = $file->get();
 
         try {
             if ($extension === 'pdf') {
