@@ -108,16 +108,11 @@ class AnalyzerController extends Controller
 
         try {
             if ($extension === 'pdf') {
-                // Try multiple methods for PDF parsing
+                // Try two different methods for PDF parsing
                 $text = $this->extractPdfText($contents);
             } elseif (in_array($extension, ['doc', 'docx'])) {
                 $text = $this->extractWordText($contents, $extension);
             }
-
-            Log::info('Extracted text stats', [
-                'text_length' => strlen($text),
-                'is_empty' => empty(trim($text))
-            ]);
         } catch (Exception $e) {
             Log::error('Text Extraction Error: ' . $e->getMessage());
             Log::error('Extraction trace: ' . $e->getTraceAsString());
@@ -132,16 +127,14 @@ class AnalyzerController extends Controller
         $text = '';
 
         try {
-            // Method 1: Using Smalot PDF Parser (simplified)
             $parser = new PdfParser();
 
-            // Try parseContent first
             try {
                 $pdf = $parser->parseContent($contents);
                 $text = $pdf->getText();
                 Log::info('PDF parsed successfully using parseContent');
             } catch (\Exception $e) {
-                Log::warning('parseContent failed, trying parseFile: ' . $e->getMessage());
+                Log::warning('Smalot parseContent failed, trying parseFile: ' . $e->getMessage());
 
                 // Fallback: Save to temp file
                 $tempPath = tempnam(sys_get_temp_dir(), 'pdf_') . '.pdf';
@@ -154,15 +147,9 @@ class AnalyzerController extends Controller
 
             // Clean up the text
             $text = $this->cleanText($text);
-
-            // If still empty, try a different approach
-            if (empty(trim($text))) {
-                Log::warning('PDF text appears empty after parsing');
-                $text = $this->fallbackPdfExtraction($contents);
-            }
         } catch (\Exception $e) {
             Log::error('PDF extraction failed: ' . $e->getMessage());
-            // Try fallback before throwing
+            // Try fallback
             $text = $this->fallbackPdfExtraction($contents);
         }
 
@@ -178,11 +165,8 @@ class AnalyzerController extends Controller
         // Remove excessive whitespace
         $text = preg_replace('/\s+/', ' ', $text);
 
-        // Remove non-printable characters (keep basic punctuation and symbols)
+        // Remove non-printable characters
         $text = preg_replace('/[^\x20-\x7E\x0A\x0D\xC2\xA0-\xEF\xBF\xBD]/u', ' ', $text);
-
-        // Fix common encoding issues
-        $text = str_replace(['�', '�', '�'], ['', '', ''], $text);
 
         return trim($text);
     }
@@ -193,21 +177,9 @@ class AnalyzerController extends Controller
 
         Log::info('Trying fallback PDF extraction');
 
-        try {
-            // Simple regex to extract text between parentheses, brackets, or after common PDF commands
-            if (preg_match_all('/(?<=\(|\[|\/Text\s*)([^\)\]]+)(?=\)|\]|TJ)/', $contents, $matches)) {
-                $text = implode(' ', $matches[1]);
-            }
-
-            // If that doesn't work, try to extract ASCII text
-            if (empty($text)) {
-                // Extract printable ASCII characters
-                $text = preg_replace('/[^\x20-\x7E\n\r\t]/', ' ', $contents);
-                $text = preg_replace('/\s+/', ' ', $text);
-            }
-        } catch (\Exception $e) {
-            Log::error('Fallback extraction failed: ' . $e->getMessage());
-        }
+        // Extract printable ASCII characters
+        $text = preg_replace('/[^\x20-\x7E\n\r\t]/', ' ', $contents);
+        $text = preg_replace('/\s+/', ' ', $text);
 
         return trim($text);
     }
@@ -220,15 +192,24 @@ class AnalyzerController extends Controller
         $tempPath = tempnam(sys_get_temp_dir(), 'cv_') . '.' . $extension;
         file_put_contents($tempPath, $contents);
 
-        Log::info('Word temp file created', ['path' => $tempPath]);
-
         try {
-            if ($extension === 'docx') {
-                // For .docx files (Office Open XML format)
-                $text = $this->extractDocxText($tempPath);
-            } elseif ($extension === 'doc') {
-                // For .doc files (older binary format)
-                $text = $this->extractDocText($tempPath);
+            $phpWord = IOFactory::load($tempPath);
+
+            // More robust text extraction for Word documents
+            foreach ($phpWord->getSections() as $section) {
+                $elements = $section->getElements();
+                foreach ($elements as $element) {
+                    if ($element instanceof \PhpOffice\PhpWord\Element\TextRun) {
+                        foreach ($element->getElements() as $textElement) {
+                            if ($textElement instanceof \PhpOffice\PhpWord\Element\Text) {
+                                $text .= $textElement->getText() . ' ';
+                            }
+                        }
+                    } elseif (method_exists($element, 'getText')) {
+                        $text .= $element->getText() . ' ';
+                    }
+                }
+                $text .= "\n";
             }
         } catch (\Exception $e) {
             Log::error('Word extraction failed: ' . $e->getMessage());
@@ -237,144 +218,8 @@ class AnalyzerController extends Controller
             // Always clean up
             if (file_exists($tempPath)) {
                 unlink($tempPath);
-                Log::info('Word temp file cleaned up');
             }
         }
-
-        return $text;
-    }
-
-    private function extractDocxText($filePath)
-    {
-        $text = '';
-
-        try {
-            // Method 1: Use PhpWord
-            $phpWord = IOFactory::load($filePath);
-
-            // Extract text from all sections
-            foreach ($phpWord->getSections() as $section) {
-                $elements = $section->getElements();
-                foreach ($elements as $element) {
-                    // Handle different element types
-                    if ($element instanceof \PhpOffice\PhpWord\Element\TextRun) {
-                        foreach ($element->getElements() as $textElement) {
-                            if ($textElement instanceof \PhpOffice\PhpWord\Element\Text) {
-                                $text .= $textElement->getText() . ' ';
-                            }
-                        }
-                        $text .= "\n";
-                    } elseif ($element instanceof \PhpOffice\PhpWord\Element\Text) {
-                        $text .= $element->getText() . "\n";
-                    } elseif ($element instanceof \PhpOffice\PhpWord\Element\Table) {
-                        foreach ($element->getRows() as $row) {
-                            foreach ($row->getCells() as $cell) {
-                                $text .= $this->extractTextFromCell($cell) . "\t";
-                            }
-                            $text .= "\n";
-                        }
-                    }
-                }
-            }
-
-            Log::info('PhpWord extraction completed', ['length' => strlen($text)]);
-
-            // If PhpWord fails, try alternative method
-            if (empty(trim($text))) {
-                $text = $this->extractDocxViaZip($filePath);
-            }
-        } catch (\Exception $e) {
-            Log::warning('PhpWord failed, trying alternative: ' . $e->getMessage());
-            $text = $this->extractDocxViaZip($filePath);
-        }
-
-        return $this->cleanText($text);
-    }
-
-    private function extractTextFromCell($cell)
-    {
-        $cellText = '';
-        foreach ($cell->getElements() as $element) {
-            if ($element instanceof \PhpOffice\PhpWord\Element\TextRun) {
-                foreach ($element->getElements() as $textElement) {
-                    if ($textElement instanceof \PhpOffice\PhpWord\Element\Text) {
-                        $cellText .= $textElement->getText();
-                    }
-                }
-            } elseif ($element instanceof \PhpOffice\PhpWord\Element\Text) {
-                $cellText .= $element->getText();
-            }
-        }
-        return $cellText;
-    }
-
-    private function extractDocxViaZip($filePath)
-    {
-        $text = '';
-
-        try {
-            // .docx is a ZIP archive containing XML files
-            $zip = new \ZipArchive();
-            if ($zip->open($filePath) === true) {
-                // Get the main document XML
-                if (($index = $zip->locateName('word/document.xml')) !== false) {
-                    $documentXml = $zip->getFromIndex($index);
-
-                    // Extract text from XML
-                    $text = strip_tags($documentXml);
-
-                    // Decode XML entities
-                    $text = html_entity_decode($text, ENT_QUOTES | ENT_XML1, 'UTF-8');
-
-                    // Clean up
-                    $text = preg_replace('/\s+/', ' ', $text);
-                }
-
-                // Also try to get other parts if main document is empty
-                if (empty(trim($text))) {
-                    for ($i = 0; $i < $zip->numFiles; $i++) {
-                        $filename = $zip->getNameIndex($i);
-                        if (str_ends_with($filename, '.xml') || str_ends_with($filename, '.rels')) {
-                            $content = $zip->getFromIndex($i);
-                            $cleaned = strip_tags($content);
-                            $cleaned = html_entity_decode($cleaned, ENT_QUOTES | ENT_XML1, 'UTF-8');
-                            $text .= ' ' . $cleaned;
-                        }
-                    }
-                }
-
-                $zip->close();
-                Log::info('DOCX extracted via ZIP', ['length' => strlen($text)]);
-            }
-        } catch (\Exception $e) {
-            Log::error('ZIP extraction failed: ' . $e->getMessage());
-        }
-
-        return $text;
-    }
-
-    private function extractDocText($filePath)
-    {
-        // For .doc files, we need a different approach
-        // This is a simplified version - .doc parsing is complex
-
-        Log::warning('.doc file format detected - limited support');
-
-        // Try to use antiword if available on system
-        if (function_exists('shell_exec') && `which antiword`) {
-            $text = shell_exec("antiword " . escapeshellarg($filePath) . " 2>/dev/null");
-            if ($text) {
-                return $this->cleanText($text);
-            }
-        }
-
-        // Fallback: Try to read as binary and extract strings
-        $content = file_get_contents($filePath);
-
-        // Extract sequences of printable characters
-        preg_match_all('/[A-Za-z0-9\s\.\,\-\+\=\*\/\(\)\[\]\{\}\@\#\$\%\^\&\*\!\?\'\"\:\;]{4,}/', $content, $matches);
-
-        $text = implode(' ', $matches[0]);
 
         return $this->cleanText($text);
     }
@@ -387,142 +232,264 @@ class AnalyzerController extends Controller
             throw new Exception('GEMINI_API_KEY not configured in .env file');
         }
 
-        // Truncate CV text if too long (Gemini has token limits)
-        $maxLength = 15000; // Keep it reasonable
+        // Truncate CV text to reasonable length
+        $maxLength = 5000;
         if (strlen($cvText) > $maxLength) {
-            $cvText = substr($cvText, 0, $maxLength) . '... [TRUNCATED]';
+            $cvText = substr($cvText, 0, $maxLength) . '... [TRUNCATED FOR ANALYSIS]';
         }
 
         $prompt = $this->buildAnalysisPrompt($cvText);
 
+        // Further limit prompt size
+        $prompt = substr($prompt, 0, 6000);
+
         Log::info('Sending request to Gemini API', [
             'prompt_length' => strlen($prompt),
-            'api_key_exists' => !empty($apiKey)
+            'api_key_exists' => !empty($apiKey),
+            'cv_length_original' => strlen($cvText)
         ]);
 
         try {
-            // Try multiple Gemini endpoints
-            $endpoints = [
-                "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={$apiKey}",
-                "https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key={$apiKey}",
-                "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={$apiKey}"
+            // Try different model endpoints
+            $models = [
+                'gemini-2.5-flash',
+                'gemini-1.5-flash-8b',  // Try 8B parameter version if available
+                'gemini-2.0-pro',       // Pro version if flash fails
             ];
 
-            $response = null;
             $lastError = null;
+            $response = null;
 
-            foreach ($endpoints as $endpoint) {
+            foreach ($models as $model) {
                 try {
-                    Log::info('Trying endpoint: ' . $endpoint);
+                    Log::info('Trying model: ' . $model);
 
-                    $response = Http::timeout(60)->post($endpoint, [
-                        'contents' => [
+                    $response = Http::timeout(60)
+                        ->retry(1, 1000)
+                        ->post(
+                            "https://generativelanguage.googleapis.com/v1/models/{$model}:generateContent?key={$apiKey}",
                             [
-                                'parts' => [
-                                    ['text' => $prompt]
+                                'contents' => [
+                                    [
+                                        'parts' => [
+                                            ['text' => $prompt]
+                                        ]
+                                    ]
+                                ],
+                                'generationConfig' => [
+                                    'temperature' => 0.7,
+                                    'maxOutputTokens' => 1500,
+                                    'topP' => 0.95,
                                 ]
                             ]
-                        ],
-                        'generationConfig' => [
-                            'temperature' => 0.7,
-                            'maxOutputTokens' => 2048,
-                        ]
-                    ]);
+                        );
+
+                    Log::info('API Response for ' . $model, ['status' => $response->status()]);
 
                     if ($response->successful()) {
-                        break;
+                        break; // Success, stop trying other models
                     }
 
-                    Log::warning('Endpoint failed', [
-                        'endpoint' => $endpoint,
-                        'status' => $response->status()
-                    ]);
+                    $lastError = 'Model ' . $model . ' failed with status: ' . $response->status();
+                    Log::warning($lastError);
                 } catch (\Exception $e) {
-                    $lastError = $e;
-                    Log::warning('Endpoint error: ' . $e->getMessage());
+                    $lastError = 'Model ' . $model . ' error: ' . $e->getMessage();
+                    Log::warning($lastError);
+                    continue; // Try next model
                 }
             }
 
             if (!$response || !$response->successful()) {
-                throw new Exception('All Gemini endpoints failed. Last error: ' . ($lastError ? $lastError->getMessage() : 'Unknown'));
+                throw new Exception('All models failed. Last error: ' . $lastError);
             }
-
-            Log::info('Gemini API Response Status', [
-                'status' => $response->status()
-            ]);
 
             $result = $response->json();
 
-            Log::info('Gemini API Response', [
+            Log::info('Gemini API Response Data', [
+                'keys' => array_keys($result),
                 'has_candidates' => isset($result['candidates']),
-                'candidate_count' => count($result['candidates'] ?? [])
+                'has_parts' => isset($result['candidates'][0]['content']['parts']),
+                'full_response_debug' => json_encode($result, JSON_PRETTY_PRINT) // For debugging
             ]);
 
-            // Extract the generated text
-            $generatedText = $result['candidates'][0]['content']['parts'][0]['text'] ?? '';
+            // Check for prompt feedback blocking
+            if (isset($result['promptFeedback']['blockReason'])) {
+                Log::error('Prompt blocked: ' . $result['promptFeedback']['blockReason']);
+                throw new Exception('Content blocked by safety filters: ' . $result['promptFeedback']['blockReason']);
+            }
 
-            Log::info('Generated text preview', [
+            // Extract the generated text - handle different response formats
+            $generatedText = '';
+
+            if (isset($result['candidates'][0]['content']['parts'][0]['text'])) {
+                // Standard format
+                $generatedText = $result['candidates'][0]['content']['parts'][0]['text'];
+            } elseif (isset($result['candidates'][0]['content']['text'])) {
+                // Alternative format
+                $generatedText = $result['candidates'][0]['content']['text'];
+            } elseif (isset($result['text'])) {
+                // Another possible format
+                $generatedText = $result['text'];
+            }
+
+            // Clean the text
+            $generatedText = trim($generatedText);
+
+            Log::info('Generated text extracted', [
                 'length' => strlen($generatedText),
-                'preview' => substr($generatedText, 0, 200)
+                'preview' => substr($generatedText, 0, 200),
+                'is_empty' => empty($generatedText)
             ]);
 
             if (empty($generatedText)) {
-                throw new Exception('Empty response from Gemini API');
+                // Log the full response for debugging
+                Log::warning('Empty response from Gemini API. Full response:', $result);
+
+                // Check if there's an error message
+                if (isset($result['error']['message'])) {
+                    throw new Exception('API Error: ' . $result['error']['message']);
+                }
+
+                // Try to get any text from the response
+                $generatedText = $this->extractAnyTextFromResponse($result);
+
+                if (empty($generatedText)) {
+                    Log::warning('No text could be extracted, using fallback analysis');
+                    return $this->generateFallbackAnalysis($cvText);
+                }
             }
 
             // Parse the structured response
-            return $this->parseGeminiResponse($generatedText);
+            $analysis = $this->parseGeminiResponse($generatedText);
+
+            // If parsing failed, use fallback
+            if (empty($analysis['strengths']) && empty($analysis['improvements'])) {
+                Log::warning('Parsing returned empty analysis, using fallback');
+                return $this->generateFallbackAnalysis($cvText);
+            }
+
+            return $analysis;
+        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+            Log::error('Connection timeout to Gemini API: ' . $e->getMessage());
+            return $this->generateFallbackAnalysis($cvText);
         } catch (Exception $e) {
             Log::error('Gemini API Error: ' . $e->getMessage());
-            Log::error('API Error trace: ' . $e->getTraceAsString());
-            throw $e;
+
+            // Provide fallback analysis
+            return $this->generateFallbackAnalysis($cvText);
         }
+    }
+
+    private function extractAnyTextFromResponse($result)
+    {
+        $text = '';
+
+        // Try to find text anywhere in the response
+        if (isset($result['candidates'])) {
+            foreach ($result['candidates'] as $candidate) {
+                if (isset($candidate['content']['parts'])) {
+                    foreach ($candidate['content']['parts'] as $part) {
+                        if (isset($part['text'])) {
+                            $text .= $part['text'] . "\n";
+                        }
+                    }
+                }
+            }
+        }
+
+        // If still empty, try to JSON encode and search for text
+        if (empty($text)) {
+            $jsonString = json_encode($result);
+            // Extract anything that looks like sentences
+            preg_match_all('/[A-Z][^.!?]*[.!?]/', $jsonString, $matches);
+            $text = implode(' ', $matches[0]);
+        }
+
+        return trim($text);
+    }
+    private function generateFallbackAnalysis($cvText)
+    {
+        // Generate a simple analysis when API fails
+        $wordCount = str_word_count($cvText);
+        $lines = explode("\n", $cvText);
+        $hasEmail = preg_match('/\S+@\S+\.\S+/', $cvText);
+        $hasPhone = preg_match('/[\d\s\+\-\(\)]{7,}/', $cvText);
+
+        // Calculate a basic rating
+        $rating = 5; // Base
+
+        if ($wordCount > 200) $rating += 1;
+        if ($hasEmail) $rating += 1;
+        if ($hasPhone) $rating += 1;
+        if (str_contains($cvText, 'experience') || str_contains($cvText, 'Experience')) $rating += 1;
+        if (str_contains($cvText, 'education') || str_contains($cvText, 'Education')) $rating += 1;
+
+        $rating = min(max($rating, 1), 10);
+
+        return [
+            'rating' => $rating,
+            'strengths' => array_filter([
+                $wordCount > 200 ? 'Good amount of content (' . $wordCount . ' words)' : null,
+                $hasEmail ? 'Includes professional email address' : null,
+                $hasPhone ? 'Includes contact phone number' : null,
+                'Text successfully extracted for analysis'
+            ]),
+            'improvements' => [
+                'For detailed AI analysis, please ensure stable internet connection',
+                'Consider reducing file size if experiencing timeout issues',
+                'Make sure your CV has clear section headings'
+            ],
+            'structure_feedback' => 'Basic text structure detected. For comprehensive formatting feedback, please retry when API connectivity is stable.',
+            'content_feedback' => 'Content extracted successfully. Full AI-powered analysis requires stable connection to Google Gemini API.',
+            'recommendations' => [
+                'Retry analysis with stable internet connection',
+                'Ensure CV has clear contact information',
+                'Include quantifiable achievements where possible'
+            ],
+            'is_fallback' => true,
+            'note' => 'Note: This is a basic analysis due to API connectivity issues.'
+        ];
     }
 
     private function buildAnalysisPrompt($cvText)
     {
         // Clean and limit the CV text
-        $cvText = htmlspecialchars($cvText);
-        $cvText = substr($cvText, 0, 10000); // Limit to prevent token overflow
+        $cvText = htmlspecialchars($cvText, ENT_QUOTES, 'UTF-8');
+        $cvText = substr($cvText, 0, 4000); // Strict limit for API
 
         return <<<PROMPT
-You are an expert CV/Resume reviewer with years of experience in recruitment and career counseling. Analyze the following CV and provide detailed, actionable feedback.
+Analyze this CV and provide feedback in this EXACT format:
 
 CV Content:
 {$cvText}
 
-Please analyze this CV and provide your response in the following EXACT format:
-
-RATING: [number from 1-10]
+RATING: [number 1-10]
 
 STRENGTHS:
 - [strength 1]
 - [strength 2]
-- [strength 3]
 
 AREAS FOR IMPROVEMENT:
 - [improvement 1]
 - [improvement 2]
-- [improvement 3]
 
 STRUCTURE FEEDBACK:
-[2-3 sentences about the overall structure, formatting, and organization]
+[2 sentences max]
 
 CONTENT FEEDBACK:
-[2-3 sentences about the quality of experiences, skills, and achievements described]
+[2 sentences max]
 
 RECOMMENDATIONS:
-- [specific recommendation 1]
-- [specific recommendation 2]
-- [specific recommendation 3]
+- [recommendation 1]
+- [recommendation 2]
 
-IMPORTANT: Your entire response must follow this exact format. Do not add any introductory or concluding text.
+Only output in the above format, nothing else.
 PROMPT;
     }
 
     private function parseGeminiResponse($text)
     {
-        Log::info('Parsing Gemini response');
+        Log::info('Parsing Gemini response', ['response_length' => strlen($text)]);
 
         // Initialize default structure
         $analysis = [
@@ -532,20 +499,18 @@ PROMPT;
             'structure_feedback' => '',
             'content_feedback' => '',
             'recommendations' => [],
-            'raw_response' => $text // Keep for debugging
+            'raw_response' => $text
         ];
 
         try {
-            // Extract rating - be flexible with format
-            $rating = 0;
+            // Extract rating
             if (preg_match('/RATING:\s*(\d+(?:\.\d+)?)/i', $text, $matches)) {
-                $rating = (float) $matches[1];
+                $analysis['rating'] = (float) $matches[1];
             } elseif (preg_match('/Rating:\s*(\d+)/i', $text, $matches)) {
-                $rating = (int) $matches[1];
+                $analysis['rating'] = (int) $matches[1];
             } elseif (preg_match('/(\d+)\s*\/\s*10/i', $text, $matches)) {
-                $rating = (int) $matches[1];
+                $analysis['rating'] = (int) $matches[1];
             }
-            $analysis['rating'] = $rating;
 
             // Extract strengths
             if (preg_match('/STRENGTHS:(.*?)(?=AREAS FOR IMPROVEMENT:|IMPROVEMENTS:|WEAKNESSES:|STRUCTURE FEEDBACK:|$)/is', $text, $matches)) {
@@ -572,6 +537,19 @@ PROMPT;
                 $analysis['recommendations'] = $this->extractBulletPoints($matches[1]);
             }
 
+            // Clean up arrays
+            $analysis['strengths'] = array_values(array_filter($analysis['strengths'], function ($item) {
+                return !empty(trim($item));
+            }));
+
+            $analysis['improvements'] = array_values(array_filter($analysis['improvements'], function ($item) {
+                return !empty(trim($item));
+            }));
+
+            $analysis['recommendations'] = array_values(array_filter($analysis['recommendations'], function ($item) {
+                return !empty(trim($item));
+            }));
+
             Log::info('Parsed analysis', [
                 'rating' => $analysis['rating'],
                 'strengths_count' => count($analysis['strengths']),
@@ -580,7 +558,7 @@ PROMPT;
             ]);
         } catch (Exception $e) {
             Log::error('Response Parsing Error: ' . $e->getMessage());
-            // Don't throw - return what we have
+            // Return what we have
         }
 
         return $analysis;
@@ -593,56 +571,64 @@ PROMPT;
 
         foreach ($lines as $line) {
             $line = trim($line);
-            if (empty($line)) {
-                continue;
-            }
+            if (empty($line)) continue;
 
-            // Match bullet points with various formats
-            if (preg_match('/^[\-\*•‣⁃◦➢⦁]\s*(.+)$/u', $line, $matches)) {
+            // Match bullet points
+            if (preg_match('/^[\-\*•]\s*(.+)$/u', $line, $matches)) {
                 $points[] = trim($matches[1]);
             } elseif (preg_match('/^\d+[\.\)]\s*(.+)$/', $line, $matches)) {
                 $points[] = trim($matches[1]);
-            } elseif (!preg_match('/^[A-Z][A-Z\s]+:$/', $line)) {
-                // If it looks like a regular sentence (not a section header), add it
+            } elseif (strlen($line) > 10 && !preg_match('/^[A-Z\s]+:$/', $line)) {
+                // Add as point if it looks like content
                 $points[] = $line;
             }
         }
 
-        // Filter out empty or very short points
-        $points = array_filter($points, function ($point) {
-            $trimmed = trim($point);
-            return !empty($trimmed) && strlen($trimmed) > 3;
-        });
-
-        return array_values(array_unique($points));
+        return array_values(array_unique(array_filter($points, function ($point) {
+            return !empty(trim($point)) && strlen(trim($point)) > 3;
+        })));
     }
 
-    /**
-     * Debug endpoint to test text extraction
-     */
-    public function debugExtraction(Request $request)
+    // Add this method for debugging
+    public function testConnection(Request $request)
     {
-        $request->validate([
-            'cv_file' => 'required|file|mimes:pdf,doc,docx|max:5120',
-        ]);
+        $apiKey = env('GEMINI_API_KEY');
 
-        $file = $request->file('cv_file');
-        $extension = $file->getClientOriginalExtension();
+        if (!$apiKey) {
+            return response()->json(['error' => 'API key not configured'], 400);
+        }
 
-        Log::info('Debug extraction called', [
-            'filename' => $file->getClientOriginalName(),
-            'extension' => $extension
-        ]);
+        try {
+            // Simple test request
+            $response = Http::timeout(10)
+                ->post(
+                    "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={$apiKey}",
+                    [
+                        'contents' => [
+                            [
+                                'parts' => [
+                                    ['text' => 'Say "Hello World"']
+                                ]
+                            ]
+                        ],
+                        'generationConfig' => [
+                            'maxOutputTokens' => 10,
+                        ]
+                    ]
+                );
 
-        $text = $this->extractText($file, $extension);
-
-        return response()->json([
-            'success' => !empty(trim($text)),
-            'filename' => $file->getClientOriginalName(),
-            'extension' => $extension,
-            'text_length' => strlen($text),
-            'text_preview' => substr($text, 0, 500),
-            'is_empty' => empty(trim($text))
-        ]);
+            return response()->json([
+                'success' => $response->successful(),
+                'status' => $response->status(),
+                'response' => $response->successful() ? $response->json() : $response->body(),
+                'api_key_length' => strlen($apiKey),
+                'endpoint' => 'gemini-2.5-flash'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'type' => get_class($e)
+            ], 500);
+        }
     }
 }
