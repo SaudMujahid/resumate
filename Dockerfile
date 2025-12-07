@@ -15,8 +15,10 @@ RUN apt-get update && apt-get install -y \
     && a2enmod rewrite \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Composer
+# Install Composer and Node
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs
 
 WORKDIR /var/www/html
 
@@ -25,6 +27,9 @@ COPY . .
 
 # Install PHP dependencies
 RUN composer install --optimize-autoloader --no-scripts --no-interaction
+
+# Install Node dependencies
+RUN npm install
 
 # Set up permissions
 RUN chown -R www-data:www-data /var/www/html && \
@@ -38,4 +43,9 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 
 EXPOSE 80
 
-CMD ["apache2-foreground"]
+# Create storage/logs directory and set permissions
+RUN mkdir -p /var/www/html/storage/logs && \
+    chown -R www-data:www-data /var/www/html/storage/logs
+
+# Run Laravel app and tail logs
+CMD ["sh", "-c", "php artisan storage:link 2>/dev/null; tail -f storage/logs/laravel.log & apache2-foreground"]

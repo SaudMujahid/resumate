@@ -6,7 +6,7 @@
   },
   "deploy": {
     "startCommand": "apache2-foreground",
-    "preDeployCommand": "php artisan migrate --force",
+    "preDeployCommand": "npm run build && php artisan migrate --force",
     "restartPolicyType": "ON_FAILURE",
     "numReplicas": 1
   }
