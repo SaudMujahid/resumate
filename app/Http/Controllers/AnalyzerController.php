@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Log;
 use Smalot\PdfParser\Parser as PdfParser;
 use PhpOffice\PhpWord\IOFactory;
 use Exception;
-use Illuminate\Support\Facades\URL;
 
 class AnalyzerController extends Controller
 {
@@ -61,16 +60,20 @@ class AnalyzerController extends Controller
             // Store in cache for 30 minutes
             Cache::put("cv_analysis_{$resultId}", $analysis, now()->addMinutes(30));
 
-            // Generate a temporary signed URL (expires in 30 min)
-            $redirectUrl = URL::temporarySignedRoute(
-                'analyzer.results',
-                now()->addMinutes(30),
-                ['id' => $resultId]
-            );
+            // OPTION 1: Use a regular route instead of signed route for Railway
+            $redirectUrl = route('analyzer.results', ['id' => $resultId]);
+
+            // OPTION 2: If you must use signed routes, ensure APP_KEY is consistent
+            // $redirectUrl = URL::temporarySignedRoute(
+            //     'analyzer.results',
+            //     now()->addMinutes(30),
+            //     ['id' => $resultId]
+            // );
 
             return response()->json([
                 'success' => true,
-                'redirect' => $redirectUrl
+                'redirect' => $redirectUrl,
+                'result_id' => $resultId // For debugging
             ]);
         } catch (Exception $e) {
             Log::error('CV Analysis Error: ' . $e->getMessage());
@@ -84,10 +87,21 @@ class AnalyzerController extends Controller
 
     public function results($id)
     {
-        // If using signed routes, Laravel automatically validates signature
+        // Remove signed route middleware temporarily
+        // $analysis = Cache::get("cv_analysis_{$id}");
+
+        // Get analysis without signature check for now
         $analysis = Cache::get("cv_analysis_{$id}");
 
         if (!$analysis) {
+            // Log for debugging
+            Log::error('Analysis not found in cache', ['id' => $id]);
+
+            // Check all cache keys for debugging
+            // foreach (Cache::get('*') as $key => $value) {
+            //     Log::info('Cache key: ' . $key);
+            // }
+
             abort(404, 'Analysis not found or has expired.');
         }
 
@@ -96,7 +110,6 @@ class AnalyzerController extends Controller
             'id' => $id
         ]);
     }
-
     private function extractText($file, $extension)
     {
         $text = '';
