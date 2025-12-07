@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Smalot\PdfParser\Parser as PdfParser;
 use PhpOffice\PhpWord\IOFactory;
 use Exception;
+use Illuminate\Support\Facades\URL;
 
 class AnalyzerController extends Controller
 {
@@ -16,19 +18,16 @@ class AnalyzerController extends Controller
         return view('analyzer');
     }
 
-    // THIS IS THE METHOD THAT CHANGES
     public function analyze(Request $request)
     {
-        // Validate the uploaded file
         $request->validate([
-            'cv_file' => 'required|file|mimes:pdf,doc,docx|max:5120', // 5MB max
+            'cv_file' => 'required|file|mimes:pdf,doc,docx|max:5120',
         ]);
 
         try {
             $file = $request->file('cv_file');
             $extension = $file->getClientOriginalExtension();
 
-            // Extract text based on file type
             $cvText = $this->extractText($file, $extension);
 
             if (empty($cvText)) {
@@ -38,24 +37,27 @@ class AnalyzerController extends Controller
                 ], 400);
             }
 
-            // Analyze with Gemini API
             $analysis = $this->analyzeWithGemini($cvText);
 
-            // CHANGE 1: Store analysis in session
-            // This creates a unique key and stores the analysis data
+            // Generate unique ID
             $resultId = uniqid('result_', true);
-            session(["analysis_{$resultId}" => $analysis]);
 
-            // CHANGE 2: Return JSON with redirect URL instead of analysis data
-            // The frontend JavaScript receives this and redirects the user
+            // Store in cache for 30 minutes
+            Cache::put("cv_analysis_{$resultId}", $analysis, now()->addMinutes(30));
+
+            // Generate a temporary signed URL (expires in 30 min)
+            $redirectUrl = URL::temporarySignedRoute(
+                'analyzer.results',
+                now()->addMinutes(30),
+                ['id' => $resultId]
+            );
+
             return response()->json([
                 'success' => true,
-                'redirect' => route('analyzer.results', ['id' => $resultId])
-                // Example: returns "/analyzer/results/result_6758e2c4c67bd1.23456789"
+                'redirect' => $redirectUrl
             ]);
         } catch (Exception $e) {
             Log::error('CV Analysis Error: ' . $e->getMessage());
-
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred while analyzing your CV. Please try again.'
@@ -63,23 +65,23 @@ class AnalyzerController extends Controller
         }
     }
 
-    // NEW METHOD: Add this to handle the results page
     public function results($id)
     {
-        // STEP 1: Retrieve analysis from session using the ID
-        $analysis = session("analysis_{$id}");
+        // If using signed routes, Laravel automatically validates signature
+        $analysis = Cache::get("cv_analysis_{$id}");
 
-        // STEP 2: If analysis doesn't exist, show 404 error
-        // This prevents people from accessing invalid URLs
         if (!$analysis) {
-            abort(404, 'Analysis not found');
+            abort(404, 'Analysis not found or has expired.');
         }
 
-        // STEP 3: Return the results view with the analysis data
-        // The view receives the $analysis array and displays it
-        return view('analyzer.results', ['analysis' => $analysis, 'id' => $id]);
-    }
+        // Optional: delete after first view (uncomment if desired)
+        // Cache::forget("cv_analysis_{$id}");
 
+        return view('analyzer.results', [
+            'analysis' => $analysis,
+            'id' => $id
+        ]);
+    }
     private function extractText($file, $extension)
     {
         $text = '';
@@ -125,7 +127,7 @@ class AnalyzerController extends Controller
 
         try {
             $response = Http::timeout(30)->post(
-                "https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key={$apiKey}",
+                "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={$apiKey}",
                 [
                     'contents' => [
                         [

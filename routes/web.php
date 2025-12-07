@@ -140,7 +140,9 @@ Route::middleware('auth')->group(function () {
 
     // Analyzer analyze action (auth only)
     Route::post('/analyzer/analyze', [AnalyzerController::class, 'analyze'])->name('analyzer.analyze');
-    Route::get('/analyzer/results/{id}', [AnalyzerController::class, 'results'])->name('analyzer.results');
+    Route::get('/analyzer/results/{id}', [AnalyzerController::class, 'results'])
+        ->name('analyzer.results')
+        ->middleware('signed');
 });
 
 require __DIR__ . '/auth.php';
