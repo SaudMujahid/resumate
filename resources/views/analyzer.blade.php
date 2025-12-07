@@ -46,7 +46,7 @@
         <div class="text-center mb-8">
     <div>
         @auth
-            <button onclick="openModal()" class="bg-orange-400 hover:bg-orange-700 text-white font-bold py-8 px-8 rounded-full transition duration-300 transform hover:scale-105 shadow-lg text-base md:text-lg border-2 border-yellow-400">
+            <button onclick="openModal()" class="bg-orange-400 hover:bg-orange-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 transform hover:scale-105 shadow-lg text-base md:text-lg border-2 border-yellow-400">
                 Upload Resume
             </button>
         @else
