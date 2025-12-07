@@ -86,26 +86,35 @@ class AnalyzerController extends Controller
     {
         $text = '';
 
+        // Read file contents directly from memory (no disk needed)
+        $contents = file_get_contents($file->getRealPath());   // This is safe and fast
+
         try {
             if ($extension === 'pdf') {
                 $parser = new PdfParser();
-                $pdf = $parser->parseFile($file->getPathname());
+                $pdf = $parser->parseContent($contents);  // ← parseContent() instead of parseFile()
                 $text = $pdf->getText();
             } elseif (in_array($extension, ['doc', 'docx'])) {
-                $phpWord = IOFactory::load($file->getPathname());
+                // Create a temporary file ONLY for PhpWord (it doesn't support content string)
+                // But we do it safely in /tmp which is always writable
+                $tempPath = tempnam(sys_get_temp_dir(), 'cv_') . '.' . $extension;
+                file_put_contents($tempPath, $contents);
+
+                $phpWord = IOFactory::load($tempPath);
                 foreach ($phpWord->getSections() as $section) {
                     foreach ($section->getElements() as $element) {
                         if (method_exists($element, 'getText')) {
                             $text .= $element->getText() . "\n";
                         } elseif (method_exists($element, 'getElements')) {
-                            foreach ($element->getElements() as $childElement) {
-                                if (method_exists($childElement, 'getText')) {
-                                    $text .= $childElement->getText() . "\n";
+                            foreach ($element->getElements() as $child) {
+                                if (method_exists($child, 'getText')) {
+                                    $text .= $child->getText() . "\n";
                                 }
                             }
                         }
                     }
                 }
+                unlink($tempPath); // Clean up immediately
             }
         } catch (Exception $e) {
             Log::error('Text Extraction Error: ' . $e->getMessage());
