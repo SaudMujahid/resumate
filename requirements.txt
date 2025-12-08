@@ -1,0 +1,267 @@
+# Resumate - AI-Powered Resume Builder
+# Requirements and Dependencies
+
+# =============================================================================
+# PHP REQUIREMENTS
+# =============================================================================
+
+# Core PHP Version
+PHP >= 8.2.0
+
+# Required PHP Extensions
+ext-pdo
+ext-mbstring
+ext-openssl
+ext-tokenizer
+ext-xml
+ext-curl
+ext-zip
+ext-gd
+ext-fileinfo
+
+# =============================================================================
+# LARAVEL FRAMEWORK & CORE DEPENDENCIES
+# =============================================================================
+
+# Laravel Framework
+laravel/framework: ^12.0
+
+# Laravel Breeze (Authentication)
+laravel/breeze: ^2.3
+
+# Laravel Tinker (Interactive Shell)
+laravel/tinker: ^2.10.1
+
+# =============================================================================
+# AI & DOCUMENT PROCESSING LIBRARIES
+# =============================================================================
+
+# Google Gemini AI Integration
+# (Requires GEMINI_API_KEY in .env file)
+
+# PDF Generation
+barryvdh/laravel-dompdf: ^3.1
+
+# Word Document Processing
+phpoffice/phpword: ^1.4
+
+# PDF Text Extraction
+smalot/pdfparser: ^2.12
+
+# =============================================================================
+# DEVELOPMENT & TESTING TOOLS
+# =============================================================================
+
+# Testing Framework
+pestphp/pest: ^4.1
+pestphp/pest-plugin-laravel: ^4.0
+
+# Code Quality Tools
+laravel/pint: ^1.24
+nunomaduro/collision: ^8.6
+
+# Debugging Tools
+laravel/sail: ^1.41
+symfony/var-dumper: ^7.0
+
+# =============================================================================
+# FRONTEND BUILD TOOLS
+# =============================================================================
+
+# Node.js Version: >= 18.0.0
+# Package Manager: npm
+
+# Frontend Dependencies (see package.json):
+# - alpinejs: ^3.15.0
+# - tailwindcss: ^3.1.0
+# - autoprefixer: ^10.4.2
+# - axios: ^1.11.0
+# - vite: ^7.0.7
+
+# =============================================================================
+# DATABASE REQUIREMENTS
+# =============================================================================
+
+# Supported Databases:
+# - MySQL 8.0+
+# - MariaDB 10.3+
+# - PostgreSQL 13.0+
+# - SQLite 3.35+ (for development)
+
+# Database Configuration:
+# DB_CONNECTION=mysql
+# DB_HOST=127.0.0.1
+# DB_PORT=3306
+# DB_DATABASE=resumate
+# DB_USERNAME=your_username
+# DB_PASSWORD=your_password
+
+# =============================================================================
+# WEB SERVER REQUIREMENTS
+# =============================================================================
+
+# Recommended Web Servers:
+# - Apache 2.4+ with mod_rewrite
+# - Nginx 1.20+
+# - Built-in PHP Server (for development)
+
+# SSL Certificate (for HTTPS in production)
+# Let's Encrypt recommended for free SSL
+
+# =============================================================================
+# SYSTEM REQUIREMENTS
+# =============================================================================
+
+# Operating System:
+# - Linux (Ubuntu 20.04+, CentOS 8+)
+# - macOS (10.15+)
+# - Windows (10/11 with WSL2)
+
+# Minimum Hardware Requirements:
+# - RAM: 2GB
+# - Storage: 500MB
+# - CPU: 1GHz dual-core
+
+# Recommended Hardware Requirements:
+# - RAM: 4GB+
+# - Storage: 1GB+
+# - CPU: 2GHz quad-core+
+
+# =============================================================================
+# EXTERNAL API REQUIREMENTS
+# =============================================================================
+
+# Google Gemini API:
+# - API Key required
+# - Google Cloud account needed
+# - Monthly quota: 60 requests/minute (free tier)
+# - Costs: $0.002 per 1K characters (input)
+
+# =============================================================================
+# OPTIONAL DEPENDENCIES
+# =============================================================================
+
+# Redis (for caching and sessions)
+# predis/predis: ^2.0
+
+# Mail Configuration (for notifications)
+# Mail Server or Service (SendGrid, Mailgun, etc.)
+
+# File Storage (for cloud storage)
+# AWS S3, DigitalOcean Spaces, etc.
+
+# =============================================================================
+# DEVELOPMENT ENVIRONMENT SETUP
+# =============================================================================
+
+# Recommended Development Stack:
+# - Laravel Herd (macOS)
+# - XAMPP/WAMP (Windows)
+# - Laravel Sail (Docker)
+# - Vagrant/Homestead
+
+# IDE Recommendations:
+# - Visual Studio Code
+# - PhpStorm
+# - Sublime Text
+
+# Version Control:
+# - Git 2.30+
+
+# =============================================================================
+# PRODUCTION DEPLOYMENT REQUIREMENTS
+# =============================================================================
+
+# Web Hosting Platforms:
+# - DigitalOcean App Platform
+# - AWS Elastic Beanstalk
+# - Google Cloud App Engine
+# - Heroku
+# - Laravel Forge
+
+# CDN (for static assets):
+# - Cloudflare
+# - AWS CloudFront
+# - Fastly
+
+# Monitoring Tools:
+# - Laravel Telescope (development)
+# - Bugsnag/Sentry (error tracking)
+# - New Relic (performance monitoring)
+
+# =============================================================================
+# SECURITY REQUIREMENTS
+# =============================================================================
+
+# SSL/TLS Certificate (required for production)
+# HTTPS enforcement
+# CSRF protection (enabled by default)
+# XSS protection (enabled by default)
+# SQL injection prevention (enabled by default)
+
+# Environment Variables (required):
+# - APP_KEY (generated via php artisan key:generate)
+# - GEMINI_API_KEY (from Google AI Studio)
+# - DB_PASSWORD (database credentials)
+# - MAIL_PASSWORD (if using SMTP)
+
+# =============================================================================
+# PERFORMANCE OPTIMIZATION
+# =============================================================================
+
+# PHP OPcache (recommended)
+# Database indexing (automatic)
+# Asset compilation (via Vite)
+# Caching layers (Redis/Memcached)
+# CDN integration
+
+# =============================================================================
+# MAINTENANCE & MONITORING
+# =============================================================================
+
+# Backup Strategy:
+# - Database backups (daily/weekly)
+# - File system backups
+# - Code repository backup
+
+# Monitoring:
+# - Application logs (Laravel logging)
+# - Error tracking
+# - Performance metrics
+# - User analytics
+
+# Update Strategy:
+# - Dependency updates (composer update)
+# - Security patches (regular updates)
+# - Framework upgrades (major version planning)
+
+# =============================================================================
+# SUPPORT & DOCUMENTATION
+# =============================================================================
+
+# Official Documentation:
+# - Laravel: https://laravel.com/docs
+# - Alpine.js: https://alpinejs.dev/
+# - Tailwind CSS: https://tailwindcss.com/
+# - Google Gemini: https://ai.google.dev/
+
+# Community Support:
+# - Laravel Forums: https://laravel.com/forums
+# - Stack Overflow: #laravel tag
+# - GitHub Issues: Report bugs and features
+
+# =============================================================================
+# LICENSE & ATTRIBUTION
+# =============================================================================
+
+# This project uses the MIT License
+# See LICENSE file for full license text
+
+# Attribution Requirements:
+# - Laravel Framework attribution
+# - Google Gemini API attribution
+# - Open source library credits
+
+# =============================================================================
+# END OF REQUIREMENTS
+# =============================================================================
