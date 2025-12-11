@@ -177,17 +177,13 @@ Form Data → Validation → Template Selection → PDF Rendering → Download
 │   └── 📁 views/                    # Blade Templates
 ├── 📁 routes/                        # Route Definitions
 ├── 📁 storage/                       # File Storage
-├── 📁 tests/                         # Test Suite
-├── 📁 data/                          # Dataset Files (Future Use)
-├── 📁 support/                       # Additional Code Files
-│   ├── 📁 scripts/                  # Utility Scripts
-│   └── 📁 libraries/                # Custom Libraries
 ├── 📁 others/                        # Project Documentation
 │   ├── 📄 IEEE_Resumate.pdf         # Final Report
 │   ├── 📄 Resumate Update 1.pptx.pdf # Presentation
 │   ├── 📄 weeklyUp1.pdf             # Progress Report
 │   └── 📹 *.mp4                     # Demo Videos
-├── 📄 artisan                       # Laravel CLI Tool (Main Entry)
+├── 📄 artisan                       # Laravel CLI Tool
+├── 📄 main.php                      # Main Entry Point
 ├── 📄 composer.json                 # PHP Dependencies
 ├── 📄 package.json                  # Node Dependencies
 ├── 📄 requirements.txt              # Python Requirements (Legacy)

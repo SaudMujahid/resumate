@@ -18,8 +18,83 @@
 // Include Laravel's autoloader
 require_once __DIR__ . '/vendor/autoload.php';
 
-// Include our utility library
-require_once __DIR__ . '/support/libraries/ResumeAnalyzer.php';
+// ResumeAnalyzer utility class (inline)
+class ResumeAnalyzer
+{
+    public function analyzeText(string $text): array
+    {
+        $results = [
+            'word_count' => str_word_count(strip_tags($text)),
+            'character_count' => strlen($text),
+            'action_verbs_count' => $this->countActionVerbs($text),
+            'structure_score' => $this->analyzeStructure($text),
+            'ats_friendly_score' => $this->checkATSFriendliness($text)
+        ];
+        return $results;
+    }
+
+    private function countActionVerbs(string $text): int
+    {
+        $actionVerbs = ['achieved', 'improved', 'created', 'developed', 'implemented', 'designed', 'managed', 'led'];
+        $text = strtolower($text);
+        $count = 0;
+        foreach ($actionVerbs as $verb) {
+            $count += substr_count($text, $verb);
+        }
+        return $count;
+    }
+
+    private function analyzeStructure(string $text): int
+    {
+        $score = 0;
+        $text = strtolower($text);
+        $sections = ['experience', 'education', 'skills', 'summary', 'contact'];
+        foreach ($sections as $section) {
+            if (strpos($text, $section) !== false) {
+                $score += 15;
+            }
+        }
+        return min(100, $score);
+    }
+
+    private function checkATSFriendliness(string $text): int
+    {
+        $score = 100;
+        if (!preg_match('/\b\d{4}\b/', $text)) $score -= 20; // No years
+        if (!preg_match('/(experience|employment|work)/i', $text)) $score -= 20; // No work section
+        return max(0, $score);
+    }
+
+    public function generateSuggestions(array $analysis): array
+    {
+        $suggestions = [];
+        if ($analysis['word_count'] < 200) {
+            $suggestions[] = "Consider adding more detailed descriptions of your experience.";
+        }
+        if ($analysis['action_verbs_count'] < 3) {
+            $suggestions[] = "Use more action verbs to make your accomplishments more impactful.";
+        }
+        if ($analysis['structure_score'] < 50) {
+            $suggestions[] = "Ensure your resume has clear sections with proper headings.";
+        }
+        if ($analysis['ats_friendly_score'] < 70) {
+            $suggestions[] = "Make your resume more ATS-friendly with standard section headers.";
+        }
+        return $suggestions;
+    }
+
+    public function extractContactInfo(string $text): array
+    {
+        $contact = ['email' => null, 'phone' => null];
+        if (preg_match('/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/', $text, $matches)) {
+            $contact['email'] = $matches[0];
+        }
+        if (preg_match('/\+?[\d\s\-\(\)]{10,}/', $text, $matches)) {
+            $contact['phone'] = trim($matches[0]);
+        }
+        return $contact;
+    }
+}
 
 // Bootstrap Laravel (minimal)
 $app = require_once __DIR__ . '/bootstrap/app.php';
