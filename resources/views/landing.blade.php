@@ -26,7 +26,7 @@
         </p>
 
         <div class="flex justify-center md:justify-start gap-4 py-6">
-            <a href="{{ route('register') }}" class="bg-[#FF6F61] text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-[#FF8C7A] transition">
+            <a href="{{ route('resumebuilder') }}" class="bg-[#FF6F61] text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-[#FF8C7A] transition">
                 Get Started Free
             </a>
             <a href="{{ url('/features') }}" class="border border-[#1C1C3C] px-8 py-3 rounded-lg text-[#1C1C3C] font-semibold hover:bg-[#1C1C3C] hover:text-white transition">
@@ -265,7 +265,7 @@
         <div class="max-w-[850px] mx-auto px-6">
             <h2 class="text-4xl md:text-5xl font-[Playfair_Display] mb-4 text-[#1C1C3C]">Ready to Build Your Resume?</h2>
             <p class="text-lg md:text-xl text-[#1C1C3C]/80 mb-8">Start creating your AI-powered resume today. It's fast, easy, and free to begin.</p>
-            <a href="{{ route('register') }}" class="inline-block bg-[#FF6F61] text-white px-10 py-4 rounded-lg text-lg font-semibold hover:bg-[#FF8C7A] transition-all duration-300 shadow-lg hover:shadow-xl">
+            <a href="{{ route('resumebuilder') }}" class="inline-block bg-[#FF6F61] text-white px-10 py-4 rounded-lg text-lg font-semibold hover:bg-[#FF8C7A] transition-all duration-300 shadow-lg hover:shadow-xl">
                 Get Started Free
             </a>
             <p class="text-sm text-[#1C1C3C]/60 mt-6">

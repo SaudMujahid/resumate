@@ -44,7 +44,7 @@
 
         <!-- CTA Button (Optional - Centered Below Cards) -->
         <div class="mb-6 text-center">
-            <a href="{{ route('register') }}"
+            <a href="{{ route('resumebuilder') }}"
                class="inline-block bg-gradient-to-r from-[#7FA1C3] to-[#6482AD] hover:from-[#3674B5] hover:to-[#3674B5] text-white font-bold text-xl px-10 py-4 rounded-2xl transform transition-all duration-300 hover:scale-105 hover:shadow-xl font-['Poppins']">
                 Start Building Now
             </a>

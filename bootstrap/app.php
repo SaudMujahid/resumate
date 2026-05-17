@@ -14,5 +14,13 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException $e, $request) {
+            $message = 'You have reached the limit for this action. Please try again later.';
+
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => $message], 429);
+            }
+
+            return back()->with('error', $message);
+        });
     })->create();

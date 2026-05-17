@@ -45,50 +45,16 @@
 <!-- CTA Section -->
         <div class="text-center mb-8">
     <div>
-        @auth
-            <button onclick="openModal()" class="bg-orange-400 hover:bg-orange-700 text-white font-bold py-8 px-8 rounded-full transition duration-300 transform hover:scale-105 shadow-lg text-base md:text-lg border-2 border-yellow-400">
-                Upload Resume
-            </button>
-        @else
-            <button onclick="openLoginPrompt()" class="bg-orange-400 hover:bg-orange-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 transform hover:scale-105 shadow-lg text-base md:text-lg border-2 border-yellow-400">
-                Upload Resume
-            </button>
-        @endauth
+        <button onclick="openModal()" class="bg-orange-400 hover:bg-orange-700 text-white font-bold py-8 px-8 rounded-full transition duration-300 transform hover:scale-105 shadow-lg text-base md:text-lg border-2 border-yellow-400">
+            Upload Resume
+        </button>
     </div>
 
         <p class="text-lg md:text-2xl font-normal leading-7 text-black/60 max-w-[649px] mb-12 text-center mx-auto py-8">
                 No more wondering why you're not getting interviews – we tell you exactly what's holding you back
             </p>
         </div>
-    <!-- Login Prompt Modal (For Guests) -->
-    <div id="loginPromptModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg shadow-xl max-w-md w-full relative">
-            <button onclick="closeLoginPrompt()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10 bg-white rounded-full p-2 hover:bg-gray-100 transition-colors">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
-
-            <div class="p-8">
-                <div class="text-center mb-6">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Get Started Now</h2>
-                    <p class="text-gray-600">Sign in to analyze your resume and unlock your potential</p>
-                </div>
-
-                <div class="space-y-4">
-                    <a href="{{ route('login') }}" class="w-full block text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
-                        Sign In
-                    </a>
-                    <p class="text-center text-gray-600">Don't have an account?</p>
-                    <a href="{{ route('register') }}" class="w-full block text-center bg-amber-400 hover:bg-amber-500 text-black font-bold py-3 px-6 rounded-lg transition-colors">
-                        Create Account
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Analyzer Modal (For Authenticated Users) -->
+    <!-- Analyzer Modal -->
     <div id="analyzerModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative">
             <!-- Close Button -->
@@ -148,25 +114,6 @@
     </div>
 
     <script>
-        // Login Prompt Modal functions (for guests)
-        function openLoginPrompt() {
-            document.getElementById('loginPromptModal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeLoginPrompt() {
-            document.getElementById('loginPromptModal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-
-        // Close login prompt when clicking outside
-        document.getElementById('loginPromptModal')?.addEventListener('click', (e) => {
-            if (e.target.id === 'loginPromptModal') {
-                closeLoginPrompt();
-            }
-        });
-
-        // Analyzer Modal functions (for authenticated users)
         function openModal() {
             document.getElementById('analyzerModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
@@ -242,6 +189,12 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
                     }
                 });
+
+                if (response.status === 429) {
+                    const rateLimitData = await response.json().catch(() => ({}));
+                    showError(rateLimitData.message || 'You have reached the upload limit. Please try again later.');
+                    return;
+                }
 
                 const data = await response.json();
 

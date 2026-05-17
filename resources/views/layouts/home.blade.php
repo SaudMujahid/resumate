@@ -34,41 +34,11 @@
                 <a href="{{ url('/analyzer') }}" class="hover:text-[#FF6F61] transition">Analyzer</a>
             </div>
 
-            {{-- Desktop Auth Buttons --}}
-            @guest
-            <div class="hidden md:flex gap-3">
-                <a href="{{ route('login') }}">
-                    <button class="px-4 py-2 bg-[#1C1C3C] text-white rounded hover:bg-[#FF6F61] transition">Sign In</button>
-                </a>
-                <a href="{{ route('register') }}">
-                    <button class="px-4 py-2 bg-[#1C1C3C] text-white rounded hover:bg-[#FF6F61] transition">Sign Up</button>
+            <div class="hidden md:flex">
+                <a href="{{ route('resumebuilder') }}">
+                    <button class="px-4 py-2 bg-[#FF6F61] text-white rounded hover:bg-[#FF8C7A] transition">Start for free</button>
                 </a>
             </div>
-            @endguest
-
-            @auth
-            <div class="relative hidden md:block" x-data="{ profileOpen: false }">
-                <button @click="profileOpen = !profileOpen" class="w-10 h-10 rounded-full bg-[#FF6F61] text-white font-bold flex items-center justify-center">
-                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                </button>
-
-                <div x-show="profileOpen" @click.away="profileOpen = false"
-                     class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
-
-                    <div class="px-4 py-3 border-b">
-                        <p class="font-medium">{{ Auth::user()->name }}</p>
-                        <p class="text-xs text-gray-500">{{ Auth::user()->email }}</p>
-                    </div>
-
-                    <a href="{{ route('profile.edit') }}" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
-
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button class="w-full text-left px-4 py-2 hover:bg-gray-100 border-t">Log Out</button>
-                    </form>
-                </div>
-            </div>
-            @endauth
 
             {{-- MOBILE MENU BUTTON --}}
             <button class="md:hidden p-2" @click="mobileMenu = !mobileMenu">
@@ -91,27 +61,11 @@
             <a href="{{ url('/mission') }}" class="block hover:text-[#6aa84f]">Mission</a>
             <a href="{{ url('/analyzer') }}" class="block hover:text-[#FF6F61]">Analyzer</a>
 
-            @guest
             <div class="pt-4 border-t">
-                <a href="{{ route('login') }}">
-                    <button class="w-full px-4 py-2 bg-[#1C1C3C] text-white rounded mb-2">Sign In</button>
-                </a>
-                <a href="{{ route('register') }}">
-                    <button class="w-full px-4 py-2 bg-[#FF6F61] text-white rounded">Sign Up</button>
+                <a href="{{ route('resumebuilder') }}">
+                    <button class="w-full px-4 py-2 bg-[#FF6F61] text-white rounded">Start for free</button>
                 </a>
             </div>
-            @endguest
-
-            @auth
-            <div class="pt-4 border-t space-y-3">
-                <a href="{{ route('profile.edit') }}" class="block hover:text-[#1C1C3C]">Profile</a>
-
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button class="block w-full text-left hover:text-[#FF6F61]">Log Out</button>
-                </form>
-            </div>
-            @endauth
         </div>
 
     </header>
