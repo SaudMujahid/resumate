@@ -27,88 +27,6 @@ body {
   padding: 80px 20px 40px;
 }
 
-/* ── TOOLBAR ───────────────────────────────── */
-.toolbar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 999;
-  background: white;
-  border-bottom: 1px solid #e5e7eb;
-  padding: 10px 24px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  box-shadow: 0 2px 12px rgba(0,0,0,.08);
-}
-.toolbar-label {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .08em;
-  color: #9ca3af;
-}
-.color-swatches {
-  display: flex;
-  gap: 7px;
-  align-items: center;
-}
-.swatch {
-  width: 26px; height: 26px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 3px solid transparent;
-  transition: transform .15s, border-color .15s;
-}
-.swatch:hover { transform: scale(1.18); }
-.swatch.active { border-color: #374151; }
-.color-picker-wrap {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-}
-.color-picker-wrap input[type=color] {
-  width: 26px; height: 26px;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  padding: 0;
-  background: none;
-}
-.toolbar-sep { width: 1px; height: 28px; background: #e5e7eb; }
-.toolbar-btn {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 7px 16px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  border: 1.5px solid #e5e7eb;
-  background: white;
-  color: #374151;
-  text-decoration: none;
-  transition: all .15s;
-  font-family: 'DM Sans', sans-serif;
-}
-.toolbar-btn:hover { border-color: #9ca3af; background: #f9fafb; }
-.toolbar-btn.primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: white;
-}
-.toolbar-btn.primary:hover { opacity: .9; }
-.toolbar-btn svg { flex-shrink: 0; }
-.edit-hint {
-  margin-left: auto;
-  font-size: 12px;
-  color: #9ca3af;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
 
 /* ── RESUME PAGE ───────────────────────────── */
 .resume-page {
@@ -345,42 +263,7 @@ body {
 </head>
 <body>
 
-<!-- ═══════════════════════════════ TOOLBAR ═══════════════════ -->
-<div class="toolbar">
-  <a href="{{ route('resumebuilder') }}" class="toolbar-btn">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-    Back
-  </a>
-
-  <div class="toolbar-sep"></div>
-  <span class="toolbar-label">Color</span>
-  <div class="color-swatches" id="swatches">
-    <div class="swatch active" style="background:hsl(220,70%,45%)" data-hue="220" title="Classic Blue"></div>
-    <div class="swatch" style="background:hsl(162,60%,38%)" data-hue="162" title="Emerald"></div>
-    <div class="swatch" style="background:hsl(270,55%,45%)" data-hue="270" title="Violet"></div>
-    <div class="swatch" style="background:hsl(340,65%,42%)" data-hue="340" title="Rose"></div>
-    <div class="swatch" style="background:hsl(25,75%,45%)" data-hue="25" title="Amber"></div>
-    <div class="swatch" style="background:hsl(195,70%,38%)" data-hue="195" title="Cyan"></div>
-  </div>
-  <div class="color-picker-wrap" title="Custom color">
-    <input type="color" id="customColor" value="#2563eb">
-    <span class="toolbar-label">Custom</span>
-  </div>
-
-  <div class="toolbar-sep"></div>
-  <button class="toolbar-btn" onclick="window.print()">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-    Print
-  </button>
-  <a href="{{ route('resume.download') }}" class="toolbar-btn primary">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-    Download PDF
-  </a>
-  <div class="edit-hint">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-    Click any text to edit
-  </div>
-</div>
+<x-resume-toolbar template="modern" />
 
 <!-- ═══════════════════════════════ RESUME ════════════════════ -->
 <div class="resume-page" id="resume">
@@ -549,62 +432,12 @@ body {
 
   </div><!-- /main-content -->
 </div><!-- /resume-page -->
-
 <script>
-// ── Color theming ─────────────────────────────
-const root = document.documentElement;
-
-function applyHue(hue) {
-  root.style.setProperty('--hue', hue);
-  // Also update the primary toolbar button
-  document.querySelectorAll('.toolbar-btn.primary').forEach(b => {
-    b.style.background = `hsl(${hue},70%,45%)`;
-    b.style.borderColor = `hsl(${hue},70%,45%)`;
-  });
-}
-
-document.querySelectorAll('.swatch').forEach(s => {
-  s.addEventListener('click', () => {
-    document.querySelectorAll('.swatch').forEach(x => x.classList.remove('active'));
-    s.classList.add('active');
-    applyHue(s.dataset.hue);
-  });
-});
-
-document.getElementById('customColor').addEventListener('input', function() {
-  // Convert hex to hue
-  const hex = this.value;
-  const r = parseInt(hex.slice(1,3),16)/255;
-  const g = parseInt(hex.slice(3,5),16)/255;
-  const b = parseInt(hex.slice(5,7),16)/255;
-  const max = Math.max(r,g,b), min = Math.min(r,g,b);
-  let h = 0;
-  if(max !== min) {
-    const d = max - min;
-    if(max===r) h = ((g-b)/d + (g<b?6:0)) * 60;
-    else if(max===g) h = ((b-r)/d + 2) * 60;
-    else h = ((r-g)/d + 4) * 60;
-  }
-  document.querySelectorAll('.swatch').forEach(x => x.classList.remove('active'));
-  applyHue(Math.round(h));
-});
-
 // ── Initials sync ─────────────────────────────
 const mainNameEl = document.querySelector('.main-content .main-name');
 const sideNameEl = document.querySelector('.sidebar .sidebar-name');
 const initialsEl = document.getElementById('initials');
 
-function getInitials(name) {
-  const parts = name.trim().split(/\s+/);
-  if(parts.length === 1) return parts[0][0]?.toUpperCase() || '';
-  return (parts[0][0] + parts[parts.length-1][0]).toUpperCase();
-}
-function syncInitials(name) {
-  initialsEl.textContent = getInitials(name);
-}
-[mainNameEl, sideNameEl].forEach(el => {
-  el.addEventListener('input', () => syncInitials(el.textContent));
-});
 </script>
 </body>
 </html>

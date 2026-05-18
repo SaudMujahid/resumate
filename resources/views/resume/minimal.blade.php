@@ -25,79 +25,6 @@ body {
   padding: 80px 20px 60px;
 }
 
-/* ── TOOLBAR ─────────────────────── */
-.toolbar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 999;
-  background: white;
-  border-bottom: 1px solid var(--rule);
-  padding: 10px 32px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-.toolbar-label {
-  font-size: 10.5px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: .1em;
-  color: var(--soft);
-}
-.color-swatches { display: flex; gap: 6px; align-items: center; }
-.swatch {
-  width: 22px; height: 22px;
-  border-radius: 3px;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: transform .15s, border-color .15s;
-}
-.swatch:hover { transform: scale(1.15); }
-.swatch.active { border-color: #0f0f0f; }
-.color-picker-wrap { display: flex; align-items: center; gap: 6px; }
-.color-picker-wrap input[type=color] {
-  width: 22px; height: 22px;
-  border: 1.5px solid var(--rule);
-  border-radius: 3px;
-  cursor: pointer;
-  padding: 0;
-  background: none;
-}
-.toolbar-sep { width: 1px; height: 24px; background: var(--rule); }
-.toolbar-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border-radius: 5px;
-  font-size: 12.5px;
-  font-weight: 400;
-  letter-spacing: .03em;
-  cursor: pointer;
-  border: 1px solid var(--rule);
-  background: white;
-  color: var(--ink);
-  text-decoration: none;
-  transition: all .15s;
-  font-family: 'Jost', sans-serif;
-}
-.toolbar-btn:hover { border-color: #999; }
-.toolbar-btn.primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: white;
-}
-.toolbar-btn.primary:hover { opacity: .88; }
-.edit-hint {
-  margin-left: auto;
-  font-size: 11.5px;
-  color: var(--soft);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-weight: 300;
-}
 
 /* ── RESUME ──────────────────────── */
 .resume-page {
@@ -303,40 +230,9 @@ body {
 </head>
 <body>
 
-<!-- ═══ TOOLBAR ═══ -->
-<div class="toolbar">
-  <a href="{{ route('resumebuilder') }}" class="toolbar-btn">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-    Back
-  </a>
-  <div class="toolbar-sep"></div>
-  <span class="toolbar-label">Accent</span>
-  <div class="color-swatches" id="swatches">
-    <div class="swatch active" data-accent="#2d6a4f" data-pale="#edf4f0" style="background:#2d6a4f" title="Sage"></div>
-    <div class="swatch" data-accent="#1e4d8c" data-pale="#edf2fb" style="background:#1e4d8c" title="Slate Blue"></div>
-    <div class="swatch" data-accent="#6b3fa0" data-pale="#f3edfb" style="background:#6b3fa0" title="Mauve"></div>
-    <div class="swatch" data-accent="#8c3a1e" data-pale="#fbedea" style="background:#8c3a1e" title="Terracotta"></div>
-    <div class="swatch" data-accent="#3a5c6b" data-pale="#edf2f4" style="background:#3a5c6b" title="Steel"></div>
-    <div class="swatch" data-accent="#4a4a4a" data-pale="#f2f2f2" style="background:#4a4a4a" title="Charcoal"></div>
-  </div>
-  <div class="color-picker-wrap">
-    <input type="color" id="customColor" value="#2d6a4f">
-    <span class="toolbar-label">Custom</span>
-  </div>
-  <div class="toolbar-sep"></div>
-  <button class="toolbar-btn" onclick="window.print()">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-    Print
-  </button>
-  <a href="{{ route('resume.download') }}" class="toolbar-btn primary">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-    Download PDF
-  </a>
-  <div class="edit-hint">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-    Click any text to edit
-  </div>
-</div>
+
+<x-resume-toolbar template="minimal" />
+
 
 <!-- ═══ RESUME ═══ -->
 <div class="resume-page">
@@ -473,26 +369,5 @@ body {
   </div><!-- /body-cols -->
 </div><!-- /resume-page -->
 
-<script>
-document.querySelectorAll('#swatches .swatch').forEach(s => {
-  s.addEventListener('click', () => {
-    document.querySelectorAll('#swatches .swatch').forEach(x => x.classList.remove('active'));
-    s.classList.add('active');
-    const root = document.documentElement;
-    root.style.setProperty('--accent', s.dataset.accent);
-    root.style.setProperty('--accent-pale', s.dataset.pale);
-    // Sync download button color
-    document.querySelector('.toolbar-btn.primary').style.background = s.dataset.accent;
-    document.querySelector('.toolbar-btn.primary').style.borderColor = s.dataset.accent;
-  });
-});
-
-document.getElementById('customColor').addEventListener('input', function() {
-  document.documentElement.style.setProperty('--accent', this.value);
-  document.querySelector('.toolbar-btn.primary').style.background = this.value;
-  document.querySelector('.toolbar-btn.primary').style.borderColor = this.value;
-  document.querySelectorAll('#swatches .swatch').forEach(x => x.classList.remove('active'));
-});
-</script>
 </body>
 </html>

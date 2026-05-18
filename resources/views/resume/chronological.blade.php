@@ -26,77 +26,6 @@ body {
   padding: 80px 20px 40px;
 }
 
-/* ── TOOLBAR ─────────────────────── */
-.toolbar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 999;
-  background: var(--accent);
-  padding: 10px 28px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  box-shadow: 0 3px 14px rgba(0,0,0,.25);
-}
-.toolbar-label {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .08em;
-  color: rgba(255,255,255,.55);
-}
-.color-swatches { display: flex; gap: 7px; align-items: center; }
-.swatch {
-  width: 24px; height: 24px;
-  border-radius: 4px;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: transform .15s, border-color .15s;
-}
-.swatch:hover { transform: scale(1.15); }
-.swatch.active { border-color: white; }
-.color-picker-wrap { display: flex; align-items: center; gap: 6px; cursor: pointer; }
-.color-picker-wrap input[type=color] {
-  width: 24px; height: 24px;
-  border: 2px solid rgba(255,255,255,.4);
-  border-radius: 4px;
-  cursor: pointer;
-  padding: 0;
-  background: none;
-}
-.toolbar-sep { width: 1px; height: 26px; background: rgba(255,255,255,.2); }
-.toolbar-btn {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  border: 1.5px solid rgba(255,255,255,.3);
-  background: transparent;
-  color: white;
-  text-decoration: none;
-  transition: all .15s;
-  font-family: 'Source Sans 3', sans-serif;
-}
-.toolbar-btn:hover { background: rgba(255,255,255,.12); }
-.toolbar-btn.primary {
-  background: var(--stripe);
-  border-color: var(--stripe);
-  color: white;
-}
-.toolbar-btn.primary:hover { opacity: .9; }
-.edit-hint {
-  margin-left: auto;
-  font-size: 12px;
-  color: rgba(255,255,255,.45);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
 
 /* ── RESUME PAGE ─────────────────── */
 .resume-page {
@@ -316,36 +245,8 @@ body {
 </head>
 <body>
 
-<!-- ═══ TOOLBAR ═══ -->
-<div class="toolbar">
-  <a href="{{ route('resumebuilder') }}" class="toolbar-btn">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-    Back
-  </a>
-  <div class="toolbar-sep"></div>
-  <span class="toolbar-label">Theme</span>
-  <div class="color-swatches" id="swatches">
-    <div class="swatch active" data-accent="#1a3a5c" data-stripe="#c9a84c" style="background:#1a3a5c" title="Navy Gold"></div>
-    <div class="swatch" data-accent="#1e3a2f" data-stripe="#52a77a" style="background:#1e3a2f" title="Forest"></div>
-    <div class="swatch" data-accent="#3b1a5c" data-stripe="#a87cd4" style="background:#3b1a5c" title="Plum"></div>
-    <div class="swatch" data-accent="#5c1a1a" data-stripe="#d47c7c" style="background:#5c1a1a" title="Burgundy"></div>
-    <div class="swatch" data-accent="#1a3a50" data-stripe="#4fc3d4" style="background:#1a3a50" title="Steel Teal"></div>
-    <div class="swatch" data-accent="#2a2a2a" data-stripe="#e0a030" style="background:#2a2a2a" title="Charcoal"></div>
-  </div>
-  <div class="toolbar-sep"></div>
-  <button class="toolbar-btn" onclick="window.print()">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-    Print
-  </button>
-  <a href="{{ route('resume.download') }}" class="toolbar-btn primary">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-    Download PDF
-  </a>
-  <div class="edit-hint">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-    Click any text to edit
-  </div>
-</div>
+  <x-resume-toolbar template="chronological" />
+
 
 <!-- ═══ RESUME ═══ -->
 <div class="resume-page">
@@ -488,24 +389,5 @@ body {
   </div><!-- /body-layout -->
 </div><!-- /resume-page -->
 
-<script>
-document.querySelectorAll('.swatch').forEach(s => {
-  s.addEventListener('click', () => {
-    document.querySelectorAll('.swatch').forEach(x => x.classList.remove('active'));
-    s.classList.add('active');
-    const root = document.documentElement;
-    root.style.setProperty('--accent', s.dataset.accent);
-    root.style.setProperty('--stripe', s.dataset.stripe);
-    // Update toolbar bg
-    document.querySelector('.toolbar').style.background = s.dataset.accent;
-  });
-});
-
-document.querySelector('.color-picker-wrap input')?.addEventListener('input', function() {
-  document.documentElement.style.setProperty('--accent', this.value);
-  document.querySelector('.toolbar').style.background = this.value;
-  document.querySelectorAll('.swatch').forEach(x => x.classList.remove('active'));
-});
-</script>
 </body>
 </html>
