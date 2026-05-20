@@ -36,12 +36,14 @@
                 Strengths
             </h3>
             <ul class="space-y-3">
-                @foreach($analysis['strengths'] as $strength)
+                @forelse($analysis['strengths'] as $strength)
                     <li class="flex items-start text-gray-700">
                         <span class="text-green-500 mr-3 font-bold">✓</span>
                         <span>{{ $strength }}</span>
                     </li>
-                @endforeach
+                @empty
+                    <li class="text-gray-500">No strengths were identified.</li>
+                @endforelse
             </ul>
         </div>
 
@@ -54,12 +56,14 @@
                 Areas for Improvement
             </h3>
             <ul class="space-y-3">
-                @foreach($analysis['improvements'] as $improvement)
+                @forelse($analysis['improvements'] as $improvement)
                     <li class="flex items-start text-gray-700">
                         <span class="text-orange-500 mr-3 font-bold">•</span>
                         <span>{{ $improvement }}</span>
                     </li>
-                @endforeach
+                @empty
+                    <li class="text-gray-500">No improvement areas were identified.</li>
+                @endforelse
             </ul>
         </div>
 
@@ -67,11 +71,11 @@
         <div class="grid md:grid-cols-2 gap-8 mb-8">
             <div class="bg-white rounded-lg shadow-lg p-8">
                 <h3 class="text-xl font-bold text-gray-800 mb-4">Structure Feedback</h3>
-                <p class="text-gray-700 leading-relaxed">{{ $analysis['structure_feedback'] }}</p>
+                <p class="text-gray-700 leading-relaxed">{{ $analysis['structure_feedback'] ?: 'No structure feedback available.' }}</p>
             </div>
             <div class="bg-white rounded-lg shadow-lg p-8">
                 <h3 class="text-xl font-bold text-gray-800 mb-4">Content Feedback</h3>
-                <p class="text-gray-700 leading-relaxed">{{ $analysis['content_feedback'] }}</p>
+                <p class="text-gray-700 leading-relaxed">{{ $analysis['content_feedback'] ?: 'No content feedback available.' }}</p>
             </div>
         </div>
 
@@ -84,12 +88,14 @@
                 Recommendations
             </h3>
             <ul class="space-y-3">
-                @foreach($analysis['recommendations'] as $rec)
+                @forelse($analysis['recommendations'] as $rec)
                     <li class="flex items-start text-gray-700">
                         <span class="text-blue-500 mr-3 font-bold">→</span>
                         <span>{{ $rec }}</span>
                     </li>
-                @endforeach
+                @empty
+                    <li class="text-gray-500">No recommendations were provided.</li>
+                @endforelse
             </ul>
         </div>
 

@@ -4,8 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{ $resume['name'] }} — Resume</title>
+@if(empty($forPdf))
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+@endif
 <style>
 :root {
   --accent: #1a3a5c;
@@ -241,11 +243,23 @@ body {
   .resume-page { box-shadow: none; }
   [contenteditable]:hover, [contenteditable]:focus { background: transparent; outline: none; }
 }
+
+/* PDF font override (DomPDF cannot load Google Fonts) */
+@if(!empty($forPdf))
+* { font-family: 'DejaVu Sans', sans-serif !important; }
+.hb-name, .sec-title {
+  font-family: 'DejaVu Serif', serif !important;
+}
+body { padding: 0 !important; background: white !important; }
+.resume-page { box-shadow: none !important; }
+@endif
 </style>
 </head>
 <body>
 
-  <x-resume-toolbar template="chronological" />
+@if(empty($forPdf))
+<x-resume-toolbar template="chronological" />
+@endif
 
 
 <!-- ═══ RESUME ═══ -->

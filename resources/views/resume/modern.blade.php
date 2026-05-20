@@ -4,440 +4,337 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{ $resume['name'] }} — Resume</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+
+@if(empty($forPdf))
+    @vite(['resources/css/app.css', 'resources/js/resume-modern.js'])
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+@endif
+
 <style>
-:root {
-  --hue: 220;
-  --accent: hsl(var(--hue), 70%, 45%);
-  --accent-dark: hsl(var(--hue), 75%, 28%);
-  --accent-mid: hsl(var(--hue), 55%, 38%);
-  --sidebar-bg: hsl(var(--hue), 40%, 18%);
-  --sidebar-sec: hsl(var(--hue), 35%, 24%);
-  --sidebar-text: hsl(var(--hue), 20%, 85%);
-  --sidebar-muted: hsl(var(--hue), 15%, 60%);
-  --dot-active: hsl(var(--hue), 70%, 65%);
-}
-* { margin:0; padding:0; box-sizing:border-box; }
+    [x-cloak] { display: none !important; }
 
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: #e8eaf0;
-  min-height: 100vh;
-  padding: 80px 20px 40px;
-}
+    .resume-shadow {
+        box-shadow: 0 12px 60px rgba(0, 0, 0, 0.22);
+    }
 
+    .font-ats { font-family: Arial, Helvetica, sans-serif !important; }
+    .font-sans-custom { font-family: 'DM Sans', sans-serif; }
+    .font-serif-custom { font-family: 'DM Serif Display', serif; }
+    .font-mono-custom { font-family: 'Courier New', monospace; }
 
-/* ── RESUME PAGE ───────────────────────────── */
-.resume-page {
-  max-width: 860px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 260px 1fr;
-  min-height: 1050px;
-  box-shadow: 0 12px 60px rgba(0,0,0,.22);
-  border-radius: 3px;
-  overflow: hidden;
-}
+    @media print {
+        .no-print { display: none !important; }
+        body { background: white !important; padding: 0 !important; }
+        .resume-shadow { box-shadow: none !important; }
+    }
 
-/* ── SIDEBAR ───────────────────────────────── */
-.sidebar {
-  background: var(--sidebar-bg);
-  color: white;
-  padding: 40px 26px;
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-}
-.avatar-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-}
-.avatar {
-  width: 88px; height: 88px;
-  border-radius: 50%;
-  background: var(--accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'DM Serif Display', serif;
-  font-size: 32px;
-  color: white;
-  letter-spacing: .02em;
-  flex-shrink: 0;
-}
-.sidebar-name {
-  font-family: 'DM Serif Display', serif;
-  font-size: 20px;
-  line-height: 1.25;
-  text-align: center;
-  color: white;
-}
-.sidebar-title {
-  font-size: 12px;
-  color: var(--dot-active);
-  text-align: center;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  margin-top: -8px;
-}
-.sidebar-section { display: flex; flex-direction: column; gap: 14px; }
-.sidebar-section-title {
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .12em;
-  color: var(--dot-active);
-  padding-bottom: 8px;
-  border-bottom: 1px solid hsla(0,0%,100%,.1);
-}
-.contact-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  font-size: 12.5px;
-  color: var(--sidebar-text);
-  line-height: 1.45;
-}
-.contact-icon {
-  width: 18px;
-  flex-shrink: 0;
-  margin-top: 1px;
-  color: var(--dot-active);
-}
-.skill-row { display: flex; flex-direction: column; gap: 9px; }
-.skill-item { display: flex; flex-direction: column; gap: 5px; }
-.skill-name {
-  font-size: 12px;
-  color: var(--sidebar-text);
-  display: flex;
-  justify-content: space-between;
-}
-.skill-bar-bg {
-  height: 4px;
-  background: hsla(0,0%,100%,.12);
-  border-radius: 99px;
-  overflow: hidden;
-}
-.skill-bar-fill {
-  height: 100%;
-  background: var(--dot-active);
-  border-radius: 99px;
-}
-.dot-skills { display: flex; flex-direction: column; gap: 8px; }
-.dot-skill-item { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--sidebar-text); }
-.dots { display: flex; gap: 4px; }
-.dot {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: hsla(0,0%,100%,.15);
-}
-.dot.on { background: var(--dot-active); }
-.lang-list { display: flex; flex-direction: column; gap: 8px; }
-.lang-item { font-size: 12.5px; color: var(--sidebar-text); display: flex; justify-content: space-between; }
-.lang-level { font-size: 11px; color: var(--sidebar-muted); }
-
-/* ── MAIN CONTENT ──────────────────────────── */
-.main-content {
-  background: white;
-  padding: 44px 40px;
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-}
-.main-header { border-bottom: 2.5px solid var(--accent); padding-bottom: 18px; }
-.main-name {
-  font-family: 'DM Serif Display', serif;
-  font-size: 34px;
-  line-height: 1.1;
-  color: #111827;
-}
-.main-role {
-  font-size: 13px;
-  color: var(--accent-mid);
-  font-weight: 500;
-  letter-spacing: .05em;
-  text-transform: uppercase;
-  margin-top: 4px;
-}
-.section { display: flex; flex-direction: column; gap: 14px; }
-.section-title {
-  font-size: 10.5px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .12em;
-  color: var(--accent-mid);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.section-title::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: #e5e7eb;
-}
-.summary-text {
-  font-size: 13.5px;
-  line-height: 1.75;
-  color: #374151;
-}
-.exp-item { display: flex; flex-direction: column; gap: 5px; padding-bottom: 18px; border-bottom: 1px solid #f3f4f6; }
-.exp-item:last-child { border-bottom: none; padding-bottom: 0; }
-.exp-header { display: flex; justify-content: space-between; align-items: flex-start; }
-.exp-title { font-size: 14.5px; font-weight: 600; color: #111827; }
-.exp-duration {
-  font-size: 11.5px;
-  color: white;
-  background: var(--accent);
-  padding: 2px 10px;
-  border-radius: 99px;
-  white-space: nowrap;
-  margin-left: 8px;
-  flex-shrink: 0;
-}
-.exp-company { font-size: 13px; color: var(--accent-mid); font-weight: 500; }
-.exp-bullets { list-style: none; display: flex; flex-direction: column; gap: 5px; margin-top: 6px; }
-.exp-bullets li {
-  font-size: 13px;
-  color: #4b5563;
-  line-height: 1.6;
-  padding-left: 14px;
-  position: relative;
-}
-.exp-bullets li::before {
-  content: '▸';
-  position: absolute;
-  left: 0;
-  color: var(--accent);
-  font-size: 10px;
-  top: 3px;
-}
-.edu-grid { display: flex; flex-direction: column; gap: 14px; }
-.edu-item {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 12px;
-  align-items: start;
-}
-.edu-dot {
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  background: var(--accent);
-  margin-top: 5px;
-  flex-shrink: 0;
-}
-.edu-degree { font-size: 14px; font-weight: 600; color: #111827; }
-.edu-school { font-size: 12.5px; color: #6b7280; margin-top: 2px; }
-.edu-meta { font-size: 12px; color: #9ca3af; margin-top: 3px; }
-.edu-badge {
-  display: inline-block;
-  font-size: 10.5px;
-  background: var(--accent);
-  color: white;
-  padding: 1px 8px;
-  border-radius: 99px;
-  margin-top: 4px;
-}
-
-/* ── CONTENTEDITABLE STYLING ───────────────── */
-[contenteditable] {
-  outline: none;
-  border-radius: 3px;
-  transition: background .15s;
-  cursor: text;
-}
-[contenteditable]:hover { background: rgba(99,102,241,.06); }
-[contenteditable]:focus { background: rgba(99,102,241,.1); outline: 1.5px dashed var(--accent); }
-
-/* ── PRINT ─────────────────────────────────── */
-@media print {
-  body { background: white; padding: 0; }
-  .toolbar { display: none !important; }
-  .resume-page { box-shadow: none; max-width: 100%; border-radius: 0; }
-  [contenteditable]:hover, [contenteditable]:focus { background: transparent; outline: none; }
-}
+    @if(!empty($forPdf))
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: 'DejaVu Sans', sans-serif;
+        background: white;
+        padding: 0;
+    }
+    .resume-pdf-wrap {
+        max-width: 860px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        background: white;
+    }
+    .resume-pdf-sidebar {
+        background: hsl(220, 40%, 18%);
+        color: white;
+        padding: 32px 26px;
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+    }
+    .resume-pdf-main { padding: 40px; background: white; }
+    .resume-pdf-sidebar h2,
+    .resume-pdf-main h1 { font-family: 'DejaVu Serif', serif; }
+    @endif
 </style>
 </head>
-<body>
+<body class="bg-gray-100 min-h-screen font-sans-custom"
+      @if(empty($forPdf))
+      x-data="resumeApp()"
+      x-init="init()"
+      :class="fontClass"
+      @endif>
 
-<x-resume-toolbar template="modern" />
+    @if(empty($forPdf))
+    {{-- Toolbar --}}
+    <div class="no-print fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3 flex-wrap">
 
-<!-- ═══════════════════════════════ RESUME ════════════════════ -->
-<div class="resume-page" id="resume">
+            <a href="{{ route('resumebuilder') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                Back
+            </a>
 
-  <!-- ── SIDEBAR ── -->
-  <div class="sidebar">
+            <div class="w-px h-6 bg-gray-300"></div>
 
-    <!-- Avatar + Name -->
-    <div class="avatar-block">
-      <div class="avatar" id="initials">{{ strtoupper(mb_substr(explode(' ', $resume['name'])[0], 0, 1)) }}{{ strtoupper(mb_substr(explode(' ', $resume['name'])[count(explode(' ', $resume['name']))-1], 0, 1)) }}</div>
-      <div class="sidebar-name" contenteditable="true" spellcheck="false">{{ $resume['name'] }}</div>
-      @if(!empty($resume['experience'][0]['title']))
-        <div class="sidebar-title" contenteditable="true" spellcheck="false">{{ $resume['experience'][0]['title'] }}</div>
-      @elseif(!empty($resume['education'][0]['degree']))
-        <div class="sidebar-title" contenteditable="true" spellcheck="false">{{ $resume['education'][0]['degree'] ?? 'Student' }}</div>
-      @endif
-    </div>
+            <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+                <input type="checkbox" x-model="atsMode" @change="saveSettings" class="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+                <span class="text-sm font-semibold" :class="atsMode ? 'text-emerald-700' : 'text-gray-700'">
+                    <span x-show="!atsMode">ATS Safe Mode</span>
+                    <span x-show="atsMode" x-cloak class="flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        ATS Mode Active
+                    </span>
+                </span>
+            </label>
 
-    <!-- Contact -->
-    <div class="sidebar-section">
-      <div class="sidebar-section-title">Contact</div>
-      <div class="contact-item">
-        <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg>
-        <span contenteditable="true" spellcheck="false">{{ $resume['email'] }}</span>
-      </div>
-      @if(!empty($resume['phone']))
-      <div class="contact-item">
-        <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013 7.18 19.79 19.79 0 01.21 7a2 2 0 012-2.18h3a2 2 0 012 1.72 12.6 12.6 0 00.57 2.57 2 2 0 01-.45 2.11L6.91 12a16 16 0 006 6l.42-.42a2 2 0 012.11-.45 12.6 12.6 0 002.57.57A2 2 0 0122 20z"/></svg>
-        <span contenteditable="true" spellcheck="false">{{ $resume['phone'] }}</span>
-      </div>
-      @endif
-      @if(!empty($resume['city']))
-      <div class="contact-item">
-        <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-        <span contenteditable="true" spellcheck="false">{{ $resume['city'] }}</span>
-      </div>
-      @endif
-    </div>
+            <div class="w-px h-6 bg-gray-300"></div>
 
-    <!-- Technical Skills -->
-    @if(!empty($resume['skills']['technical']))
-    <div class="sidebar-section">
-      <div class="sidebar-section-title">Technical Skills</div>
-      <div class="skill-row">
-        @foreach($resume['skills']['technical'] as $i => $skill)
-        @php $pct = max(60, 100 - ($i * 8)); @endphp
-        <div class="skill-item">
-          <div class="skill-name">
-            <span contenteditable="true" spellcheck="false">{{ $skill }}</span>
-          </div>
-          <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:{{ $pct }}%"></div></div>
+            <div class="flex items-center gap-2">
+                <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">Color</span>
+                <template x-for="h in presets" :key="h">
+                    <button type="button" @click="setHue(h)"
+                            class="w-6 h-6 rounded-full border-2 transition-transform hover:scale-110"
+                            :class="hue == h ? 'border-gray-800' : 'border-transparent'"
+                            :style="`background: hsl(${h}, 70%, 45%)`"></button>
+                </template>
+                <div class="relative flex items-center gap-1 ml-1">
+                    <input type="color" x-model="customColor" @input="updateCustomColor" class="w-7 h-7 rounded-full overflow-hidden border-0 p-0 cursor-pointer">
+                    <span class="text-xs text-gray-500">Custom</span>
+                </div>
+            </div>
+
+            <div class="w-px h-6 bg-gray-300"></div>
+
+            <select x-model="fontFamily" @change="saveSettings" class="text-sm border-gray-300 rounded-md shadow-sm py-1">
+                <option value="sans">DM Sans</option>
+                <option value="serif">DM Serif</option>
+                <option value="mono">Monospace</option>
+            </select>
+
+            <select x-model="spacing" @change="saveSettings" class="text-sm border-gray-300 rounded-md shadow-sm py-1">
+                <option value="compact">Compact</option>
+                <option value="normal">Normal</option>
+                <option value="spacious">Spacious</option>
+            </select>
+
+            <template x-if="!atsMode">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-gray-500">Sidebar</span>
+                    <input type="range" min="200" max="320" x-model.number="sidebarWidth" @change="saveSettings" class="w-20 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+            </template>
+
+            <div class="flex-1"></div>
+
+            <button type="button" @click="window.print()" class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                Print
+            </button>
+            <a href="{{ route('resume.download') }}" class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white rounded-lg hover:opacity-90 transition shadow-sm" :style="`background: hsl(${hue}, 70%, 45%)`">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Download PDF
+            </a>
         </div>
-        @endforeach
-      </div>
     </div>
     @endif
 
-    <!-- Soft Skills -->
-    @if(!empty($resume['skills']['soft']))
-    <div class="sidebar-section">
-      <div class="sidebar-section-title">Soft Skills</div>
-      <div class="dot-skills">
-        @foreach($resume['skills']['soft'] as $i => $skill)
-        <div class="dot-skill-item">
-          <div class="dots">
-            @for($d=0;$d<5;$d++)<div class="dot {{ $d < 4-($i%2) ? 'on' : '' }}"></div>@endfor
-          </div>
-          <span contenteditable="true" spellcheck="false">{{ $skill }}</span>
+    @php
+        $headlineTitle = $resume['experience'][0]['title'] ?? ($resume['education'][0]['degree'] ?? 'Student');
+        $headlineOrg = $resume['experience'][0]['company'] ?? ($resume['education'][0]['school'] ?? null);
+        $nameParts = preg_split('/\s+/', trim($resume['name'] ?? ''));
+        $initials = count($nameParts) >= 2
+            ? strtoupper(mb_substr($nameParts[0], 0, 1) . mb_substr($nameParts[count($nameParts) - 1], 0, 1))
+            : strtoupper(mb_substr($nameParts[0] ?? 'U', 0, 1));
+    @endphp
+
+    <div class="{{ empty($forPdf) ? 'pt-24 pb-12 px-4' : 'py-0 px-0' }}">
+        <div class="mx-auto bg-white resume-shadow overflow-hidden transition-all duration-300 {{ !empty($forPdf) ? 'resume-pdf-wrap' : '' }}"
+             @if(empty($forPdf))
+             :style="layoutStyle"
+             @endif>
+
+            {{-- Sidebar --}}
+            <aside class="text-white {{ !empty($forPdf) ? 'resume-pdf-sidebar' : '' }}"
+                   @if(empty($forPdf))
+                   :class="atsMode ? 'hidden' : 'flex flex-col ' + spacingClasses.sidebar"
+                   :style="`background: hsl(${hue}, 40%, 18%)`"
+                   @else
+                   style="background: hsl(220, 40%, 18%)"
+                   @endif>
+
+                <div class="flex flex-col items-center gap-3">
+                    <div class="w-20 h-20 rounded-full flex items-center justify-center text-3xl text-white font-serif-custom shadow-lg"
+                         @if(empty($forPdf)) :style="`background: hsl(${hue}, 70%, 45%)`" @else style="background: hsl(220, 70%, 45%)" @endif>
+                        {{ $initials }}
+                    </div>
+                    <h2 class="font-serif-custom text-xl text-center leading-tight">{{ $resume['name'] }}</h2>
+                    <p class="text-xs uppercase tracking-widest text-center font-medium opacity-80">{{ $headlineTitle }}</p>
+                </div>
+
+                <div class="space-y-3">
+                    <h3 class="text-[10px] font-bold uppercase tracking-[0.15em] pb-2 border-b border-white/10 opacity-70">Contact</h3>
+                    <div class="flex items-start gap-2.5 text-sm opacity-90">
+                        <span class="break-all">{{ $resume['email'] }}</span>
+                    </div>
+                    @if(!empty($resume['phone']))
+                    <div class="text-sm opacity-90">{{ $resume['phone'] }}</div>
+                    @endif
+                    @if(!empty($resume['city']))
+                    <div class="text-sm opacity-90">{{ $resume['city'] }}</div>
+                    @endif
+                </div>
+
+                @if(!empty($resume['skills']['technical']))
+                <div class="space-y-4">
+                    <h3 class="text-[10px] font-bold uppercase tracking-[0.15em] pb-2 border-b border-white/10 opacity-70">Technical Skills</h3>
+                    <div class="space-y-3">
+                        @foreach($resume['skills']['technical'] as $i => $skill)
+                        @php $pct = max(60, 100 - ($i * 8)); @endphp
+                        <div>
+                            <div class="text-xs mb-1.5 opacity-90">{{ $skill }}</div>
+                            <div class="h-1 bg-white/10 rounded-full overflow-hidden">
+                                @if(empty($forPdf))
+                                <div class="h-full rounded-full transition-all duration-500" :style="`width: {{ $pct }}%; background: hsl(${hue}, 70%, 65%)`"></div>
+                                @else
+                                <div class="h-full rounded-full" style="width: {{ $pct }}%; background: hsl(220, 70%, 65%)"></div>
+                                @endif
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+
+                @if(!empty($resume['skills']['soft']))
+                <div class="space-y-4">
+                    <h3 class="text-[10px] font-bold uppercase tracking-[0.15em] pb-2 border-b border-white/10 opacity-70">Soft Skills</h3>
+                    <ul class="space-y-2 text-sm opacity-90">
+                        @foreach($resume['skills']['soft'] as $skill)
+                        <li>{{ $skill }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                @endif
+
+                @if(!empty($resume['skills']['languages']))
+                <div class="space-y-4">
+                    <h3 class="text-[10px] font-bold uppercase tracking-[0.15em] pb-2 border-b border-white/10 opacity-70">Languages</h3>
+                    <div class="space-y-2">
+                        @foreach($resume['skills']['languages'] as $i => $lang)
+                        <div class="flex justify-between text-sm opacity-90">
+                            <span>{{ $lang }}</span>
+                            <span class="text-xs opacity-60">{{ $i === 0 ? 'Native' : ($i === 1 ? 'Fluent' : 'Intermediate') }}</span>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+            </aside>
+
+            {{-- Main --}}
+            <main class="bg-white flex flex-col {{ !empty($forPdf) ? 'resume-pdf-main' : '' }}"
+                  @if(empty($forPdf)) :class="[atsMode ? 'max-w-[800px] mx-auto p-10' : spacingClasses.main + ' p-10']" @endif>
+
+                <div class="border-b-2 border-gray-800 pb-5 mb-6">
+                    <h1 class="text-3xl leading-tight text-gray-900 font-serif-custom">{{ $resume['name'] }}</h1>
+                    <p class="text-sm uppercase tracking-wide mt-1.5 font-semibold text-gray-600">
+                        {{ $headlineTitle }}
+                        @if($headlineOrg)
+                            &nbsp;·&nbsp; {{ $headlineOrg }}
+                        @endif
+                    </p>
+                </div>
+
+                @if(!empty($resume['summary']))
+                <div class="mb-6">
+                    <h3 class="text-xs font-bold uppercase tracking-[0.15em] flex items-center gap-2 mb-3 text-gray-700">
+                        Professional Summary
+                        <span class="flex-1 h-px bg-gray-200"></span>
+                    </h3>
+                    <p class="text-sm leading-relaxed text-gray-600">{{ $resume['summary'] }}</p>
+                </div>
+                @endif
+
+                @if(!empty($resume['experience']))
+                <div class="mb-6">
+                    <h3 class="text-xs font-bold uppercase tracking-[0.15em] flex items-center gap-2 mb-4 text-gray-700">
+                        Experience
+                        <span class="flex-1 h-px bg-gray-200"></span>
+                    </h3>
+                    <div class="space-y-5">
+                        @foreach($resume['experience'] as $exp)
+                        <div class="pb-5 border-b border-gray-100 last:border-0 last:pb-0">
+                            <div class="flex justify-between items-start mb-1 gap-4">
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">{{ $exp['title'] ?? '' }}</h4>
+                                    <p class="text-sm font-medium mt-0.5 text-gray-600">{{ $exp['company'] ?? '' }}</p>
+                                </div>
+                                @if(!empty($exp['duration']))
+                                <span class="text-xs px-3 py-1 rounded-full text-white font-medium whitespace-nowrap bg-gray-800">{{ $exp['duration'] }}</span>
+                                @endif
+                            </div>
+                            @if(!empty($exp['responsibilities']))
+                            <ul class="mt-2.5 space-y-1.5">
+                                @foreach($exp['responsibilities'] as $resp)
+                                <li class="text-sm text-gray-600 pl-4 relative">
+                                    <span class="absolute left-0 text-xs mt-1 text-gray-800">▸</span>
+                                    {{ $resp }}
+                                </li>
+                                @endforeach
+                            </ul>
+                            @endif
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+
+                @if(!empty($resume['education']))
+                <div>
+                    <h3 class="text-xs font-bold uppercase tracking-[0.15em] flex items-center gap-2 mb-4 text-gray-700">
+                        Education
+                        <span class="flex-1 h-px bg-gray-200"></span>
+                    </h3>
+                    <div class="space-y-4">
+                        @foreach($resume['education'] as $edu)
+                        <div class="flex gap-3">
+                            <div class="w-2.5 h-2.5 rounded-full mt-1.5 shrink-0 bg-gray-800"></div>
+                            <div>
+                                @if(!empty($edu['degree']))
+                                    <h4 class="font-semibold text-gray-900">{{ $edu['degree'] }}@if(!empty($edu['major'])) <span class="font-normal text-gray-600">in {{ $edu['major'] }}</span>@endif</h4>
+                                @else
+                                    <h4 class="font-semibold text-gray-900">{{ $edu['level'] ?? 'Education' }}</h4>
+                                @endif
+                                <p class="text-sm text-gray-500 mt-0.5">{{ $edu['school'] ?? '' }}@if(!empty($edu['year'])) &nbsp;·&nbsp; {{ $edu['year'] }}@endif</p>
+                                @if(!empty($edu['cgpa']))
+                                    <span class="inline-block text-[11px] font-medium text-white px-2 py-0.5 rounded-full mt-1.5 bg-gray-700">CGPA {{ $edu['cgpa'] }}</span>
+                                @elseif(!empty($edu['grade']))
+                                    <span class="inline-block text-[11px] font-medium text-white px-2 py-0.5 rounded-full mt-1.5 bg-gray-700">GPA {{ $edu['grade'] }}</span>
+                                @endif
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+
+                @if(empty($forPdf) && !empty($resume['skills']['technical']))
+                <div x-show="atsMode" x-cloak class="mt-6 pt-6 border-t border-gray-200">
+                    <h3 class="text-xs font-bold uppercase tracking-[0.15em] font-ats mb-3">Skills & Competencies</h3>
+                    <p class="text-sm font-ats text-gray-800 leading-relaxed">
+                        <span class="font-semibold">Technical:</span> {{ implode(', ', $resume['skills']['technical']) }}.
+                        @if(!empty($resume['skills']['soft']))
+                        <span class="font-semibold">Soft Skills:</span> {{ implode(', ', $resume['skills']['soft']) }}.
+                        @endif
+                        @if(!empty($resume['skills']['languages']))
+                        <span class="font-semibold">Languages:</span> {{ implode(', ', $resume['skills']['languages']) }}.
+                        @endif
+                    </p>
+                </div>
+                @endif
+
+            </main>
         </div>
-        @endforeach
-      </div>
     </div>
-    @endif
-
-    <!-- Languages -->
-    @if(!empty($resume['skills']['languages']))
-    <div class="sidebar-section">
-      <div class="sidebar-section-title">Languages</div>
-      <div class="lang-list">
-        @foreach($resume['skills']['languages'] as $i => $lang)
-        <div class="lang-item">
-          <span contenteditable="true" spellcheck="false">{{ $lang }}</span>
-          <span class="lang-level">{{ $i === 0 ? 'Native' : ($i === 1 ? 'Fluent' : 'Intermediate') }}</span>
-        </div>
-        @endforeach
-      </div>
-    </div>
-    @endif
-
-  </div><!-- /sidebar -->
-
-  <!-- ── MAIN CONTENT ── -->
-  <div class="main-content">
-
-    <!-- Header -->
-    <div class="main-header">
-      <div class="main-name" contenteditable="true" spellcheck="false">{{ $resume['name'] }}</div>
-      @if(!empty($resume['experience'][0]['title']))
-        <div class="main-role" contenteditable="true" spellcheck="false">{{ $resume['experience'][0]['title'] }}@if(!empty($resume['experience'][0]['company'])) &nbsp;·&nbsp; {{ $resume['experience'][0]['company'] }}@endif</div>
-      @elseif(!empty($resume['education'][0]['degree']))
-        <div class="main-role" contenteditable="true" spellcheck="false">{{ $resume['education'][0]['degree'] }}@if(!empty($resume['education'][0]['school'])) &nbsp;·&nbsp; {{ $resume['education'][0]['school'] }}@endif</div>
-      @endif
-    </div>
-
-    <!-- Summary -->
-    @if(!empty($resume['summary']))
-    <div class="section">
-      <div class="section-title">Professional Summary</div>
-      <div class="summary-text" contenteditable="true" spellcheck="false">{{ $resume['summary'] }}</div>
-    </div>
-    @endif
-
-    <!-- Experience -->
-    @if(!empty($resume['experience']))
-    <div class="section">
-      <div class="section-title">Experience</div>
-      @foreach($resume['experience'] as $exp)
-      <div class="exp-item">
-        <div class="exp-header">
-          <div>
-            <div class="exp-title" contenteditable="true" spellcheck="false">{{ $exp['title'] ?? '' }}</div>
-            <div class="exp-company" contenteditable="true" spellcheck="false">{{ $exp['company'] ?? '' }}</div>
-          </div>
-          @if(!empty($exp['duration']))
-          <div class="exp-duration" contenteditable="true" spellcheck="false">{{ $exp['duration'] }}</div>
-          @endif
-        </div>
-        @if(!empty($exp['responsibilities']))
-        <ul class="exp-bullets">
-          @foreach($exp['responsibilities'] as $resp)
-          <li contenteditable="true" spellcheck="false">{{ $resp }}</li>
-          @endforeach
-        </ul>
-        @endif
-      </div>
-      @endforeach
-    </div>
-    @endif
-
-    <!-- Education -->
-    @if(!empty($resume['education']))
-    <div class="section">
-      <div class="section-title">Education</div>
-      <div class="edu-grid">
-        @foreach($resume['education'] as $edu)
-        <div class="edu-item">
-          <div class="edu-dot"></div>
-          <div>
-            @if(!empty($edu['degree']))
-              <div class="edu-degree" contenteditable="true" spellcheck="false">{{ $edu['degree'] }}@if(!empty($edu['major'])) in {{ $edu['major'] }}@endif</div>
-            @else
-              <div class="edu-degree" contenteditable="true" spellcheck="false">{{ $edu['level'] }}</div>
-            @endif
-            <div class="edu-school" contenteditable="true" spellcheck="false">{{ $edu['school'] ?? '' }}@if(!empty($edu['year'])) &nbsp;·&nbsp; {{ $edu['year'] }}@endif</div>
-            @if(!empty($edu['cgpa']))
-              <span class="edu-badge">CGPA {{ $edu['cgpa'] }}</span>
-            @elseif(!empty($edu['grade']))
-              <span class="edu-badge">GPA {{ $edu['grade'] }}</span>
-            @endif
-          </div>
-        </div>
-        @endforeach
-      </div>
-    </div>
-    @endif
-
-  </div><!-- /main-content -->
-</div><!-- /resume-page -->
-<script>
-// ── Initials sync ─────────────────────────────
-const mainNameEl = document.querySelector('.main-content .main-name');
-const sideNameEl = document.querySelector('.sidebar .sidebar-name');
-const initialsEl = document.getElementById('initials');
-
-</script>
 </body>
 </html>

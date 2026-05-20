@@ -38,7 +38,6 @@ class AnalyzerController extends Controller
                 ], 400);
             }
 
-            // Analyze with Gemini API
             $analysis = $this->analyzeWithGemini($cvText);
 
             // CHANGE 1: Store analysis in session
@@ -113,9 +112,9 @@ class AnalyzerController extends Controller
         return trim($text);
     }
 
-    private function analyzeWithGemini($cvText)
+    private function analyzeWithGemini(string $cvText): array
     {
-        $apiKey = env('GEMINI_API_KEY');
+        $apiKey = config('services.gemini.key');
 
         if (!$apiKey) {
             throw new Exception('GEMINI_API_KEY not configured in .env file');
@@ -124,40 +123,48 @@ class AnalyzerController extends Controller
         $prompt = $this->buildAnalysisPrompt($cvText);
 
         try {
-            $response = Http::timeout(30)->post(
-                "https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key={$apiKey}",
+            $response = Http::timeout(60)->post(
+                "https://generativelanguage.googleapis.com/v1/models/gemini-3.5-flash:generateContent?key={$apiKey}",
                 [
                     'contents' => [
                         [
                             'parts' => [
-                                ['text' => $prompt]
-                            ]
-                        ]
+                                ['text' => $prompt],
+                            ],
+                        ],
                     ],
                     'generationConfig' => [
                         'temperature' => 0.7,
                         'maxOutputTokens' => 2048,
-                    ]
+                    ],
                 ]
             );
 
             if ($response->failed()) {
-                throw new Exception('Gemini API request failed: ' . $response->body());
+                $body = $response->json();
+                $msg = $body['error']['message'] ?? $response->body();
+                Log::error('Gemini API failed', ['response' => $msg]);
+
+                throw new Exception('Service temporarily unavailable. Please try again later.');
             }
 
-            $result = $response->json();
+            $generatedText = $this->extractGeneratedText($response->json());
 
-            // Extract the generated text
-            $generatedText = $result['candidates'][0]['content']['parts'][0]['text'] ?? '';
+            if (empty($generatedText)) {
+                $finishReason = $response->json('candidates.0.finishReason');
+                Log::error('Gemini empty content', [
+                    'finishReason' => $finishReason,
+                    'response'     => $response->json(),
+                ]);
+                throw new Exception('Gemini returned an empty response.');
+            }
 
-            // Parse the structured response
             return $this->parseGeminiResponse($generatedText);
         } catch (Exception $e) {
             Log::error('Gemini API Error: ' . $e->getMessage());
             throw $e;
         }
     }
-
     private function buildAnalysisPrompt($cvText)
     {
         return <<<PROMPT
@@ -207,47 +214,74 @@ Be specific, constructive, and actionable in your feedback.
 PROMPT;
     }
 
-    private function parseGeminiResponse($text)
+    private function extractGeneratedText(?array $result): string
     {
-        // Initialize default structure
+        if (empty($result['candidates'][0]['content']['parts'])) {
+            return '';
+        }
+
+        $text = '';
+        foreach ($result['candidates'][0]['content']['parts'] as $part) {
+            if (!empty($part['text'])) {
+                $text .= $part['text'];
+            }
+        }
+
+        return trim($text);
+    }
+
+    private function normalizeGeminiText(string $text): string
+    {
+        // Strip markdown bold/italic and heading markers so section regexes match reliably
+        $text = preg_replace('/\*\*([^*]+)\*\*/', '$1', $text);
+        $text = preg_replace('/\*([^*]+)\*/', '$1', $text);
+        $text = preg_replace('/^#+\s*/m', '', $text);
+
+        return $text;
+    }
+
+    private function parseGeminiResponse(string $text): array
+    {
         $analysis = [
-            'rating' => 0,
-            'strengths' => [],
-            'improvements' => [],
-            'structure_feedback' => '',
-            'content_feedback' => '',
-            'recommendations' => []
+            'rating'              => 0,
+            'strengths'           => [],
+            'improvements'        => [],
+            'structure_feedback'  => '',
+            'content_feedback'    => '',
+            'recommendations'     => [],
         ];
 
+        $text = $this->normalizeGeminiText($text);
+
         try {
-            // Extract rating
-            if (preg_match('/RATING:\s*(\d+)/i', $text, $matches)) {
-                $analysis['rating'] = (int) $matches[1];
+            if (preg_match('/RATING:\s*(\d+)(?:\s*\/\s*10)?/i', $text, $matches)) {
+                $analysis['rating'] = min(10, max(1, (int) $matches[1]));
             }
 
-            // Extract strengths
-            if (preg_match('/STRENGTHS:(.*?)(?=AREAS FOR IMPROVEMENT:|$)/is', $text, $matches)) {
+            if (preg_match('/STRENGTHS:\s*(.*?)(?=\n\s*(?:AREAS FOR IMPROVEMENT|IMPROVEMENTS|WEAKNESSES):|$)/is', $text, $matches)) {
                 $analysis['strengths'] = $this->extractBulletPoints($matches[1]);
             }
 
-            // Extract improvements
-            if (preg_match('/AREAS FOR IMPROVEMENT:(.*?)(?=STRUCTURE FEEDBACK:|$)/is', $text, $matches)) {
+            if (preg_match('/(?:AREAS FOR IMPROVEMENT|IMPROVEMENTS|WEAKNESSES):\s*(.*?)(?=\n\s*STRUCTURE FEEDBACK:|$)/is', $text, $matches)) {
                 $analysis['improvements'] = $this->extractBulletPoints($matches[1]);
             }
 
-            // Extract structure feedback
-            if (preg_match('/STRUCTURE FEEDBACK:(.*?)(?=CONTENT FEEDBACK:|$)/is', $text, $matches)) {
-                $analysis['structure_feedback'] = trim($matches[1]);
+            if (preg_match('/STRUCTURE FEEDBACK:\s*(.*?)(?=\n\s*CONTENT FEEDBACK:|$)/is', $text, $matches)) {
+                $analysis['structure_feedback'] = $this->cleanParagraph($matches[1]);
             }
 
-            // Extract content feedback
-            if (preg_match('/CONTENT FEEDBACK:(.*?)(?=RECOMMENDATIONS:|$)/is', $text, $matches)) {
-                $analysis['content_feedback'] = trim($matches[1]);
+            if (preg_match('/CONTENT FEEDBACK:\s*(.*?)(?=\n\s*RECOMMENDATIONS:|$)/is', $text, $matches)) {
+                $analysis['content_feedback'] = $this->cleanParagraph($matches[1]);
             }
 
-            // Extract recommendations
-            if (preg_match('/RECOMMENDATIONS:(.*?)$/is', $text, $matches)) {
+            if (preg_match('/RECOMMENDATIONS:\s*(.*?)$/is', $text, $matches)) {
                 $analysis['recommendations'] = $this->extractBulletPoints($matches[1]);
+            }
+
+            if ($analysis['rating'] === 0 && $analysis['strengths'] === [] && $analysis['structure_feedback'] === '') {
+                Log::warning('Gemini response did not match expected format', [
+                    'preview' => substr($text, 0, 500),
+                ]);
             }
         } catch (Exception $e) {
             Log::error('Response Parsing Error: ' . $e->getMessage());
@@ -256,15 +290,32 @@ PROMPT;
         return $analysis;
     }
 
-    private function extractBulletPoints($text)
+    private function cleanParagraph(string $text): string
+    {
+        $text = trim(preg_replace('/\s+/', ' ', $text));
+
+        return trim($text, '* ');
+    }
+
+    private function extractBulletPoints(string $text): array
     {
         $points = [];
-        $lines = explode("\n", $text);
 
-        foreach ($lines as $line) {
+        foreach (explode("\n", $text) as $line) {
             $line = trim($line);
-            // Match lines starting with -, *, or numbers
-            if (preg_match('/^[-*\d.]+\s*(.+)$/', $line, $matches)) {
+            if ($line === '' || $line === '*' || preg_match('/^\*+$/', $line)) {
+                continue;
+            }
+
+            if (preg_match('/^[-•*]\s+(.+)$/', $line, $matches)) {
+                $point = trim($matches[1], '* ');
+                if ($point !== '') {
+                    $points[] = $point;
+                }
+                continue;
+            }
+
+            if (preg_match('/^\d+[.)]\s+(.+)$/', $line, $matches)) {
                 $points[] = trim($matches[1]);
             }
         }
