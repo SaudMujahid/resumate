@@ -367,7 +367,6 @@ class ResumeBuilderController extends Controller
         try {
             $html = view("resume.$template", [
                 'resume' => $resume,
-                'forPdf' => true,
             ])->render();
 
             $path = storage_path('app/public/resume.pdf');

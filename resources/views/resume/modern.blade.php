@@ -5,11 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{ $resume['name'] }} — Resume</title>
 
-@if(empty($forPdf))
-    @vite(['resources/css/app.css', 'resources/js/resume-modern.js'])
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
-@endif
+@vite(['resources/css/app.css', 'resources/js/resume-modern.js'])
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
 
 <style>
     [x-cloak] { display: none !important; }
@@ -27,116 +25,16 @@
         .no-print { display: none !important; }
         body { background: white !important; padding: 0 !important; }
         .resume-shadow { box-shadow: none !important; }
+        .resume-page-wrap { padding: 0 !important; }
     }
-
-    @if(!empty($forPdf))
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-        font-family: 'DejaVu Sans', sans-serif;
-        background: white;
-        padding: 0;
-    }
-    .resume-pdf-wrap {
-        max-width: 860px;
-        margin: 0 auto;
-        display: grid;
-        grid-template-columns: 260px 1fr;
-        background: white;
-    }
-    .resume-pdf-sidebar {
-        background: hsl(220, 40%, 18%);
-        color: white;
-        padding: 32px 26px;
-        display: flex;
-        flex-direction: column;
-        gap: 28px;
-    }
-    .resume-pdf-main { padding: 40px; background: white; }
-    .resume-pdf-sidebar h2,
-    .resume-pdf-main h1 { font-family: 'DejaVu Serif', serif; }
-    @endif
 </style>
 </head>
 <body class="bg-gray-100 min-h-screen font-sans-custom"
-      @if(empty($forPdf))
       x-data="resumeApp()"
       x-init="init()"
-      :class="fontClass"
-      @endif>
+      :class="fontClass">
 
-    @if(empty($forPdf))
-    {{-- Toolbar --}}
-    <div class="no-print fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3 flex-wrap">
-
-            <a href="{{ route('resumebuilder') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                Back
-            </a>
-
-            <div class="w-px h-6 bg-gray-300"></div>
-
-            <label class="inline-flex items-center gap-2 cursor-pointer select-none">
-                <input type="checkbox" x-model="atsMode" @change="saveSettings" class="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
-                <span class="text-sm font-semibold" :class="atsMode ? 'text-emerald-700' : 'text-gray-700'">
-                    <span x-show="!atsMode">ATS Safe Mode</span>
-                    <span x-show="atsMode" x-cloak class="flex items-center gap-1">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        ATS Mode Active
-                    </span>
-                </span>
-            </label>
-
-            <div class="w-px h-6 bg-gray-300"></div>
-
-            <div class="flex items-center gap-2">
-                <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">Color</span>
-                <template x-for="h in presets" :key="h">
-                    <button type="button" @click="setHue(h)"
-                            class="w-6 h-6 rounded-full border-2 transition-transform hover:scale-110"
-                            :class="hue == h ? 'border-gray-800' : 'border-transparent'"
-                            :style="`background: hsl(${h}, 70%, 45%)`"></button>
-                </template>
-                <div class="relative flex items-center gap-1 ml-1">
-                    <input type="color" x-model="customColor" @input="updateCustomColor" class="w-7 h-7 rounded-full overflow-hidden border-0 p-0 cursor-pointer">
-                    <span class="text-xs text-gray-500">Custom</span>
-                </div>
-            </div>
-
-            <div class="w-px h-6 bg-gray-300"></div>
-
-            <select x-model="fontFamily" @change="saveSettings" class="text-sm border-gray-300 rounded-md shadow-sm py-1">
-                <option value="sans">DM Sans</option>
-                <option value="serif">DM Serif</option>
-                <option value="mono">Monospace</option>
-            </select>
-
-            <select x-model="spacing" @change="saveSettings" class="text-sm border-gray-300 rounded-md shadow-sm py-1">
-                <option value="compact">Compact</option>
-                <option value="normal">Normal</option>
-                <option value="spacious">Spacious</option>
-            </select>
-
-            <template x-if="!atsMode">
-                <div class="flex items-center gap-2">
-                    <span class="text-xs text-gray-500">Sidebar</span>
-                    <input type="range" min="200" max="320" x-model.number="sidebarWidth" @change="saveSettings" class="w-20 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                </div>
-            </template>
-
-            <div class="flex-1"></div>
-
-            <button type="button" @click="window.print()" class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                Print
-            </button>
-            <a href="{{ route('resume.download') }}" class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white rounded-lg hover:opacity-90 transition shadow-sm" :style="`background: hsl(${hue}, 70%, 45%)`">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                Download PDF
-            </a>
-        </div>
-    </div>
-    @endif
+    <x-resume-toolbar template="modern" />
 
     @php
         $headlineTitle = $resume['experience'][0]['title'] ?? ($resume['education'][0]['degree'] ?? 'Student');
@@ -147,24 +45,18 @@
             : strtoupper(mb_substr($nameParts[0] ?? 'U', 0, 1));
     @endphp
 
-    <div class="{{ empty($forPdf) ? 'pt-24 pb-12 px-4' : 'py-0 px-0' }}">
-        <div class="mx-auto bg-white resume-shadow overflow-hidden transition-all duration-300 {{ !empty($forPdf) ? 'resume-pdf-wrap' : '' }}"
-             @if(empty($forPdf))
-             :style="layoutStyle"
-             @endif>
+    <div class="pt-24 pb-12 px-4 resume-page-wrap">
+        <div class="mx-auto bg-white resume-shadow overflow-hidden transition-all duration-300"
+             :style="layoutStyle">
 
             {{-- Sidebar --}}
-            <aside class="text-white {{ !empty($forPdf) ? 'resume-pdf-sidebar' : '' }}"
-                   @if(empty($forPdf))
-                   :class="atsMode ? 'hidden' : 'flex flex-col ' + spacingClasses.sidebar"
-                   :style="`background: hsl(${hue}, 40%, 18%)`"
-                   @else
-                   style="background: hsl(220, 40%, 18%)"
-                   @endif>
+            <aside class="text-white flex flex-col"
+                   :class="atsMode ? 'hidden' : spacingClasses.sidebar"
+                   :style="`background: hsl(${hue}, 40%, 18%)`">
 
                 <div class="flex flex-col items-center gap-3">
                     <div class="w-20 h-20 rounded-full flex items-center justify-center text-3xl text-white font-serif-custom shadow-lg"
-                         @if(empty($forPdf)) :style="`background: hsl(${hue}, 70%, 45%)`" @else style="background: hsl(220, 70%, 45%)" @endif>
+                         :style="`background: hsl(${hue}, 70%, 45%)`">
                         {{ $initials }}
                     </div>
                     <h2 class="font-serif-custom text-xl text-center leading-tight">{{ $resume['name'] }}</h2>
@@ -193,11 +85,7 @@
                         <div>
                             <div class="text-xs mb-1.5 opacity-90">{{ $skill }}</div>
                             <div class="h-1 bg-white/10 rounded-full overflow-hidden">
-                                @if(empty($forPdf))
                                 <div class="h-full rounded-full transition-all duration-500" :style="`width: {{ $pct }}%; background: hsl(${hue}, 70%, 65%)`"></div>
-                                @else
-                                <div class="h-full rounded-full" style="width: {{ $pct }}%; background: hsl(220, 70%, 65%)"></div>
-                                @endif
                             </div>
                         </div>
                         @endforeach
@@ -232,8 +120,8 @@
             </aside>
 
             {{-- Main --}}
-            <main class="bg-white flex flex-col {{ !empty($forPdf) ? 'resume-pdf-main' : '' }}"
-                  @if(empty($forPdf)) :class="[atsMode ? 'max-w-[800px] mx-auto p-10' : spacingClasses.main + ' p-10']" @endif>
+            <main class="bg-white flex flex-col"
+                  :class="atsMode ? 'max-w-[800px] mx-auto p-10' : spacingClasses.main">
 
                 <div class="border-b-2 border-gray-800 pb-5 mb-6">
                     <h1 class="text-3xl leading-tight text-gray-900 font-serif-custom">{{ $resume['name'] }}</h1>
@@ -318,7 +206,7 @@
                 </div>
                 @endif
 
-                @if(empty($forPdf) && !empty($resume['skills']['technical']))
+                @if(!empty($resume['skills']['technical']))
                 <div x-show="atsMode" x-cloak class="mt-6 pt-6 border-t border-gray-200">
                     <h3 class="text-xs font-bold uppercase tracking-[0.15em] font-ats mb-3">Skills & Competencies</h3>
                     <p class="text-sm font-ats text-gray-800 leading-relaxed">
@@ -336,5 +224,70 @@
             </main>
         </div>
     </div>
+
+    <script>
+    function resumeApp() {
+        return {
+            hue: 220,
+            atsMode: false,
+            fontFamily: 'sans',
+            spacing: 'normal',
+            sidebarWidth: 260,
+
+            get fontClass() {
+                if (this.atsMode) return 'font-ats';
+                return {
+                    'sans': 'font-sans-custom',
+                    'serif': 'font-serif-custom',
+                    'mono': 'font-mono-custom'
+                }[this.fontFamily] || 'font-sans-custom';
+            },
+
+get sidebarClass() {
+    if (this.atsMode) return 'hidden';
+    return 'flex flex-col ' + this.spacingClasses.sidebar;
+},
+
+get mainClass() {
+    const map = {
+        compact: 'max-w-[800px] mx-auto p-6 gap-5',
+        normal:  'max-w-[800px] mx-auto p-10 gap-6',
+        spacious:'max-w-[800px] mx-auto p-12 gap-8'
+    };
+    return this.atsMode
+        ? (map[this.spacing] || map.normal)
+        : this.spacingClasses.main;
+},
+            get layoutStyle() {
+                if (this.atsMode) {
+                    return 'max-width: 800px; margin-left: auto; margin-right: auto;';
+                }
+                return `max-width: 860px; display: grid; grid-template-columns: ${this.sidebarWidth}px 1fr;`;
+            },
+
+            init() {
+                const saved = localStorage.getItem('resumeSettings');
+                if (saved) {
+                    const s = JSON.parse(saved);
+                    this.hue = s.hue ?? 220;
+                    this.atsMode = s.atsMode ?? false;
+                    this.fontFamily = s.fontFamily ?? 'sans';
+                    this.spacing = s.spacing ?? 'normal';
+                    this.sidebarWidth = s.sidebarWidth ?? 260;
+                }
+            },
+
+            saveSettings() {
+                localStorage.setItem('resumeSettings', JSON.stringify({
+                    hue: this.hue,
+                    atsMode: this.atsMode,
+                    fontFamily: this.fontFamily,
+                    spacing: this.spacing,
+                    sidebarWidth: this.sidebarWidth
+                }));
+            }
+        }
+    }
+    </script>
 </body>
 </html>

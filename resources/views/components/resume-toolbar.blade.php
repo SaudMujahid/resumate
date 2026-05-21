@@ -101,7 +101,11 @@ $defaultHex    = match($template) {
   @else border-color: #9ca3af; background: #f9fafb;
   @endif
 }
-.rt-btn-primary { border-color: transparent !important; color: white !important; }
+.rt-btn-primary {
+  border-color: transparent !important;
+  color: white !important;
+  background: #4b5563;
+}
 .rt-select {
   font-size: 12px; font-weight: 500;
   padding: 5px 10px; border-radius: 7px;
@@ -123,6 +127,17 @@ $defaultHex    = match($template) {
 .rt-ats-toggle input[type=checkbox] { width: 15px; height: 15px; cursor: pointer; accent-color: #059669; }
 .rt-ats-label { font-size: 12.5px; font-weight: 600; color: {{ $isDarkToolbar ? 'white' : '#374151' }}; }
 .rt-ats-label.ats-on { color: #059669; }
+.rt-ats-help {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 16px; height: 16px; border-radius: 50%; cursor: help;
+  margin-left: 4px;
+  background: {{ $isDarkToolbar ? 'rgba(255,255,255,.2)' : '#e5e7eb' }};
+  color: {{ $isDarkToolbar ? 'white' : '#6b7280' }};
+  transition: background .15s;
+}
+.rt-ats-help:hover {
+  background: {{ $isDarkToolbar ? 'rgba(255,255,255,.35)' : '#d1d5db' }};
+}
 .rt-slider-wrap { display: flex; align-items: center; gap: 7px; }
 .rt-slider {
   width: 72px; height: 4px; border-radius: 9999px;
@@ -158,11 +173,35 @@ $defaultHex    = match($template) {
         ATS Mode Active
       </span>
     </span>
+    <span class="rt-ats-help" title="ATS (Applicant Tracking Systems) scan resumes before recruiters see them. Safe Mode strips colors, graphics, and complex layouts so your resume is read correctly by these automated systems.">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    </span>
   </label>
 
   <div class="rt-sep"></div>
-  @endif
 
+  {{-- Colour swatches — hidden in ATS mode --}}
+  <template x-if="!atsMode">
+    <div style="display: contents;">
+      <span class="rt-label">{{ $pickerLabel }}</span>
+      <div class="rt-swatches" id="rt-swatches">
+        @foreach($swatches as $sw)
+        <div
+          class="rt-swatch {{ !empty($sw['active']) ? 'active' : '' }}"
+          style="background:{{ $sw['bg'] }}"
+          title="{{ $sw['label'] }}"
+          data-vars="{{ json_encode($sw['vars']) }}"
+        ></div>
+        @endforeach
+      </div>
+      <div class="rt-picker-wrap">
+        <input type="color" id="rt-custom" value="{{ $defaultHex }}" title="Custom colour">
+        <span class="rt-label">Custom</span>
+      </div>
+      <div class="rt-sep"></div>
+    </div>
+  </template>
+  @else
   {{-- Colour swatches --}}
   <span class="rt-label">{{ $pickerLabel }}</span>
   <div class="rt-swatches" id="rt-swatches">
@@ -175,22 +214,22 @@ $defaultHex    = match($template) {
     ></div>
     @endforeach
   </div>
-
-  {{-- Custom picker --}}
   <div class="rt-picker-wrap">
     <input type="color" id="rt-custom" value="{{ $defaultHex }}" title="Custom colour">
     <span class="rt-label">Custom</span>
   </div>
-
   <div class="rt-sep"></div>
+  @endif
 
-  @if($hasExtras)
-  {{-- Font --}}
-  <select x-model="fontFamily" @change="saveSettings" class="rt-select">
-    <option value="sans">DM Sans</option>
-    <option value="serif">DM Serif</option>
-    <option value="mono">Monospace</option>
-  </select>
+@if($hasExtras)
+  {{-- Font — hidden in ATS mode because ATS forces standard fonts --}}
+  <template x-if="!atsMode">
+    <select x-model="fontFamily" @change="saveSettings" class="rt-select">
+      <option value="sans">DM Sans</option>
+      <option value="serif">DM Serif</option>
+      <option value="mono">Monospace</option>
+    </select>
+  </template>
 
   {{-- Spacing --}}
   <select x-model="spacing" @change="saveSettings" class="rt-select">
@@ -265,7 +304,12 @@ $defaultHex    = match($template) {
   }
 
   const firstActive = document.querySelector('.rt-swatch.active');
-  if (firstActive) applyVars(JSON.parse(firstActive.dataset.vars));
+  if (firstActive) {
+    applyVars(JSON.parse(firstActive.dataset.vars));
+  } else {
+    // Fallback when swatches are hidden (e.g. ATS mode)
+    syncDownloadBtn({ '--hue': '220', '--accent': '#4b5563', '--stripe': '#c9a84c' });
+  }
 
   document.querySelectorAll('.rt-swatch').forEach(sw => {
     sw.addEventListener('click', () => {
