@@ -9,42 +9,23 @@
 @props(['template' => 'modern'])
 
 @php
-/*
- * Each swatch carries a "vars" map: CSS-variable → value.
- * The JS reads this map and sets every entry on :root.
- * This is the single source of truth for all three systems.
- *
- * Modern      : { "--hue": "220" }
- * Chronological: { "--accent": "#1a3a5c", "--stripe": "#c9a84c",
- *                  "--toolbar-bg": "#1a3a5c" }
- * Minimal     : { "--accent": "#2d6a4f", "--accent-pale": "#edf4f0" }
- */
 $swatchSets = [
-
     'modern' => [
-        ['vars' => ['--hue' => '220'], 'bg' => 'hsl(220,70%,45%)', 'label' => 'Classic Blue',  'active' => true],
+        ['vars' => ['--hue' => '220'], 'bg' => 'hsl(220,70%,45%)', 'label' => 'Classic Blue', 'active' => true],
         ['vars' => ['--hue' => '162'], 'bg' => 'hsl(162,60%,38%)', 'label' => 'Emerald'],
         ['vars' => ['--hue' => '270'], 'bg' => 'hsl(270,55%,45%)', 'label' => 'Violet'],
         ['vars' => ['--hue' => '340'], 'bg' => 'hsl(340,65%,42%)', 'label' => 'Rose'],
         ['vars' => ['--hue' => '25'],  'bg' => 'hsl(25,75%,45%)',  'label' => 'Amber'],
         ['vars' => ['--hue' => '195'], 'bg' => 'hsl(195,70%,38%)', 'label' => 'Cyan'],
     ],
-
     'chronological' => [
-        ['vars' => ['--accent' => '#1a3a5c', '--stripe' => '#c9a84c', '--toolbar-bg' => '#1a3a5c'],
-         'bg' => '#1a3a5c', 'label' => 'Navy Gold',   'active' => true],
-        ['vars' => ['--accent' => '#1e3a2f', '--stripe' => '#52a77a', '--toolbar-bg' => '#1e3a2f'],
-         'bg' => '#1e3a2f', 'label' => 'Forest'],
-        ['vars' => ['--accent' => '#3b1a5c', '--stripe' => '#a87cd4', '--toolbar-bg' => '#3b1a5c'],
-         'bg' => '#3b1a5c', 'label' => 'Plum'],
-        ['vars' => ['--accent' => '#5c1a1a', '--stripe' => '#d47c7c', '--toolbar-bg' => '#5c1a1a'],
-         'bg' => '#5c1a1a', 'label' => 'Burgundy'],
-        ['vars' => ['--accent' => '#1a3a50', '--stripe' => '#4fc3d4', '--toolbar-bg' => '#1a3a50'],
-         'bg' => '#1a3a50', 'label' => 'Steel Teal'],
-        ['vars' => ['--accent' => '#2a2a2a', '--stripe' => '#e0a030', '--toolbar-bg' => '#2a2a2a'],
-         'bg' => '#2a2a2a', 'label' => 'Charcoal'],
+        ['vars' => ['--accent' => '#1a3a5c', '--stripe' => '#c9a84c', '--toolbar-bg' => '#1a3a5c'], 'bg' => '#1a3a5c', 'label' => 'Navy Gold',  'active' => true],
+        ['vars' => ['--accent' => '#1e3a2f', '--stripe' => '#52a77a', '--toolbar-bg' => '#1e3a2f'], 'bg' => '#1e3a2f', 'label' => 'Forest'],
+        ['vars' => ['--accent' => '#3b1a5c', '--stripe' => '#a87cd4', '--toolbar-bg' => '#3b1a5c'], 'bg' => '#3b1a5c', 'label' => 'Plum'],
+        ['vars' => ['--accent' => '#5c1a1a', '--stripe' => '#d47c7c', '--toolbar-bg' => '#5c1a1a'], 'bg' => '#5c1a1a', 'label' => 'Burgundy'],
+        ['vars' => ['--accent' => '#1a3a50', '--stripe' => '#4fc3d4', '--toolbar-bg' => '#1a3a50'], 'bg' => '#1a3a50', 'label' => 'Steel Teal'],
+        ['vars' => ['--accent' => '#2a2a2a', '--stripe' => '#e0a030', '--toolbar-bg' => '#2a2a2a'], 'bg' => '#2a2a2a', 'label' => 'Charcoal'],
     ],
-
     'minimal' => [
         ['vars' => ['--accent' => '#2d6a4f', '--accent-pale' => '#edf4f0'], 'bg' => '#2d6a4f', 'label' => 'Sage',        'active' => true],
         ['vars' => ['--accent' => '#1e4d8c', '--accent-pale' => '#edf2fb'], 'bg' => '#1e4d8c', 'label' => 'Slate Blue'],
@@ -53,135 +34,137 @@ $swatchSets = [
         ['vars' => ['--accent' => '#3a5c6b', '--accent-pale' => '#edf2f4'], 'bg' => '#3a5c6b', 'label' => 'Steel'],
         ['vars' => ['--accent' => '#4a4a4a', '--accent-pale' => '#f2f2f2'], 'bg' => '#4a4a4a', 'label' => 'Charcoal'],
     ],
-
 ];
 
 $swatches      = $swatchSets[$template] ?? $swatchSets['modern'];
 $isDarkToolbar = $template === 'chronological';
 $swatchShape   = $template === 'modern' ? 'border-radius:50%' : 'border-radius:4px';
-$labelSets     = ['modern' => 'Color', 'chronological' => 'Theme', 'minimal' => 'Accent'];
-$pickerLabel   = $labelSets[$template] ?? 'Color';
-
-// Default custom-picker hex (matches first swatch)
+$pickerLabel   = ['modern' => 'Color', 'chronological' => 'Theme', 'minimal' => 'Accent'][$template] ?? 'Color';
+$hasExtras     = $template === 'modern'; // ATS toggle, font, spacing, sidebar
 $defaultHex    = match($template) {
-    'modern'         => '#2563eb',
-    'chronological'  => '#1a3a5c',
-    'minimal'        => '#2d6a4f',
+    'chronological' => '#1a3a5c',
+    'minimal'       => '#2d6a4f',
+    default         => '#2563eb',
 };
 @endphp
 
-{{-- ════════════════════════════════════════════════ STYLES ══ --}}
 <style>
 .rt-bar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 999;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 999;
   padding: 10px 24px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  flex-wrap: wrap;
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
   @if($isDarkToolbar)
-  background: var(--toolbar-bg, var(--accent));
-  box-shadow: 0 3px 14px rgba(0,0,0,.25);
+    background: var(--toolbar-bg, var(--accent));
+    box-shadow: 0 3px 14px rgba(0,0,0,.25);
   @else
-  background: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
-  box-shadow: 0 2px 12px rgba(0,0,0,.07);
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 2px 12px rgba(0,0,0,.07);
   @endif
 }
-.rt-sep {
-  width: 1px; height: 26px;
-  background: {{ $isDarkToolbar ? 'rgba(255,255,255,.2)' : '#e5e7eb' }};
-}
+.rt-sep { width: 1px; height: 26px; background: {{ $isDarkToolbar ? 'rgba(255,255,255,.2)' : '#e5e7eb' }}; }
 .rt-label {
-  font-size: 10.5px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .1em;
+  font-size: 10.5px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .1em;
   color: {{ $isDarkToolbar ? 'rgba(255,255,255,.5)' : '#9ca3af' }};
 }
 .rt-swatches { display: flex; gap: 7px; align-items: center; }
 .rt-swatch {
-  width: 24px; height: 24px;
-  cursor: pointer;
+  width: 24px; height: 24px; cursor: pointer;
   border: 2px solid transparent;
   transition: transform .15s, border-color .15s;
   {{ $swatchShape }};
 }
 .rt-swatch:hover { transform: scale(1.18); }
-.rt-swatch.active {
-  border-color: {{ $isDarkToolbar ? 'white' : '#374151' }};
-}
+.rt-swatch.active { border-color: {{ $isDarkToolbar ? 'white' : '#374151' }}; }
 .rt-picker-wrap { display: flex; align-items: center; gap: 6px; }
 .rt-picker-wrap input[type=color] {
-  width: 24px; height: 24px;
-  padding: 0;
-  background: none;
-  cursor: pointer;
+  width: 24px; height: 24px; padding: 0;
+  background: none; cursor: pointer;
   {{ $swatchShape }};
   border: {{ $isDarkToolbar ? '2px solid rgba(255,255,255,.35)' : '1.5px solid #d1d5db' }};
 }
 .rt-btn {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 7px 15px;
-  border-radius: 7px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  text-decoration: none;
-  transition: all .15s;
-  white-space: nowrap;
+  display: flex; align-items: center; gap: 7px;
+  padding: 7px 15px; border-radius: 7px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; text-decoration: none;
+  transition: all .15s; white-space: nowrap;
   @if($isDarkToolbar)
-  border: 1.5px solid rgba(255,255,255,.28);
-  background: transparent;
-  color: white;
+    border: 1.5px solid rgba(255,255,255,.28); background: transparent; color: white;
   @else
-  border: 1.5px solid #e5e7eb;
-  background: white;
-  color: #374151;
+    border: 1.5px solid #e5e7eb; background: white; color: #374151;
   @endif
 }
 .rt-btn:hover {
-  @if($isDarkToolbar)
-  background: rgba(255,255,255,.12);
-  @else
-  border-color: #9ca3af; background: #f9fafb;
+  @if($isDarkToolbar) background: rgba(255,255,255,.12);
+  @else border-color: #9ca3af; background: #f9fafb;
   @endif
 }
-/* Primary (Download) button — color injected by JS on load */
-.rt-btn-primary {
-  border-color: transparent !important;
-  color: white !important;
+.rt-btn-primary { border-color: transparent !important; color: white !important; }
+.rt-select {
+  font-size: 12px; font-weight: 500;
+  padding: 5px 10px; border-radius: 7px;
+  cursor: pointer; outline: none; transition: all .15s;
+  @if($isDarkToolbar)
+    background: rgba(255,255,255,.1);
+    border: 1.5px solid rgba(255,255,255,.25);
+    color: white;
+  @else
+    background: white; border: 1.5px solid #e5e7eb; color: #374151;
+  @endif
+}
+.rt-select:hover {
+  @if($isDarkToolbar) background: rgba(255,255,255,.18);
+  @else border-color: #9ca3af;
+  @endif
+}
+.rt-ats-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
+.rt-ats-toggle input[type=checkbox] { width: 15px; height: 15px; cursor: pointer; accent-color: #059669; }
+.rt-ats-label { font-size: 12.5px; font-weight: 600; color: {{ $isDarkToolbar ? 'white' : '#374151' }}; }
+.rt-ats-label.ats-on { color: #059669; }
+.rt-slider-wrap { display: flex; align-items: center; gap: 7px; }
+.rt-slider {
+  width: 72px; height: 4px; border-radius: 9999px;
+  appearance: none; cursor: pointer;
+  background: {{ $isDarkToolbar ? 'rgba(255,255,255,.2)' : '#e5e7eb' }};
 }
 .rt-hint {
-  margin-left: auto;
-  font-size: 11.5px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
+  margin-left: auto; font-size: 11.5px;
+  display: flex; align-items: center; gap: 5px; font-weight: 300;
   color: {{ $isDarkToolbar ? 'rgba(255,255,255,.4)' : '#9ca3af' }};
-  font-weight: 300;
 }
+@media print { .rt-bar { display: none !important; } }
 </style>
 
-{{-- ════════════════════════════════════════════════ HTML ═══ --}}
 <div class="rt-bar" id="rt-bar">
 
   {{-- Back --}}
   <a href="{{ route('resumebuilder') }}" class="rt-btn">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-      <polyline points="15 18 9 12 15 6"/>
-    </svg>
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
     Back
   </a>
 
   <div class="rt-sep"></div>
-  <span class="rt-label">{{ $pickerLabel }}</span>
 
-  {{-- Swatches --}}
+  @if($hasExtras)
+  {{-- ATS Safe Mode --}}
+  <label class="rt-ats-toggle">
+    <input type="checkbox" x-model="atsMode" @change="saveSettings">
+    <span class="rt-ats-label" :class="atsMode ? 'ats-on' : ''">
+      <span x-show="!atsMode">ATS Safe Mode</span>
+      <span x-show="atsMode" x-cloak style="display:flex;align-items:center;gap:5px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        ATS Mode Active
+      </span>
+    </span>
+  </label>
+
+  <div class="rt-sep"></div>
+  @endif
+
+  {{-- Colour swatches --}}
+  <span class="rt-label">{{ $pickerLabel }}</span>
   <div class="rt-swatches" id="rt-swatches">
     @foreach($swatches as $sw)
     <div
@@ -193,13 +176,39 @@ $defaultHex    = match($template) {
     @endforeach
   </div>
 
-  {{-- Custom color picker --}}
+  {{-- Custom picker --}}
   <div class="rt-picker-wrap">
     <input type="color" id="rt-custom" value="{{ $defaultHex }}" title="Custom colour">
     <span class="rt-label">Custom</span>
   </div>
 
   <div class="rt-sep"></div>
+
+  @if($hasExtras)
+  {{-- Font --}}
+  <select x-model="fontFamily" @change="saveSettings" class="rt-select">
+    <option value="sans">DM Sans</option>
+    <option value="serif">DM Serif</option>
+    <option value="mono">Monospace</option>
+  </select>
+
+  {{-- Spacing --}}
+  <select x-model="spacing" @change="saveSettings" class="rt-select">
+    <option value="compact">Compact</option>
+    <option value="normal">Normal</option>
+    <option value="spacious">Spacious</option>
+  </select>
+
+  {{-- Sidebar width — hidden in ATS mode --}}
+  <template x-if="!atsMode">
+    <div class="rt-slider-wrap">
+      <span class="rt-label">Sidebar</span>
+      <input type="range" min="200" max="320" x-model.number="sidebarWidth" @change="saveSettings" class="rt-slider">
+    </div>
+  </template>
+
+  <div class="rt-sep"></div>
+  @endif
 
   {{-- Print --}}
   <button class="rt-btn" onclick="window.print()">
@@ -230,50 +239,34 @@ $defaultHex    = match($template) {
   </div>
 </div>
 
-{{-- ════════════════════════════════════════════════ SCRIPT ══ --}}
 <script>
 (function () {
-  const TEMPLATE     = @json($template);
-  const IS_DARK_BAR  = @json($isDarkToolbar);
-  const root         = document.documentElement;
-  const bar          = document.getElementById('rt-bar');
-  const dlBtn        = document.getElementById('rt-dl');
+  const TEMPLATE    = @json($template);
+  const root        = document.documentElement;
+  const bar         = document.getElementById('rt-bar');
+  const dlBtn       = document.getElementById('rt-dl');
 
-  /* ── Apply a vars map to :root and update reactive UI ─── */
   function applyVars(vars) {
     for (const [prop, val] of Object.entries(vars)) {
-      if (prop === '--toolbar-bg') {
-        // Chronological: toolbar itself changes colour
-        if (bar) bar.style.background = val;
-      } else {
-        root.style.setProperty(prop, val);
-      }
+      if (prop === '--toolbar-bg') { if (bar) bar.style.background = val; }
+      else root.style.setProperty(prop, val);
     }
     syncDownloadBtn(vars);
   }
 
-  /* ── Keep Download button colour in sync ─────────────── */
   function syncDownloadBtn(vars) {
     if (!dlBtn) return;
-    let colour;
-    if (TEMPLATE === 'modern') {
-      const hue = vars['--hue'] ?? '220';
-      colour = `hsl(${hue},70%,45%)`;
-    } else if (TEMPLATE === 'chronological') {
-      colour = vars['--stripe'] ?? '#c9a84c';
-    } else {
-      // minimal
-      colour = vars['--accent'] ?? '#2d6a4f';
-    }
-    dlBtn.style.background   = colour;
-    dlBtn.style.borderColor  = colour;
+    const colour = TEMPLATE === 'modern'
+      ? `hsl(${vars['--hue'] ?? '220'},70%,45%)`
+      : TEMPLATE === 'chronological'
+        ? (vars['--stripe'] ?? '#c9a84c')
+        : (vars['--accent'] ?? '#2d6a4f');
+    dlBtn.style.background = dlBtn.style.borderColor = colour;
   }
 
-  /* ── Initialise: apply first (active) swatch on load ─── */
   const firstActive = document.querySelector('.rt-swatch.active');
   if (firstActive) applyVars(JSON.parse(firstActive.dataset.vars));
 
-  /* ── Swatch clicks ───────────────────────────────────── */
   document.querySelectorAll('.rt-swatch').forEach(sw => {
     sw.addEventListener('click', () => {
       document.querySelectorAll('.rt-swatch').forEach(x => x.classList.remove('active'));
@@ -282,49 +275,30 @@ $defaultHex    = match($template) {
     });
   });
 
-  /* ── Custom colour picker ────────────────────────────── */
   document.getElementById('rt-custom')?.addEventListener('input', function () {
     const hex = this.value;
     document.querySelectorAll('.rt-swatch').forEach(x => x.classList.remove('active'));
-
     if (TEMPLATE === 'modern') {
       applyVars({ '--hue': String(hexToHue(hex)) });
-
     } else if (TEMPLATE === 'chronological') {
-      // Keep existing stripe, just update accent + toolbar
-      const currentStripe = getComputedStyle(root).getPropertyValue('--stripe').trim()
-                          || '#c9a84c';
-      applyVars({ '--accent': hex, '--stripe': currentStripe, '--toolbar-bg': hex });
-
+      const stripe = getComputedStyle(root).getPropertyValue('--stripe').trim() || '#c9a84c';
+      applyVars({ '--accent': hex, '--stripe': stripe, '--toolbar-bg': hex });
     } else {
-      // minimal: derive a very pale tint automatically
       applyVars({ '--accent': hex, '--accent-pale': hexToPale(hex) });
     }
   });
 
-  /* ── Helpers ─────────────────────────────────────────── */
   function hexToHue(hex) {
-    const r = parseInt(hex.slice(1,3),16)/255;
-    const g = parseInt(hex.slice(3,5),16)/255;
-    const b = parseInt(hex.slice(5,7),16)/255;
-    const max = Math.max(r,g,b), min = Math.min(r,g,b);
-    if (max === min) return 0;
-    const d = max - min;
-    let h;
-    if (max===r)      h = ((g-b)/d + (g<b?6:0)) * 60;
-    else if (max===g) h = ((b-r)/d + 2) * 60;
-    else              h = ((r-g)/d + 4) * 60;
+    const r = parseInt(hex.slice(1,3),16)/255, g = parseInt(hex.slice(3,5),16)/255, b = parseInt(hex.slice(5,7),16)/255;
+    const max = Math.max(r,g,b), min = Math.min(r,g,b), d = max - min;
+    if (!d) return 0;
+    let h = max===r ? ((g-b)/d+(g<b?6:0))*60 : max===g ? ((b-r)/d+2)*60 : ((r-g)/d+4)*60;
     return Math.round(h);
   }
 
-  // Mix hex colour with white at ~92% white to get a pale tint
   function hexToPale(hex) {
-    const r = parseInt(hex.slice(1,3),16);
-    const g = parseInt(hex.slice(3,5),16);
-    const b = parseInt(hex.slice(5,7),16);
-    const mix = v => Math.round(v + (255-v)*0.88);
-    return '#' + [mix(r),mix(g),mix(b)].map(v=>v.toString(16).padStart(2,'0')).join('');
+    const mix = v => Math.round(parseInt(hex.slice(v,v+2),16) * .12 + 255 * .88);
+    return '#' + [1,3,5].map(v => mix(v).toString(16).padStart(2,'0')).join('');
   }
-
 })();
 </script>

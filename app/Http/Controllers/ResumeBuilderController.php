@@ -376,6 +376,7 @@ class ResumeBuilderController extends Controller
                 ->format('A4')
                 ->showBackground()
                 ->margins(0, 0, 0, 0)
+                ->waitUntilNetworkIdle()
                 ->savePdf($path);
 
             return response()->download($path);
