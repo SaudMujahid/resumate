@@ -4,6 +4,9 @@
   │                                                         │
   │  Props:                                                 │
   │    template  – 'modern' | 'chronological' | 'minimal'  │
+  │                                                         │
+  │  Enriched with A4 fit gauges, auto-spacing toggles,     │
+  │  and full interactive design controls.                 │
   └─────────────────────────────────────────────────────────┘
 --}}
 @props(['template' => 'modern'])
@@ -40,7 +43,7 @@ $swatches      = $swatchSets[$template] ?? $swatchSets['modern'];
 $isDarkToolbar = $template === 'chronological';
 $swatchShape   = $template === 'modern' ? 'border-radius:50%' : 'border-radius:4px';
 $pickerLabel   = ['modern' => 'Color', 'chronological' => 'Theme', 'minimal' => 'Accent'][$template] ?? 'Color';
-$hasExtras     = $template === 'modern'; // ATS toggle, font, spacing, sidebar
+$hasExtras     = true; // Always enable layout extras (A4 Spacing systems!)
 $defaultHex    = match($template) {
     'chronological' => '#1a3a5c',
     'minimal'       => '#2d6a4f',
@@ -51,26 +54,28 @@ $defaultHex    = match($template) {
 <style>
 .rt-bar {
   position: fixed; top: 0; left: 0; right: 0; z-index: 999;
-  padding: 10px 24px;
+  padding: 12px 24px;
   display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
   @if($isDarkToolbar)
     background: var(--toolbar-bg, var(--accent));
-    box-shadow: 0 3px 14px rgba(0,0,0,.25);
+    box-shadow: 0 4px 20px rgba(0,0,0,.3);
   @else
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border-bottom: 1px solid #e5e7eb;
-    box-shadow: 0 2px 12px rgba(0,0,0,.07);
+    box-shadow: 0 2px 14px rgba(0,0,0,.06);
   @endif
 }
 .rt-sep { width: 1px; height: 26px; background: {{ $isDarkToolbar ? 'rgba(255,255,255,.2)' : '#e5e7eb' }}; }
 .rt-label {
-  font-size: 10.5px; font-weight: 600;
-  text-transform: uppercase; letter-spacing: .1em;
-  color: {{ $isDarkToolbar ? 'rgba(255,255,255,.5)' : '#9ca3af' }};
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .08em;
+  color: {{ $isDarkToolbar ? 'rgba(255,255,255,.6)' : '#6b7280' }};
 }
 .rt-swatches { display: flex; gap: 7px; align-items: center; }
 .rt-swatch {
-  width: 24px; height: 24px; cursor: pointer;
+  width: 20px; height: 20px; cursor: pointer;
   border: 2px solid transparent;
   transition: transform .15s, border-color .15s;
   {{ $swatchShape }};
@@ -79,15 +84,15 @@ $defaultHex    = match($template) {
 .rt-swatch.active { border-color: {{ $isDarkToolbar ? 'white' : '#374151' }}; }
 .rt-picker-wrap { display: flex; align-items: center; gap: 6px; }
 .rt-picker-wrap input[type=color] {
-  width: 24px; height: 24px; padding: 0;
+  width: 20px; height: 20px; padding: 0;
   background: none; cursor: pointer;
   {{ $swatchShape }};
   border: {{ $isDarkToolbar ? '2px solid rgba(255,255,255,.35)' : '1.5px solid #d1d5db' }};
 }
 .rt-btn {
   display: flex; align-items: center; gap: 7px;
-  padding: 7px 15px; border-radius: 7px;
-  font-size: 13px; font-weight: 500;
+  padding: 6px 14px; border-radius: 8px;
+  font-size: 12.5px; font-weight: 500;
   cursor: pointer; text-decoration: none;
   transition: all .15s; white-space: nowrap;
   @if($isDarkToolbar)
@@ -104,14 +109,18 @@ $defaultHex    = match($template) {
 .rt-btn-primary {
   border-color: transparent !important;
   color: white !important;
-  background: #4b5563;
+  background: #4f46e5;
+  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);
+}
+.rt-btn-primary:hover {
+  background: #4338ca !important;
 }
 .rt-select {
-  font-size: 12px; font-weight: 500;
-  padding: 5px 10px; border-radius: 7px;
+  font-size: 11.5px; font-weight: 600;
+  padding: 5px 8px; border-radius: 6px;
   cursor: pointer; outline: none; transition: all .15s;
   @if($isDarkToolbar)
-    background: rgba(255,255,255,.1);
+    background: rgba(255,255,255,.12);
     border: 1.5px solid rgba(255,255,255,.25);
     color: white;
   @else
@@ -123,86 +132,74 @@ $defaultHex    = match($template) {
   @else border-color: #9ca3af;
   @endif
 }
-.rt-ats-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
-.rt-ats-toggle input[type=checkbox] { width: 15px; height: 15px; cursor: pointer; accent-color: #059669; }
-.rt-ats-label { font-size: 12.5px; font-weight: 600; color: {{ $isDarkToolbar ? 'white' : '#374151' }}; }
-.rt-ats-label.ats-on { color: #059669; }
-.rt-ats-help {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 16px; height: 16px; border-radius: 50%; cursor: help;
-  margin-left: 4px;
-  background: {{ $isDarkToolbar ? 'rgba(255,255,255,.2)' : '#e5e7eb' }};
-  color: {{ $isDarkToolbar ? 'white' : '#6b7280' }};
-  transition: background .15s;
+
+/* Smart gauge formatting */
+.rt-gauge-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  background: {{ $isDarkToolbar ? 'rgba(255,255,255,0.08)' : 'rgba(15, 23, 42, 0.05)' }};
+  border: 1px solid {{ $isDarkToolbar ? 'rgba(255,255,255,0.1)' : 'rgba(15, 23, 42, 0.08)' }};
 }
-.rt-ats-help:hover {
-  background: {{ $isDarkToolbar ? 'rgba(255,255,255,.35)' : '#d1d5db' }};
+.rt-gauge-bar {
+  width: 50px;
+  height: 6px;
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 3px;
+  overflow: hidden;
 }
+.rt-gauge-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+.rt-gauge-text {
+  font-family: monospace;
+}
+
+/* Layout sliders */
 .rt-slider-wrap { display: flex; align-items: center; gap: 7px; }
 .rt-slider {
-  width: 72px; height: 4px; border-radius: 9999px;
+  width: 64px; height: 4px; border-radius: 9999px;
   appearance: none; cursor: pointer;
-  background: {{ $isDarkToolbar ? 'rgba(255,255,255,.2)' : '#e5e7eb' }};
+  background: {{ $isDarkToolbar ? 'rgba(255,255,255,.2)' : '#cbd5e1' }};
 }
+
 .rt-hint {
   margin-left: auto; font-size: 11.5px;
-  display: flex; align-items: center; gap: 5px; font-weight: 300;
-  color: {{ $isDarkToolbar ? 'rgba(255,255,255,.4)' : '#9ca3af' }};
+  display: flex; align-items: center; gap: 5px; font-weight: 400;
+  color: {{ $isDarkToolbar ? 'rgba(255,255,255,.5)' : '#6b7280' }};
 }
+
+/* Theme variable integrations */
+.gauge-perfect {
+  --gauge-color: #10b981;
+}
+.gauge-underflow {
+  --gauge-color: #f59e0b;
+}
+.gauge-overflow {
+  --gauge-color: #ef4444;
+}
+
 @media print { .rt-bar { display: none !important; } }
 </style>
 
-<div class="rt-bar" id="rt-bar">
+<div class="rt-bar shadow-sm" id="rt-bar">
 
   {{-- Back --}}
   <a href="{{ route('resumebuilder') }}" class="rt-btn">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-    Back
+    Back to Wizard
   </a>
 
   <div class="rt-sep"></div>
 
-  @if($hasExtras)
-  {{-- ATS Safe Mode --}}
-  <label class="rt-ats-toggle">
-    <input type="checkbox" x-model="atsMode" @change="saveSettings">
-    <span class="rt-ats-label" :class="atsMode ? 'ats-on' : ''">
-      <span x-show="!atsMode">ATS Safe Mode</span>
-      <span x-show="atsMode" x-cloak style="display:flex;align-items:center;gap:5px">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        ATS Mode Active
-      </span>
-    </span>
-    <span class="rt-ats-help" title="ATS (Applicant Tracking Systems) scan resumes before recruiters see them. Safe Mode strips colors, graphics, and complex layouts so your resume is read correctly by these automated systems.">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-    </span>
-  </label>
-
-  <div class="rt-sep"></div>
-
-  {{-- Colour swatches — hidden in ATS mode --}}
-  <template x-if="!atsMode">
-    <div style="display: contents;">
-      <span class="rt-label">{{ $pickerLabel }}</span>
-      <div class="rt-swatches" id="rt-swatches">
-        @foreach($swatches as $sw)
-        <div
-          class="rt-swatch {{ !empty($sw['active']) ? 'active' : '' }}"
-          style="background:{{ $sw['bg'] }}"
-          title="{{ $sw['label'] }}"
-          data-vars="{{ json_encode($sw['vars']) }}"
-        ></div>
-        @endforeach
-      </div>
-      <div class="rt-picker-wrap">
-        <input type="color" id="rt-custom" value="{{ $defaultHex }}" title="Custom colour">
-        <span class="rt-label">Custom</span>
-      </div>
-      <div class="rt-sep"></div>
-    </div>
-  </template>
-  @else
-  {{-- Colour swatches --}}
+  {{-- Swatches --}}
   <span class="rt-label">{{ $pickerLabel }}</span>
   <div class="rt-swatches" id="rt-swatches">
     @foreach($swatches as $sw)
@@ -216,38 +213,49 @@ $defaultHex    = match($template) {
   </div>
   <div class="rt-picker-wrap">
     <input type="color" id="rt-custom" value="{{ $defaultHex }}" title="Custom colour">
-    <span class="rt-label">Custom</span>
   </div>
+
   <div class="rt-sep"></div>
-  @endif
 
-@if($hasExtras)
-  {{-- Font — hidden in ATS mode because ATS forces standard fonts --}}
-  <template x-if="!atsMode">
-    <select x-model="fontFamily" @change="saveSettings" class="rt-select">
-      <option value="sans">DM Sans</option>
-      <option value="serif">DM Serif</option>
-      <option value="mono">Monospace</option>
-    </select>
-  </template>
-
-  {{-- Spacing --}}
-  <select x-model="spacing" @change="saveSettings" class="rt-select">
-    <option value="compact">Compact</option>
-    <option value="normal">Normal</option>
-    <option value="spacious">Spacious</option>
+  {{-- Fonts --}}
+  <span class="rt-label">Font</span>
+  <select x-model="fontFamily" @change="saveSettings" class="rt-select">
+    <option value="sans">DM Sans</option>
+    <option value="serif">DM Serif</option>
+    <option value="mono">Monospace</option>
   </select>
 
-  {{-- Sidebar width — hidden in ATS mode --}}
-  <template x-if="!atsMode">
-    <div class="rt-slider-wrap">
-      <span class="rt-label">Sidebar</span>
-      <input type="range" min="200" max="320" x-model.number="sidebarWidth" @change="saveSettings" class="rt-slider">
-    </div>
-  </template>
+  {{-- Spacing Preset --}}
+  <select x-model="spacing" @change="saveSettings(); $nextTick(() => calculateA4Fit())" class="rt-select">
+    <option value="compact">Compact Margins</option>
+    <option value="normal">Normal Margins</option>
+    <option value="spacious">Spacious Margins</option>
+  </select>
 
   <div class="rt-sep"></div>
-  @endif
+
+  {{-- Visual Spacing Slider & Auto spacing --}}
+  <div class="rt-slider-wrap">
+    <span class="rt-label">Spacing</span>
+    <input type="range" min="0.7" max="1.3" step="0.05" x-model.number="spacingMultiplier" @input="saveSettings(); calculateA4Fit()" class="rt-slider">
+    <span style="font-size: 11px; opacity: 0.7; font-family: monospace; min-width: 28px;" x-text="Math.round(spacingMultiplier * 100) + '%'"></span>
+  </div>
+
+  <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; font-size: 12px; font-weight: 500; color: {{ $isDarkToolbar ? '#fff' : '#374151' }}">
+    <input type="checkbox" x-model="autoSpace" @change="saveSettings(); $nextTick(() => calculateA4Fit())" style="width: 14px; height: 14px; accent-color: #4f46e5;">
+    <span>Auto-Budget</span>
+  </label>
+
+  <div class="rt-sep"></div>
+
+  {{-- Fit level indicator gauge --}}
+  <div class="rt-gauge-box" :class="isOverflowing ? 'gauge-overflow' : (isUnderflowing ? 'gauge-underflow' : 'gauge-perfect')">
+    <span class="rt-label" style="font-size: 9px; color: var(--gauge-color)">A4 Fill</span>
+    <div class="rt-gauge-bar">
+      <div class="rt-gauge-fill" :style="'width: ' + Math.min(fillPercentage, 100) + '%; background-color: var(--gauge-color);'"></div>
+    </div>
+    <span class="rt-gauge-text" :style="'color: var(--gauge-color)'" x-text="fillPercentage + '%'">100%</span>
+  </div>
 
   {{-- Print --}}
   <button class="rt-btn" onclick="window.print()">
@@ -256,7 +264,7 @@ $defaultHex    = match($template) {
       <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
       <rect x="6" y="14" width="12" height="8"/>
     </svg>
-    Print
+    Print Sheet
   </button>
 
   {{-- Download --}}
@@ -266,16 +274,9 @@ $defaultHex    = match($template) {
       <polyline points="7 10 12 15 17 10"/>
       <line x1="12" y1="15" x2="12" y2="3"/>
     </svg>
-    Download PDF
+    Export PDF
   </a>
 
-  <div class="rt-hint">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-      <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-    </svg>
-    Click any text to edit
-  </div>
 </div>
 
 <script>
@@ -307,8 +308,7 @@ $defaultHex    = match($template) {
   if (firstActive) {
     applyVars(JSON.parse(firstActive.dataset.vars));
   } else {
-    // Fallback when swatches are hidden (e.g. ATS mode)
-    syncDownloadBtn({ '--hue': '220', '--accent': '#4b5563', '--stripe': '#c9a84c' });
+    syncDownloadBtn({ '--hue': '220', '--accent': '#4f46e5', '--stripe': '#c9a84c' });
   }
 
   document.querySelectorAll('.rt-swatch').forEach(sw => {
@@ -316,6 +316,18 @@ $defaultHex    = match($template) {
       document.querySelectorAll('.rt-swatch').forEach(x => x.classList.remove('active'));
       sw.classList.add('active');
       applyVars(JSON.parse(sw.dataset.vars));
+      
+      // Sync to local storage for persistence across pages
+      const vars = JSON.parse(sw.dataset.vars);
+      if (window.Alpine) {
+        if (vars['--hue']) {
+          Alpine.store('themeColor', { hue: vars['--hue'] });
+        } else if (vars['--accent']) {
+          root.style.setProperty('--accent', vars['--accent']);
+          if (vars['--accent-pale']) root.style.setProperty('--accent-pale', vars['--accent-pale']);
+          if (vars['--stripe']) root.style.setProperty('--stripe', vars['--stripe']);
+        }
+      }
     });
   });
 
