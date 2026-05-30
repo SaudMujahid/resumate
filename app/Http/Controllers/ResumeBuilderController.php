@@ -11,10 +11,14 @@ class ResumeBuilderController extends Controller
 {
     public function readyResume(string $template)
     {
+        // Sanitize selection to prevent unauthorized file access
+        $template = in_array($template, ['modern', 'chronological', 'minimal']) ? $template : 'modern';
+
         // Seed data matching the PDF sample
         $resumeData = $this->defaultResumeData();
 
-        return view('readyresume', [
+        // Redirects rendering to resources/views/readymade/{template}.blade.php
+        return view("readymade.$template", [
             'selectedTemplate' => $template,
             'resumeData' => $resumeData,
         ]);
@@ -175,7 +179,6 @@ class ResumeBuilderController extends Controller
     }
 
     // ── Navigation (POST) ─────────────────────────────────────────────────
-
     public function navigate(Request $request)
     {
         $action = $request->input('action');
@@ -191,12 +194,17 @@ class ResumeBuilderController extends Controller
                 'selected_template' => $template,
             ]);
 
-            // ── Branch here before touching current_page ──
+            // Ready-made Template Path
             if ($option === 'ready') {
                 return redirect()->route('readyresume.show', ['template' => $template]);
             }
 
-            // Default: guided builder
+            // Experimental "Create New Template" Guided Builder Path
+            if ($option === 'create') {
+                session()->flash('experimental_warning', 'Note: The custom builder from scratch is an experimental feature.');
+            }
+
+            // Default: guided builder setup
             session([
                 'current_page' => 'builder',
                 'current_section' => 0,
@@ -298,7 +306,6 @@ class ResumeBuilderController extends Controller
             $ctx .= 'Degree: '.$context['degree']."\n";
         }
 
-        // Pre-compute fallback values to avoid ?? inside string interpolation
         $jobTitleFallback = $context['jobTitle'] ?? 'professional';
 
         $instructions = match ($field) {
@@ -331,11 +338,9 @@ class ResumeBuilderController extends Controller
         $phone = $data['phone'] ?? '';
         $city = $data['city'] ?? 'Bangladesh';
 
-        // If coming from readyresume editor, decode the JSON payload
         if ($request->filled('resume_json')) {
             $decoded = json_decode($request->input('resume_json'), true);
             if ($decoded) {
-                // Merge flat fields into the request so existing generate logic can use them
                 $request->merge([
                     'first_name' => $decoded['first_name'] ?? '',
                     'last_name' => $decoded['last_name'] ?? '',
@@ -347,7 +352,6 @@ class ResumeBuilderController extends Controller
                     'languages' => $decoded['languages'] ?? '',
                     'certifications' => $decoded['certifications'] ?? '',
                     'awards' => $decoded['awards'] ?? '',
-                    // experiences/educations are arrays — pass as-is or serialize as needed
                     '_experiences' => $decoded['experiences'] ?? [],
                     '_educations' => $decoded['educations'] ?? [],
                 ]);
@@ -358,7 +362,6 @@ class ResumeBuilderController extends Controller
             return back()->with('error', 'Name and email are required.');
         }
 
-        // ── Education ─────────────────────────────────────────────────────
         $education = [];
         if (! empty($data['degree']) || ! empty($data['university'])) {
             $education[] = [
@@ -395,7 +398,6 @@ class ResumeBuilderController extends Controller
             ];
         }
 
-        // ── Experience ────────────────────────────────────────────────────
         $experience = [];
         if (! empty($data['jobTitle']) || ! empty($data['company'])) {
             $responsibilities = ! empty($data['responsibilities'])
@@ -409,7 +411,6 @@ class ResumeBuilderController extends Controller
             ];
         }
 
-        // ── Skills ────────────────────────────────────────────────────────
         $technical = ! empty($data['technicalSkills'])
             ? array_map('trim', explode(',', $data['technicalSkills'])) : [];
         $soft = ! empty($data['softSkills'])
@@ -417,7 +418,6 @@ class ResumeBuilderController extends Controller
         $languages = ! empty($data['languages'])
             ? array_map('trim', explode(',', $data['languages'])) : [];
 
-        // ── AI Summary (enhanced context) ─────────────────────────────────
         $degree = $data['degree'] ?? 'their degree';
         $uni = $data['university'] ?? 'their institution';
         $skills = $data['technicalSkills'] ?? 'technology';
@@ -453,7 +453,6 @@ class ResumeBuilderController extends Controller
             }
         }
 
-        // ── Store & Redirect ────────────────────────────────────────────
         session([
             'resume' => [
                 'name' => $name,
@@ -476,7 +475,6 @@ class ResumeBuilderController extends Controller
         return redirect()->route('resume.show', ['template' => $template]);
     }
 
-    // ── Show rendered resume ──────────────────────────────────────────────
     public function show($template)
     {
         $resume = session('resume');
@@ -488,7 +486,6 @@ class ResumeBuilderController extends Controller
         return view("resume.$template", compact('resume'));
     }
 
-    // ── PDF download ─────────────────────────────────────────────────────
     public function downloadPDF(Request $request)
     {
         $resume = session('resume');
