@@ -1,15 +1,15 @@
 <?php
 
-use App\Http\Controllers\ResumeBuilderController;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
 use App\Http\Controllers\AnalyzerController;
+use App\Http\Controllers\ResumeBuilderController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 // Public pages
-Route::get('/', fn() => view('landing'))->name('home');
-Route::get('/mission', fn() => view('mission'));
-Route::get('/templates', fn() => view('templates'));
-Route::get('/features', fn() => view('features'));
+Route::get('/', fn () => view('landing'))->name('home');
+Route::get('/mission', fn () => view('mission'));
+Route::get('/templates', fn () => view('templates'));
+Route::get('/features', fn () => view('features'));
 
 // Analyzer — open, rate limited (10 uploads per hour per IP)
 Route::get('/analyzer', [AnalyzerController::class, 'index'])->name('analyzer.index');
@@ -19,8 +19,7 @@ Route::post('/analyzer/analyze', [AnalyzerController::class, 'analyze'])
 Route::get('/analyzer/results/{id}', [AnalyzerController::class, 'results'])
     ->name('analyzer.results');
 
-
-Route::get('/resumebuilder',  [ResumeBuilderController::class, 'index'])->name('resumebuilder');
+Route::get('/resumebuilder', [ResumeBuilderController::class, 'index'])->name('resumebuilder');
 Route::post('/resumebuilder', [ResumeBuilderController::class, 'navigate'])->name('resumebuilder.navigate');
 
 // Resume Builder — open, rate limited (20 generations per hour per IP)
@@ -124,3 +123,11 @@ Route::get('/resume/{template}', [ResumeBuilderController::class, 'show'])
 
 Route::get('/resume/download-pdf', [ResumeBuilderController::class, 'downloadPDF'])
     ->name('resume.download');
+
+// Ready-made resume editor
+Route::get('/readyresume/{template}', [ResumeBuilderController::class, 'readyResume'])
+    ->name('readyresume.show')
+    ->where('template', 'modern|minimal|chronological');
+
+Route::post('/readyresume/save', [ResumeBuilderController::class, 'readyResumeSave'])
+    ->name('readyresume.save');

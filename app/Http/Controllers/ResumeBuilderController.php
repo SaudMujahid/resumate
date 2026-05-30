@@ -9,28 +9,115 @@ use Spatie\Browsershot\Browsershot;
 
 class ResumeBuilderController extends Controller
 {
+    public function readyResume(string $template)
+    {
+        // Seed data matching the PDF sample
+        $resumeData = $this->defaultResumeData();
+
+        return view('readyresume', [
+            'selectedTemplate' => $template,
+            'resumeData' => $resumeData,
+        ]);
+    }
+
+    public function readyResumeSave(Request $request)
+    {
+        // Store edited data in session, then redirect to the same generate/show flow
+        session(['form_data' => $request->except(['_token', 'selected_template'])]);
+        session(['selected_template' => $request->input('selected_template')]);
+
+        return redirect()->route('resume.generate')->with('from_ready', true);
+    }
+
+    private function defaultResumeData(): array
+    {
+        return [
+            'first_name' => 'Jacqueline',
+            'last_name' => 'Thompson',
+            'email' => 'hello@reallygreatsite.com',
+            'phone' => '123-456-7890',
+            'address' => '123 Anywhere St., Any City',
+            'website' => 'www.reallygreatsite.com',
+            'summary' => 'Results-oriented Engineering Executive with a proven track record of optimizing project outcomes. Skilled in strategic project management and team leadership. Seeking a challenging executive role to leverage technical expertise and drive engineering excellence.',
+            'experiences' => [
+                [
+                    'title' => 'Engineering Executive',
+                    'company' => 'Borcelle Technologies',
+                    'period' => 'Jan 2023 - Present',
+                    'bullets' => [
+                        'Implemented cost-effective solutions, resulting in a 20% reduction in project expenses.',
+                        'Streamlined project workflows, enhancing overall efficiency by 25%.',
+                        'Led a team in successfully delivering a complex engineering project on time and within allocated budget.',
+                    ],
+                ],
+                [
+                    'title' => 'Project Engineer',
+                    'company' => 'Salford & Co',
+                    'period' => 'Mar 2021 - Dec 2022',
+                    'bullets' => [
+                        'Managed project timelines, reducing delivery times by 30%.',
+                        'Spearheaded the adoption of cutting-edge engineering software, improving project accuracy by 15%.',
+                        'Collaborated with cross-functional teams, enhancing project success rates by 10%.',
+                    ],
+                ],
+                [
+                    'title' => 'Graduate Engineer',
+                    'company' => 'Arowwai Industries',
+                    'period' => 'Feb 2020 - Jan 2021',
+                    'bullets' => [
+                        'Coordinated project tasks, ensuring adherence to engineering standards and regulations.',
+                        'Conducted comprehensive project analyses, identifying and rectifying discrepancies in engineering designs.',
+                    ],
+                ],
+            ],
+            'educations' => [
+                [
+                    'degree' => 'Master of Science in Mechanical Engineering',
+                    'school' => 'University of Engineering and Technology',
+                    'period' => 'Sep 2019 - Oct 2020',
+                    'bullets' => [
+                        'Specialization in Advanced Manufacturing.',
+                        'Thesis on "Innovations in Sustainable Engineering Practices".',
+                    ],
+                ],
+                [
+                    'degree' => 'Bachelor of Science in Civil Engineering',
+                    'school' => 'City College of Engineering',
+                    'period' => 'Aug 2015 - Aug 2019',
+                    'bullets' => [
+                        'Relevant coursework in Structural Design and Project Management.',
+                    ],
+                ],
+            ],
+            'technical_skills' => 'Project Management, Structural Analysis, Robotics and Automation, CAD',
+            'languages' => 'English, Malay, German',
+            'certifications' => 'Professional Engineer (PE) License, Project Management Professional (PMP)',
+            'awards' => 'Received the "Engineering Excellence" Award for outstanding contributions to project innovation, Borcelle Technologies',
+        ];
+    }
+
     // ── Single source of truth for all sections & fields ──────────────────
     private function sections(): array
     {
         return [
             [
-                'id'     => 'personal',
-                'name'   => 'Personal Info',
-                'desc'   => 'Your basic contact details',
-                'color'  => 'from-[#F2E9FF] to-[#FFE9F5]',
+                'id' => 'personal',
+                'name' => 'Personal Info',
+                'desc' => 'Your basic contact details',
+                'color' => 'from-[#F2E9FF] to-[#FFE9F5]',
                 'fields' => [
                     ['id' => 'firstName', 'label' => 'First Name',     'type' => 'text',  'placeholder' => 'John',             'required' => true,  'span' => 1, 'ai' => false],
                     ['id' => 'lastName',  'label' => 'Last Name',      'type' => 'text',  'placeholder' => 'Doe',              'required' => false, 'span' => 1, 'ai' => false],
                     ['id' => 'email',     'label' => 'Email Address',  'type' => 'email', 'placeholder' => 'john@example.com', 'required' => true,  'span' => 1, 'ai' => false],
                     ['id' => 'phone',     'label' => 'Phone Number',   'type' => 'tel',   'placeholder' => '01712345678',      'required' => false, 'span' => 1, 'ai' => false],
-                    ['id' => 'city',      'label' => 'City / Location','type' => 'text',  'placeholder' => 'Dhaka, Remote',    'required' => false, 'span' => 2, 'ai' => false],
+                    ['id' => 'city',      'label' => 'City / Location', 'type' => 'text',  'placeholder' => 'Dhaka, Remote',    'required' => false, 'span' => 2, 'ai' => false],
                 ],
             ],
             [
-                'id'     => 'education',
-                'name'   => 'Education',
-                'desc'   => 'Academic background',
-                'color'  => 'from-[#FFE9D1] to-[#FFF5E9]',
+                'id' => 'education',
+                'name' => 'Education',
+                'desc' => 'Academic background',
+                'color' => 'from-[#FFE9D1] to-[#FFF5E9]',
                 'fields' => [
                     ['id' => 'degree',         'label' => 'Highest Degree',         'type' => 'text', 'placeholder' => 'B.Sc. Computer Science',    'required' => true,  'span' => 1, 'ai' => false],
                     ['id' => 'university',     'label' => 'University / College',   'type' => 'text', 'placeholder' => 'University of Dhaka',        'required' => true,  'span' => 1, 'ai' => false],
@@ -45,10 +132,10 @@ class ResumeBuilderController extends Controller
                 ],
             ],
             [
-                'id'     => 'experience',
-                'name'   => 'Experience',
-                'desc'   => 'Work history — AI can expand your bullets',
-                'color'  => 'from-[#E9F5FF] to-[#F0F9FF]',
+                'id' => 'experience',
+                'name' => 'Experience',
+                'desc' => 'Work history — AI can expand your bullets',
+                'color' => 'from-[#E9F5FF] to-[#F0F9FF]',
                 'fields' => [
                     ['id' => 'jobTitle',         'label' => 'Job Title',        'type' => 'text',     'placeholder' => 'Software Engineer, Intern',       'required' => false, 'span' => 1, 'ai' => 'title'],
                     ['id' => 'company',          'label' => 'Company',          'type' => 'text',     'placeholder' => 'bKash, Daraz, Freelance',          'required' => false, 'span' => 1, 'ai' => false],
@@ -57,10 +144,10 @@ class ResumeBuilderController extends Controller
                 ],
             ],
             [
-                'id'     => 'skills',
-                'name'   => 'Skills',
-                'desc'   => 'AI can suggest related skills and ATS keywords',
-                'color'  => 'from-[#E9FFE9] to-[#F0FFF0]',
+                'id' => 'skills',
+                'name' => 'Skills',
+                'desc' => 'AI can suggest related skills and ATS keywords',
+                'color' => 'from-[#E9FFE9] to-[#F0FFF0]',
                 'fields' => [
                     ['id' => 'technicalSkills', 'label' => 'Technical Skills', 'type' => 'text', 'placeholder' => 'JavaScript, Python, Laravel, MySQL, Figma', 'required' => false, 'span' => 2, 'ai' => 'skills'],
                     ['id' => 'softSkills',      'label' => 'Soft Skills',      'type' => 'text', 'placeholder' => 'Leadership, Communication, Teamwork',        'required' => false, 'span' => 1, 'ai' => false],
@@ -78,29 +165,44 @@ class ResumeBuilderController extends Controller
         }
 
         return view('resumebuilder', [
-            'sections'         => $this->sections(),
-            'currentPage'      => session('current_page', 'choice'),
-            'currentSection'   => (int) session('current_section', 0),
-            'formData'         => session('form_data', []),
+            'sections' => $this->sections(),
+            'currentPage' => session('current_page', 'choice'),
+            'currentSection' => (int) session('current_section', 0),
+            'formData' => session('form_data', []),
             'selectedTemplate' => session('selected_template', 'modern'),
-            'selectedOption'   => session('selected_option', null),
+            'selectedOption' => session('selected_option', null),
         ]);
     }
 
     // ── Navigation (POST) ─────────────────────────────────────────────────
+
     public function navigate(Request $request)
     {
-        $action   = $request->input('action');
-        $section  = (int) $request->input('current_section', 0);
+        $action = $request->input('action');
+        $section = (int) $request->input('current_section', 0);
         $sections = $this->sections();
 
         if ($action === 'proceed') {
+            $option = $request->input('option', 'create');
+            $template = $request->input('selected_template', session('selected_template', 'modern'));
+
             session([
-                'selected_option' => $request->input('option', 'create'),
-                'current_page'    => 'builder',
-                'current_section' => 0,
-                'form_data'       => [],
+                'selected_option' => $option,
+                'selected_template' => $template,
             ]);
+
+            // ── Branch here before touching current_page ──
+            if ($option === 'ready') {
+                return redirect()->route('readyresume.show', ['template' => $template]);
+            }
+
+            // Default: guided builder
+            session([
+                'current_page' => 'builder',
+                'current_section' => 0,
+                'form_data' => [],
+            ]);
+
             return redirect()->route('resumebuilder');
         }
 
@@ -108,9 +210,9 @@ class ResumeBuilderController extends Controller
             $skip = ['_token', 'action', 'current_section', 'selected_template'];
             $incoming = array_filter(
                 $request->except($skip),
-                fn($v) => $v !== null && $v !== ''
+                fn ($v) => $v !== null && $v !== ''
             );
-            session(['form_data'       => array_merge(session('form_data', []), $incoming)]);
+            session(['form_data' => array_merge(session('form_data', []), $incoming)]);
             session(['current_section' => min($section + 1, count($sections) - 1)]);
         }
 
@@ -124,18 +226,18 @@ class ResumeBuilderController extends Controller
     // ── AI Enhancement Endpoint (AJAX) ────────────────────────────────────
     public function aiEnhance(Request $request)
     {
-        $field   = $request->input('field');
+        $field = $request->input('field');
         $content = $request->input('content', '');
         $context = $request->input('context', []);
-        $tone    = $request->input('tone', 'corporate');
-        $mode    = $request->input('mode', 'rewrite');
+        $tone = $request->input('tone', 'corporate');
+        $mode = $request->input('mode', 'rewrite');
 
         if (empty($content) && $mode !== 'suggest') {
             return response()->json(['success' => false, 'error' => 'Content is empty']);
         }
 
         $apiKey = config('services.gemini.key');
-        if (!$apiKey) {
+        if (! $apiKey) {
             return response()->json(['success' => false, 'error' => 'AI service not configured']);
         }
 
@@ -143,7 +245,7 @@ class ResumeBuilderController extends Controller
 
         try {
             $response = Http::timeout(90)->post(
-                'https://generativelanguage.googleapis.com/v1/models/gemini-3.5-flash:generateContent?key=' . $apiKey,
+                'https://generativelanguage.googleapis.com/v1/models/gemini-3.5-flash:generateContent?key='.$apiKey,
                 [
                     'contents' => [
                         ['parts' => [['text' => $prompt]]],
@@ -177,134 +279,163 @@ class ResumeBuilderController extends Controller
     private function buildPrompt(string $field, string $content, array $context, string $tone, string $mode): string
     {
         $toneMap = [
-            'corporate'   => 'Use formal, polished corporate language suitable for Fortune 500 companies. Focus on leadership and business impact.',
-            'modern'      => 'Use energetic, concise startup language with strong action verbs. Focus on speed, growth, and innovation.',
-            'academic'    => 'Use scholarly, research-oriented language. Focus on methodology, publications, and intellectual rigor.',
-            'minimalist'  => 'Use extremely concise, punchy language. One clause per bullet. No fluff.',
-            'executive'   => 'Use strategic, high-level leadership language. Focus on vision, ROI, and organizational scale.',
+            'corporate' => 'Use formal, polished corporate language suitable for Fortune 500 companies. Focus on leadership and business impact.',
+            'modern' => 'Use energetic, concise startup language with strong action verbs. Focus on speed, growth, and innovation.',
+            'academic' => 'Use scholarly, research-oriented language. Focus on methodology, publications, and intellectual rigor.',
+            'minimalist' => 'Use extremely concise, punchy language. One clause per bullet. No fluff.',
+            'executive' => 'Use strategic, high-level leadership language. Focus on vision, ROI, and organizational scale.',
         ];
         $toneText = $toneMap[$tone] ?? $toneMap['corporate'];
 
         $ctx = '';
-        if (!empty($context['jobTitle']))  $ctx .= "Job Title: " . $context['jobTitle'] . "\n";
-        if (!empty($context['industry']))  $ctx .= "Industry: " . $context['industry'] . "\n";
-        if (!empty($context['degree']))    $ctx .= "Degree: " . $context['degree'] . "\n";
+        if (! empty($context['jobTitle'])) {
+            $ctx .= 'Job Title: '.$context['jobTitle']."\n";
+        }
+        if (! empty($context['industry'])) {
+            $ctx .= 'Industry: '.$context['industry']."\n";
+        }
+        if (! empty($context['degree'])) {
+            $ctx .= 'Degree: '.$context['degree']."\n";
+        }
 
         // Pre-compute fallback values to avoid ?? inside string interpolation
         $jobTitleFallback = $context['jobTitle'] ?? 'professional';
 
         $instructions = match ($field) {
             'responsibilities' => match ($mode) {
-                'expand' => "Expand the following rough note into 3 professional resume bullet points with metrics and impact. " . $toneText . "\n\n" . $ctx . "Input:\n" . $content . "\n\nReturn ONLY the 3 bullet points, one per line, starting with '•'.",
-                'ats'    => "Rewrite the following with strong ATS keywords for a " . $jobTitleFallback . " role. " . $toneText . "\n\n" . $ctx . "Input:\n" . $content . "\n\nReturn ONLY the rewritten content.",
-                default  => "Rewrite the following into professional, achievement-oriented resume bullets. " . $toneText . "\n\n" . $ctx . "Input:\n" . $content . "\n\nReturn ONLY the improved content.",
+                'expand' => 'Expand the following rough note into 3 professional resume bullet points with metrics and impact. '.$toneText."\n\n".$ctx."Input:\n".$content."\n\nReturn ONLY the 3 bullet points, one per line, starting with '•'.",
+                'ats' => 'Rewrite the following with strong ATS keywords for a '.$jobTitleFallback.' role. '.$toneText."\n\n".$ctx."Input:\n".$content."\n\nReturn ONLY the rewritten content.",
+                default => 'Rewrite the following into professional, achievement-oriented resume bullets. '.$toneText."\n\n".$ctx."Input:\n".$content."\n\nReturn ONLY the improved content.",
             },
             'skills' => match ($mode) {
-                'suggest' => "Based on these skills: '" . $content . "', suggest 6-8 related professional technical skills that would strengthen a resume. Return ONLY a comma-separated list.",
-                'ats'     => "Optimize the following skill list for ATS scanners for a " . $jobTitleFallback . " role. Use industry-standard terms. " . $toneText . "\n\nInput:\n" . $content . "\n\nReturn ONLY the optimized comma-separated list.",
-                default   => "Improve the following skill list to sound more professional and current. " . $toneText . "\n\nInput:\n" . $content . "\n\nReturn ONLY the improved comma-separated list.",
+                'suggest' => "Based on these skills: '".$content."', suggest 6-8 related professional technical skills that would strengthen a resume. Return ONLY a comma-separated list.",
+                'ats' => 'Optimize the following skill list for ATS scanners for a '.$jobTitleFallback.' role. Use industry-standard terms. '.$toneText."\n\nInput:\n".$content."\n\nReturn ONLY the optimized comma-separated list.",
+                default => 'Improve the following skill list to sound more professional and current. '.$toneText."\n\nInput:\n".$content."\n\nReturn ONLY the improved comma-separated list.",
             },
-            'title' => "Rewrite the following job title to be more professional and ATS-friendly. " . $toneText . "\n\nInput:\n" . $content . "\n\nReturn ONLY the improved title.",
-            'summary' => "Write a professional resume summary (2-3 sentences). " . $toneText . "\n\n" . $ctx . "Background:\n" . $content . "\n\nReturn ONLY the summary.",
-            default => "Improve the following for a professional resume. " . $toneText . "\n\nInput:\n" . $content . "\n\nReturn ONLY the improved content.",
+            'title' => 'Rewrite the following job title to be more professional and ATS-friendly. '.$toneText."\n\nInput:\n".$content."\n\nReturn ONLY the improved title.",
+            'summary' => 'Write a professional resume summary (2-3 sentences). '.$toneText."\n\n".$ctx."Background:\n".$content."\n\nReturn ONLY the summary.",
+            default => 'Improve the following for a professional resume. '.$toneText."\n\nInput:\n".$content."\n\nReturn ONLY the improved content.",
         };
 
-        return $instructions . "\nDo not add explanations, markdown formatting, or quotation marks around the output.";
+        return $instructions."\nDo not add explanations, markdown formatting, or quotation marks around the output.";
     }
 
     // ── Final Generation (POST) ─────────────────────────────────────────
     public function generate(Request $request)
     {
-        $data     = $request->except(['selected_template', '_token']);
+        $data = $request->except(['selected_template', '_token']);
         $template = $request->input('selected_template', 'modern');
 
-        $name  = trim(($data['firstName'] ?? '') . ' ' . ($data['lastName'] ?? ''));
+        $name = trim(($data['firstName'] ?? '').' '.($data['lastName'] ?? ''));
         $email = $data['email'] ?? '';
         $phone = $data['phone'] ?? '';
-        $city  = $data['city'] ?? 'Bangladesh';
+        $city = $data['city'] ?? 'Bangladesh';
 
-        if (!$name || !$email) {
+        // If coming from readyresume editor, decode the JSON payload
+        if ($request->filled('resume_json')) {
+            $decoded = json_decode($request->input('resume_json'), true);
+            if ($decoded) {
+                // Merge flat fields into the request so existing generate logic can use them
+                $request->merge([
+                    'first_name' => $decoded['first_name'] ?? '',
+                    'last_name' => $decoded['last_name'] ?? '',
+                    'email' => $decoded['email'] ?? '',
+                    'phone' => $decoded['phone'] ?? '',
+                    'address' => $decoded['address'] ?? '',
+                    'summary' => $decoded['summary'] ?? '',
+                    'technical_skills' => $decoded['technical_skills'] ?? '',
+                    'languages' => $decoded['languages'] ?? '',
+                    'certifications' => $decoded['certifications'] ?? '',
+                    'awards' => $decoded['awards'] ?? '',
+                    // experiences/educations are arrays — pass as-is or serialize as needed
+                    '_experiences' => $decoded['experiences'] ?? [],
+                    '_educations' => $decoded['educations'] ?? [],
+                ]);
+            }
+        }
+
+        if (! $name || ! $email) {
             return back()->with('error', 'Name and email are required.');
         }
 
         // ── Education ─────────────────────────────────────────────────────
         $education = [];
-        if (!empty($data['degree']) || !empty($data['university'])) {
+        if (! empty($data['degree']) || ! empty($data['university'])) {
             $education[] = [
-                'level'  => 'Undergraduate',
-                'degree' => $data['degree']         ?? null,
-                'school' => $data['university']     ?? null,
-                'major'  => $data['major']          ?? null,
-                'cgpa'   => $data['cgpa']           ?? null,
-                'year'   => $data['graduationYear'] ?? null,
+                'level' => 'Undergraduate',
+                'degree' => $data['degree'] ?? null,
+                'school' => $data['university'] ?? null,
+                'major' => $data['major'] ?? null,
+                'cgpa' => $data['cgpa'] ?? null,
+                'year' => $data['graduationYear'] ?? null,
             ];
         }
-        if (!empty($data['hsc_college'])) {
+        if (! empty($data['hsc_college'])) {
             $education[] = [
-                'level'  => 'HSC / A-Level',
+                'level' => 'HSC / A-Level',
                 'school' => $data['hsc_college'],
-                'year'   => $data['hsc_year']  ?? null,
-                'grade'  => $data['hsc_grade'] ?? null,
+                'year' => $data['hsc_year'] ?? null,
+                'grade' => $data['hsc_grade'] ?? null,
             ];
         }
-        if (!empty($data['ssc_school'])) {
+        if (! empty($data['ssc_school'])) {
             $education[] = [
-                'level'  => 'SSC / O-Level',
+                'level' => 'SSC / O-Level',
                 'school' => $data['ssc_school'],
-                'year'   => $data['ssc_year']  ?? null,
-                'grade'  => $data['ssc_grade'] ?? null,
+                'year' => $data['ssc_year'] ?? null,
+                'grade' => $data['ssc_grade'] ?? null,
             ];
         }
         if (empty($education)) {
             $education[] = [
-                'level'  => 'Education',
-                'degree' => $data['degree']     ?? 'Student',
+                'level' => 'Education',
+                'degree' => $data['degree'] ?? 'Student',
                 'school' => $data['university'] ?? 'Not Provided',
-                'year'   => $data['graduationYear'] ?? null,
+                'year' => $data['graduationYear'] ?? null,
             ];
         }
 
         // ── Experience ────────────────────────────────────────────────────
         $experience = [];
-        if (!empty($data['jobTitle']) || !empty($data['company'])) {
-            $responsibilities = !empty($data['responsibilities'])
+        if (! empty($data['jobTitle']) || ! empty($data['company'])) {
+            $responsibilities = ! empty($data['responsibilities'])
                 ? array_values(array_filter(explode("\n", trim($data['responsibilities']))))
                 : [];
             $experience[] = [
-                'title'            => $data['jobTitle'] ?? '',
-                'company'          => $data['company']  ?? '',
-                'duration'         => $data['duration'] ?? '',
+                'title' => $data['jobTitle'] ?? '',
+                'company' => $data['company'] ?? '',
+                'duration' => $data['duration'] ?? '',
                 'responsibilities' => $responsibilities,
             ];
         }
 
         // ── Skills ────────────────────────────────────────────────────────
-        $technical = !empty($data['technicalSkills'])
+        $technical = ! empty($data['technicalSkills'])
             ? array_map('trim', explode(',', $data['technicalSkills'])) : [];
-        $soft = !empty($data['softSkills'])
-            ? array_map('trim', explode(',', $data['softSkills']))      : [];
-        $languages = !empty($data['languages'])
-            ? array_map('trim', explode(',', $data['languages']))       : [];
+        $soft = ! empty($data['softSkills'])
+            ? array_map('trim', explode(',', $data['softSkills'])) : [];
+        $languages = ! empty($data['languages'])
+            ? array_map('trim', explode(',', $data['languages'])) : [];
 
         // ── AI Summary (enhanced context) ─────────────────────────────────
-        $degree  = $data['degree']          ?? 'their degree';
-        $uni     = $data['university']      ?? 'their institution';
-        $skills  = $data['technicalSkills'] ?? 'technology';
-        $job     = $data['jobTitle']        ?? null;
+        $degree = $data['degree'] ?? 'their degree';
+        $uni = $data['university'] ?? 'their institution';
+        $skills = $data['technicalSkills'] ?? 'technology';
+        $job = $data['jobTitle'] ?? null;
 
-        $summaryContext = "Name: " . $name . "\nDegree: " . $degree . " from " . $uni . "\nSkills: " . $skills;
+        $summaryContext = 'Name: '.$name."\nDegree: ".$degree.' from '.$uni."\nSkills: ".$skills;
         if ($job) {
-            $summaryContext .= "\nExperience: " . $job . " at " . ($data['company'] ?? 'a company');
+            $summaryContext .= "\nExperience: ".$job.' at '.($data['company'] ?? 'a company');
         }
 
-        $prompt  = "Write a professional resume summary (2–3 sentences) for:\n" . $summaryContext . "\n\nReturn ONLY the summary text. No labels, no quotes.";
-        $summary = "Professional with a strong background in " . $skills . ".";
+        $prompt = "Write a professional resume summary (2–3 sentences) for:\n".$summaryContext."\n\nReturn ONLY the summary text. No labels, no quotes.";
+        $summary = 'Professional with a strong background in '.$skills.'.';
 
         $apiKey = config('services.gemini.key');
         if ($apiKey) {
             try {
                 $response = Http::timeout(90)->post(
-                    'https://generativelanguage.googleapis.com/v1/models/gemini-3.5-flash:generateContent?key=' . $apiKey,
+                    'https://generativelanguage.googleapis.com/v1/models/gemini-3.5-flash:generateContent?key='.$apiKey,
                     [
                         'contents' => [['parts' => [['text' => $prompt]]]],
                         'generationConfig' => ['temperature' => 0.7, 'maxOutputTokens' => 300],
@@ -325,16 +456,16 @@ class ResumeBuilderController extends Controller
         // ── Store & Redirect ────────────────────────────────────────────
         session([
             'resume' => [
-                'name'       => $name,
-                'email'      => $email,
-                'phone'      => $phone,
-                'city'       => $city,
-                'summary'    => $summary,
-                'education'  => $education,
+                'name' => $name,
+                'email' => $email,
+                'phone' => $phone,
+                'city' => $city,
+                'summary' => $summary,
+                'education' => $education,
                 'experience' => $experience,
-                'skills'     => [
+                'skills' => [
                     'technical' => $technical,
-                    'soft'      => $soft,
+                    'soft' => $soft,
                     'languages' => $languages,
                 ],
             ],
@@ -349,19 +480,20 @@ class ResumeBuilderController extends Controller
     public function show($template)
     {
         $resume = session('resume');
-        if (!$resume) {
+        if (! $resume) {
             return redirect()->route('resumebuilder')->with('error', 'No resume data found. Please start over.');
         }
         $template = in_array($template, ['modern', 'chronological', 'minimal']) ? $template : 'modern';
+
         return view("resume.$template", compact('resume'));
     }
 
     // ── PDF download ─────────────────────────────────────────────────────
     public function downloadPDF(Request $request)
     {
-        $resume   = session('resume');
+        $resume = session('resume');
         $template = session('template', 'modern');
-        if (!$resume) {
+        if (! $resume) {
             return redirect()->route('resumebuilder')->with('error', 'No resume available to download.');
         }
         try {
@@ -381,6 +513,7 @@ class ResumeBuilderController extends Controller
             return response()->download($path);
         } catch (\Exception $e) {
             Log::error('PDF generation error', ['message' => $e->getMessage()]);
+
             return redirect()->back()->with('error', 'Failed to generate PDF.');
         }
     }

@@ -217,24 +217,24 @@
           </div>
         </label>
 
-        {{-- Upload --}}
-        <label class="cursor-pointer group">
-          <input type="radio" name="option" value="upload" class="hidden peer"
-                 :checked="option === 'upload'" @click="option = 'upload'">
-          <div class="bg-white rounded-2xl p-6 md:p-7 text-center border-2 border-transparent
-                      peer-checked:border-[#FFB8C6] peer-checked:shadow-lg
-                      shadow-md hover:shadow-xl active:scale-[0.98] transition-all duration-300">
-            <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-4 rounded-2xl bg-[#FFE9F5] flex items-center justify-center transition-colors">
-              <svg class="w-7 h-7 md:w-8 md:h-8 text-[#FFB8C6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-              </svg>
-            </div>
-            <h3 class="font-['Poppins'] text-lg md:text-xl font-semibold text-[#3A2F6A] mb-1">Upload Existing</h3>
-            <p class="text-sm text-[#3A2F6A]/55 font-light">Import and enhance</p>
-          </div>
-        </label>
-      </div>
-
+      {{-- Edit Ready-Made --}}
+      <label class="cursor-pointer group">
+  <input type="radio" name="option" value="ready" class="hidden peer"
+         :checked="option === 'ready'" @click="option = 'ready'">
+  <div class="bg-white rounded-2xl p-6 md:p-7 text-center border-2 border-transparent
+              peer-checked:border-[#FF8C6A] peer-checked:shadow-lg
+              shadow-md hover:shadow-xl active:scale-[0.98] transition-all duration-300">
+    <div class="w-14 h-14 md:w-16 md:h-16 mx-auto mb-4 rounded-2xl bg-[#FFF2E9] flex items-center justify-center">
+      <svg class="w-7 h-7 md:w-8 md:h-8 text-[#FF8C6A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5
+                 m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+      </svg>
+    </div>
+    <h3 class="font-['Poppins'] text-lg md:text-xl font-semibold text-[#3A2F6A] mb-1">Edit Ready-Made</h3>
+    <p class="text-sm text-[#3A2F6A]/55 font-light">Start from a filled template</p>
+  </div>
+</label>
       <div class="text-center">
         <button type="submit" name="action" value="proceed"
                 class="w-full md:w-auto px-8 md:px-12 py-4 rounded-xl font-['Inter'] font-bold text-lg bg-[#6A6CFF] text-white
