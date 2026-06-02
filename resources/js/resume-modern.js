@@ -1,43 +1,45 @@
-import Alpine from 'alpinejs';
+import Alpine from "alpinejs";
 
-Alpine.data('resumeApp', () => ({
+Alpine.data("resumeApp", () => ({
     resume: {},
-    roleTitle: '',
+    roleTitle: "",
     hue: 220,
-    customColor: '#2563eb',
+    customColor: "#2563eb",
     atsMode: false,
-    fontFamily: 'sans',
-    spacing: 'normal',
+    fontFamily: "sans",
+    spacing: "normal",
     spacingMultiplier: 1.0,
     autoSpace: true,
     sidebarWidth: 260,
     presets: [220, 162, 270, 340, 25, 195],
-    
+
     fillPercentage: 100,
     isOverflowing: false,
     isUnderflowing: false,
 
     get fontClass() {
-        if (this.atsMode) return 'font-ats';
-        return {
-            sans: 'font-sans-custom',
-            serif: 'font-serif-custom',
-            mono: 'font-mono-custom',
-        }[this.fontFamily] || 'font-sans-custom';
+        if (this.atsMode) return "font-ats";
+        return (
+            {
+                sans: "font-sans-custom",
+                serif: "font-serif-custom",
+                mono: "font-mono-custom",
+            }[this.fontFamily] || "font-sans-custom"
+        );
     },
 
     get spacingClasses() {
         const map = {
-            compact: { sidebar: 'p-5 gap-4', main: 'p-6', section: 'mb-4' },
-            normal: { sidebar: 'p-7 gap-6', main: 'p-8', section: 'mb-6' },
-            spacious: { sidebar: 'p-9 gap-8', main: 'p-10', section: 'mb-8' },
+            compact: { sidebar: "p-5 gap-4", main: "p-6", section: "mb-4" },
+            normal: { sidebar: "p-7 gap-6", main: "p-8", section: "mb-6" },
+            spacious: { sidebar: "p-9 gap-8", main: "p-10", section: "mb-8" },
         };
         return map[this.spacing] || map.normal;
     },
 
     get layoutStyle() {
         if (this.atsMode) {
-            return 'max-width: 800px; display: block;';
+            return "max-width: 800px; display: block;";
         }
         return `max-width: 860px; display: grid; grid-template-columns: ${this.sidebarWidth}px 1fr;`;
     },
@@ -45,29 +47,31 @@ Alpine.data('resumeApp', () => ({
     init(initialResume) {
         if (initialResume) {
             this.resume = initialResume;
-            
+
             // Initial headline calculation
-            if (this.resume.experience && this.resume.experience[0]) {
-                this.roleTitle = this.resume.experience[0].title || '';
-            } else if (this.resume.education && this.resume.education[0]) {
-                this.roleTitle = this.resume.education[0].degree || '';
+            if (this.resume.experiences && this.resume.experiences[0]) {
+                this.roleTitle = this.resume.experiences[0].title || "";
+            } else if (this.resume.educations && this.resume.educations[0]) {
+                this.roleTitle = this.resume.educations[0].degree || "";
             } else {
-                this.roleTitle = 'Professional';
+                this.roleTitle = "Professional";
             }
         }
 
-        const saved = localStorage.getItem('resumeSettings_modern');
+        const saved = localStorage.getItem(
+            "resumeSettings_readymade_modern_v2",
+        );
         if (saved) {
             try {
                 const s = JSON.parse(saved);
                 this.hue = s.hue ?? 220;
                 this.atsMode = s.atsMode ?? false;
-                this.fontFamily = s.fontFamily ?? 'sans';
-                this.spacing = s.spacing ?? 'normal';
+                this.fontFamily = s.fontFamily ?? "sans";
+                this.spacing = s.spacing ?? "normal";
                 this.spacingMultiplier = s.spacingMultiplier ?? 1.0;
                 this.autoSpace = s.autoSpace ?? true;
                 this.sidebarWidth = s.sidebarWidth ?? 260;
-                this.customColor = s.customColor ?? '#2563eb';
+                this.customColor = s.customColor ?? "#2563eb";
                 if (s.resume) this.resume = s.resume;
             } catch {
                 // ignore corrupt localStorage
@@ -78,17 +82,20 @@ Alpine.data('resumeApp', () => ({
     },
 
     saveSettings() {
-        localStorage.setItem('resumeSettings_modern', JSON.stringify({
-            hue: this.hue,
-            atsMode: this.atsMode,
-            fontFamily: this.fontFamily,
-            spacing: this.spacing,
-            spacingMultiplier: this.spacingMultiplier,
-            autoSpace: this.autoSpace,
-            sidebarWidth: this.sidebarWidth,
-            customColor: this.customColor,
-            resume: this.resume
-        }));
+        localStorage.setItem(
+            "resumeSettings_readymade_modern_v2",
+            JSON.stringify({
+                hue: this.hue,
+                atsMode: this.atsMode,
+                fontFamily: this.fontFamily,
+                spacing: this.spacing,
+                spacingMultiplier: this.spacingMultiplier,
+                autoSpace: this.autoSpace,
+                sidebarWidth: this.sidebarWidth,
+                customColor: this.customColor,
+                resume: this.resume,
+            }),
+        );
     },
 
     setHue(h) {
@@ -117,83 +124,85 @@ Alpine.data('resumeApp', () => ({
     },
 
     initials(name) {
-        if (!name) return '';
+        if (!name) return "";
         const parts = name.trim().split(/\s+/).filter(Boolean);
-        if (parts.length === 1) return parts[0][0]?.toUpperCase() || '';
+        if (parts.length === 1) return parts[0][0]?.toUpperCase() || "";
         return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
     },
 
     // In-sheet operations
-    addJob() {
-        if (!this.resume.experience) this.resume.experience = [];
-        this.resume.experience.push({
-            title: 'Role / Focus',
-            company: 'Company Name',
-            duration: 'Period',
-            responsibilities: ['Responsibility bullet point.']
+    addExperience() {
+        if (!this.resume.experiences) this.resume.experiences = [];
+        this.resume.experiences.push({
+            title: "Role / Focus",
+            company: "Company Name",
+            duration: "Period",
+            bullets: ["Responsibility bullet point."],
         });
         this.saveSettings();
         this.$nextTick(() => this.calculateA4Fit());
     },
-    delJob(idx) {
-        this.resume.experience.splice(idx, 1);
+    delExperience(idx) {
+        this.resume.experiences.splice(idx, 1);
         this.saveSettings();
         this.$nextTick(() => this.calculateA4Fit());
     },
-    addBullet(expIdx) {
-        if (!this.resume.experience[expIdx].responsibilities) {
-            this.resume.experience[expIdx].responsibilities = [];
+    addExperienceBullet(expIdx) {
+        if (!this.resume.experiences[expIdx].bullets) {
+            this.resume.experiences[expIdx].bullets = [];
         }
-        this.resume.experience[expIdx].responsibilities.push('New key milestone achievement.');
+        this.resume.experiences[expIdx].bullets.push(
+            "New key milestone achievement.",
+        );
         this.saveSettings();
         this.$nextTick(() => this.calculateA4Fit());
     },
-    delBullet(expIdx, bIdx) {
-        this.resume.experience[expIdx].responsibilities.splice(bIdx, 1);
+    delExperienceBullet(expIdx, bIdx) {
+        this.resume.experiences[expIdx].bullets.splice(bIdx, 1);
         this.saveSettings();
         this.$nextTick(() => this.calculateA4Fit());
     },
 
-    addEdu() {
-        if (!this.resume.education) this.resume.education = [];
-        this.resume.education.push({
-            level: 'Higher Education',
-            degree: 'Degree Program',
-            school: 'Institution',
-            year: '2025',
-            cgpa: '4.00'
+    addEducation() {
+        if (!this.resume.educations) this.resume.educations = [];
+        this.resume.educations.push({
+            level: "Higher Education",
+            degree: "Degree Program",
+            school: "Institution",
+            year: "2025",
+            cgpa: "4.00",
         });
         this.saveSettings();
         this.$nextTick(() => this.calculateA4Fit());
     },
-    delEdu(idx) {
-        this.resume.education.splice(idx, 1);
+    delEducation(idx) {
+        this.resume.educations.splice(idx, 1);
         this.saveSettings();
         this.$nextTick(() => this.calculateA4Fit());
     },
 
     addTechSkill() {
         if (!this.resume.skills) this.resume.skills = {};
-        if (!this.resume.skills.technical) this.resume.skills.technical = [];
-        this.resume.skills.technical.push('Skill Item');
+        if (!this.resume.key_skills) this.resume.key_skills = [];
+        this.resume.key_skills.push("Skill Item");
         this.saveSettings();
         this.$nextTick(() => this.calculateA4Fit());
     },
     delTechSkill(idx) {
-        this.resume.skills.technical.splice(idx, 1);
+        this.resume.key_skills.splice(idx, 1);
         this.saveSettings();
         this.$nextTick(() => this.calculateA4Fit());
     },
 
     addSoftSkill() {
         if (!this.resume.skills) this.resume.skills = {};
-        if (!this.resume.skills.soft) this.resume.skills.soft = [];
-        this.resume.skills.soft.push('Core Competency');
+        if (!this.resume.additional_skills) this.resume.additional_skills = [];
+        this.resume.additional_skills.push("Core Competency");
         this.saveSettings();
         this.$nextTick(() => this.calculateA4Fit());
     },
     delSoftSkill(idx) {
-        this.resume.skills.soft.splice(idx, 1);
+        this.resume.additional_skills.splice(idx, 1);
         this.saveSettings();
         this.$nextTick(() => this.calculateA4Fit());
     },
@@ -201,7 +210,7 @@ Alpine.data('resumeApp', () => ({
     addLang() {
         if (!this.resume.skills) this.resume.skills = {};
         if (!this.resume.skills.languages) this.resume.skills.languages = [];
-        this.resume.skills.languages.push('Language');
+        this.resume.skills.languages.push("Language");
         this.saveSettings();
         this.$nextTick(() => this.calculateA4Fit());
     },
@@ -212,36 +221,33 @@ Alpine.data('resumeApp', () => ({
     },
 
     calculateA4Fit() {
-        const wrapper = document.getElementById('resume-surface-wrapper');
+        const wrapper = document.getElementById("resume-surface-wrapper");
         if (!wrapper) return;
-        
-        // Measure side column & main column content sizes
-        const aside = wrapper.querySelector('aside');
-        const main = wrapper.querySelector('main');
-        
+
+        const aside = wrapper.querySelector("aside");
+        const main = wrapper.querySelector("main");
+
         if (!aside || !main) return;
-        
-        // Temporarily reset auto space stretch to find real baseline sizes
-        aside.style.justifyContent = 'flex-start';
-        main.style.justifyContent = 'flex-start';
-        
-        // Sub-elements calculations
+
+        aside.style.justifyContent = "flex-start";
+        main.style.justifyContent = "flex-start";
+
         const asideHeight = aside.scrollHeight;
         const mainHeight = main.scrollHeight;
         const maxContentHeight = Math.max(asideHeight, mainHeight);
-        
+
         if (this.autoSpace) {
-            aside.style.justifyContent = 'space-between';
-            main.style.justifyContent = 'space-between';
+            aside.style.justifyContent = "space-between";
+            main.style.justifyContent = "space-between";
         }
 
         const a4MaxHeightPx = wrapper.offsetHeight || 1123;
         const fill = Math.round((maxContentHeight / a4MaxHeightPx) * 100);
-        
+
         this.fillPercentage = fill;
         this.isOverflowing = fill > 100;
         this.isUnderflowing = fill < 88;
-    }
+    },
 }));
 
 window.Alpine = Alpine;
